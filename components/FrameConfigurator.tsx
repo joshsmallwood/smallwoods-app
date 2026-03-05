@@ -343,10 +343,10 @@ function SingleFrame({
   const [showPhotoTips, setShowPhotoTips] = useState(false)
   const [sampleIdx, setSampleIdx] = useState(0)
   const SAMPLE_PHOTOS = [
-    'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
-    'https://images.unsplash.com/photo-1511895426328-dc8714191011?w=800&q=80',
-    'https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?w=800&q=80',
-    'https://images.unsplash.com/photo-1536640712-4d4c36ff0e4e?w=800&q=80',
+    'https://cdn.shopify.com/s/files/1/1091/1314/files/63A4970-2_b44b42d1-4e90-45f9-8479-046771313de6.jpg?v=1764101397',
+    'https://cdn.shopify.com/s/files/1/1091/1314/files/SmallwoodKids-3M_310829a1-d49a-4c9e-bfca-2d6bf9e21509.jpg?v=1764101397',
+    'https://cdn.shopify.com/s/files/1/1091/1314/files/laceyburgert_7217bd0e-cbbd-4bbc-9f2c-18ef9a38a8f4.jpg?v=1764101397',
+    'https://cdn.shopify.com/s/files/1/1091/1314/files/20200312-DrCulver_9fd36e38-7b6d-4758-b6cd-c680d813b789.jpg?v=1764101397',
   ]
   useEffect(() => {
     if (frame.photo) return
@@ -1219,9 +1219,9 @@ export default function FrameConfigurator() {
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-4">How it looks in your home</p>
         <div className="flex gap-2.5 overflow-x-auto pb-1 px-4" style={{ scrollSnapType: 'x mandatory' }}>
           {[
-            { img: 'https://images.unsplash.com/photo-1618219740975-d40978bb7378?w=400&q=80', room: 'Living Room', name: 'Sarah M.', size: '16×20 Walnut' },
-            { img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80', room: 'Bedroom', name: 'Jessica L.', size: '16×16 Oak' },
-            { img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80', room: 'Office', name: 'Mike R.', size: '12×16 Black' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397', room: 'Living Room', name: 'Sarah M.', size: '16×16 Walnut' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/220224Practicals_20.jpg?v=1764101397', room: 'Bedroom', name: 'Jessica L.', size: '16×16 Oak' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS_E_1x1_a97b2134-fd1d-4aeb-8cb8-6c4fc0f31d6e.jpg?v=1764101397', room: 'Office', name: 'Mike R.', size: '12×16 Black' },
             { img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80', room: 'Hallway', name: 'Amy K.', size: '20×30 Walnut' },
             { img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&q=80', room: 'Nursery', name: 'Rachel T.', size: '10×12 White' },
           ].map(c => (
