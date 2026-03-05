@@ -91,6 +91,50 @@ const faqSchema = {
   ],
 }
 
+// WebSite schema — enables Google Sitelinks Searchbox potential
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Smallwoods',
+  url: 'https://app.smallwoods.io',
+  description: 'Design custom wood framed signs with your photos. Handcrafted in the USA.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://www.smallwoodhome.com/search?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
+}
+
+// Organization schema — enables Google Knowledge Panel with logo + social links
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Smallwoods',
+  url: 'https://www.smallwoodhome.com',
+  logo: 'https://cdn.shopify.com/s/files/1/1091/1314/files/smallwoods-logo.png',
+  description: 'Custom wood framed signs and wall art. Handcrafted in the USA with real wood. 3M+ happy families.',
+  address: {
+    '@type': 'PostalAddress',
+    addressCountry: 'US',
+    addressRegion: 'TX',
+  },
+  sameAs: [
+    'https://www.facebook.com/SmallwoodsHome',
+    'https://www.instagram.com/smallwoodshome',
+    'https://www.tiktok.com/@smallwoodshome',
+    'https://www.pinterest.com/smallwoodshome',
+  ],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer service',
+    url: 'https://www.smallwoodhome.com/pages/contact',
+    availableLanguage: 'English',
+  },
+}
+
 export default function Home() {
   return (
     <>
@@ -101,6 +145,14 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
       <FrameConfigurator />
     </>
