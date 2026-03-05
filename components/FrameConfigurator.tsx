@@ -968,6 +968,34 @@ export default function FrameConfigurator() {
 
           <div className="h-px bg-gray-100 mb-3"/>
 
+          {/* Most Popular Combo quick-select */}
+          <div className="mx-0 mb-3 rounded-xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #1B5A4A 0%, #2d7a65 100%)', border: '1px solid rgba(27,90,74,0.2)' }}>
+            <div className="px-3 py-2.5 flex items-center gap-2.5">
+              <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden" style={{ background: FRAME_COLORS[0].gradient, border: '2px solid rgba(255,255,255,0.3)' }}>
+                <div className="w-full h-full flex items-center justify-center">
+                  <div style={{ width: 28, height: 28, border: '4px solid rgba(90,48,16,0.9)', borderRadius: 2, background: 'rgba(255,255,255,0.15)' }} />
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <span className="bg-amber-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wide">🏆 #1 Best Seller</span>
+                </div>
+                <p className="text-white font-bold text-[12px] leading-tight">16×16 Walnut Frame</p>
+                <p className="text-white/70 text-[10px]">Chosen by 68% of customers</p>
+              </div>
+              <button
+                onClick={() => {
+                  const s = SIZES.find(x => x.id === '16x16')
+                  if (s) updateFrame(activeId, { size: s, color: 'walnut' })
+                }}
+                className="flex-shrink-0 bg-white text-[#1B5A4A] text-[11px] font-black px-3 py-1.5 rounded-lg whitespace-nowrap"
+                style={{ boxShadow: '0 1px 6px rgba(0,0,0,0.15)' }}
+              >
+                Select ✓
+              </button>
+            </div>
+          </div>
+
           {/* Color swatches */}
           <div>
             <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Frame Color</p>
