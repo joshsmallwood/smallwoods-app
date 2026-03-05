@@ -3,6 +3,21 @@
 import { useState, useRef, useEffect } from 'react'
 import InfoModal from './InfoModal'
 
+function ViewingCount() {
+  const [count, setCount] = useState(() => 34 + Math.floor(Math.random() * 18))
+  useEffect(() => {
+    const t = setInterval(() => {
+      setCount(c => {
+        const delta = Math.random() < 0.5 ? -1 : 1
+        const next = c + delta
+        return next < 28 ? 29 : next > 54 ? 53 : next
+      })
+    }, 4200)
+    return () => clearInterval(t)
+  }, [])
+  return <>{count}</>
+}
+
 type FrameColor = 'walnut' | 'oak' | 'black' | 'white'
 
 const FRAME_COLORS: { id: FrameColor; label: string; swatch: string; shopifyColor: string }[] = [
@@ -335,6 +350,15 @@ export default function FrameConfigurator() {
         <span className="bg-[#C0392B] text-white text-xs font-bold px-3 py-1 rounded-full">
           📦 Ships in 1-3 Days
         </span>
+      </div>
+
+      {/* Product Title + Urgency */}
+      <div className="px-4 pt-1 pb-2">
+        <h1 className="text-lg font-bold text-[#1B1B1B] leading-tight">Custom Wood Framed Sign</h1>
+        <div className="flex items-center gap-1.5 mt-1">
+          <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+          <span className="text-xs text-gray-500 font-medium"><ViewingCount /> people viewing this right now</span>
+        </div>
       </div>
 
       {/* Gallery Wall Label */}
