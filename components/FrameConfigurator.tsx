@@ -2264,6 +2264,30 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
               </div>
             </div>
 
+            {/* Estimated delivery */}
+            <div className="px-5 py-3 border-t border-gray-100 bg-green-50">
+              {(() => {
+                const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+                const cutoff = new Date(now); cutoff.setHours(15, 0, 0, 0)
+                const prodDays = now < cutoff ? 1 : 2
+                const lo = new Date(now); lo.setDate(lo.getDate() + prodDays + 2)
+                const hi = new Date(now); hi.setDate(hi.getDate() + prodDays + 5)
+                // Skip weekends
+                while ([0,6].includes(lo.getDay())) lo.setDate(lo.getDate() + 1)
+                while ([0,6].includes(hi.getDay())) hi.setDate(hi.getDate() + 1)
+                const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                return (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">📦</span>
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#1B5A4A' }}>Estimated Delivery: {fmt(lo)}–{fmt(hi)}</div>
+                      <div style={{ fontSize: '10px', color: '#6b7280' }}>Production 1–2 days · Ships UPS from Texas</div>
+                    </div>
+                  </div>
+                )
+              })()}
+            </div>
+
             {/* Trust row */}
             <div className="px-5 py-3 border-t border-gray-100">
               <div className="flex justify-around">
