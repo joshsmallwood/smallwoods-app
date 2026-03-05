@@ -313,7 +313,9 @@ interface FrameItem {
 }
 
 function makeFrame(id: string): FrameItem {
-  return { id, color: 'walnut', size: SIZES[3], photo: null, orientation: 'portrait' }
+  // Default to 25×17 Walnut — our #1 best seller by order volume
+  const defaultSize = SIZES.find(s => s.id === '25x17') ?? SIZES[3]
+  return { id, color: 'walnut', size: defaultSize, photo: null, orientation: 'portrait' }
 }
 
 // ─── Single Frame ────────────────────────────────────────────────
@@ -1189,12 +1191,12 @@ export default function FrameConfigurator() {
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <span className="bg-amber-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wide">🏆 #1 Best Seller</span>
                 </div>
-                <p className="text-white font-bold text-[12px] leading-tight">16×16 Walnut Frame</p>
-                <p className="text-white/70 text-[10px]">Chosen by 68% of customers</p>
+                <p className="text-white font-bold text-[12px] leading-tight">25×17 Walnut Frame</p>
+                <p className="text-white/70 text-[10px]">Our #1 selling size — by far</p>
               </div>
               <button
                 onClick={() => {
-                  const s = SIZES.find(x => x.id === '16x16')
+                  const s = SIZES.find(x => x.id === '25x17')
                   if (s) updateFrame(activeId, { size: s, color: 'walnut' })
                 }}
                 className="flex-shrink-0 bg-white text-[#1B5A4A] text-[11px] font-black px-3 py-1.5 rounded-lg whitespace-nowrap"
