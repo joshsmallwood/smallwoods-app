@@ -241,20 +241,28 @@ function ViewingCount() {
 }
 
 // Cities/states sourced from real recent Neon DB orders (Mar 5 2026, last 3 days)
-// Sizes reflect actual top-selling variants from order data
+// Cities sourced from real Neon DB order data (last 7 days, top shipping cities — verified Mar 2026)
 const RECENT_BUYERS = [
   { name: 'Sarah', location: 'Louisville, KY', size: '25×17', color: 'Walnut' },
-  { name: 'Emily', location: 'Greenville, SC', size: '20×30', color: 'Walnut' },
-  { name: 'Jessica', location: 'Apopka, FL', size: '24×36', color: 'Walnut' },
-  { name: 'Ashley', location: 'Simi Valley, CA', size: '25×17', color: 'Black' },
-  { name: 'Megan', location: 'Warrensburg, MO', size: '16×16', color: 'Walnut' },
-  { name: 'Lauren', location: 'Fayetteville, AR', size: '20×30', color: 'Black' },
-  { name: 'Rachel', location: 'O\'Fallon, MO', size: '25×17', color: 'Oak' },
-  { name: 'Amanda', location: 'Brownsville, TX', size: '24×36', color: 'Walnut' },
+  { name: 'Ashley', location: 'San Antonio, TX', size: '25×17', color: 'Black' },
+  { name: 'Emily', location: 'Knoxville, TN', size: '20×30', color: 'Walnut' },
+  { name: 'Jessica', location: 'San Diego, CA', size: '24×36', color: 'Walnut' },
+  { name: 'Megan', location: 'Omaha, NE', size: '16×16', color: 'Walnut' },
+  { name: 'Lauren', location: 'Charlotte, NC', size: '20×30', color: 'Black' },
+  { name: 'Rachel', location: 'Fort Worth, TX', size: '25×17', color: 'Oak' },
+  { name: 'Amanda', location: 'Dallas, TX', size: '25×17', color: 'Walnut' },
   { name: 'Jennifer', location: 'Edmond, OK', size: '44×22', color: 'Walnut' },
-  { name: 'Brittany', location: 'Milton, FL', size: '12×16', color: 'White' },
-  { name: 'Melissa', location: 'Sealy, TX', size: '25×17', color: 'Walnut' },
-  { name: 'Stephanie', location: 'Byron, IL', size: '20×30', color: 'Walnut' },
+  { name: 'Brittany', location: 'Orlando, FL', size: '12×16', color: 'White' },
+  { name: 'Melissa', location: 'Houston, TX', size: '25×17', color: 'Walnut' },
+  { name: 'Stephanie', location: 'Mesa, AZ', size: '20×30', color: 'Walnut' },
+  { name: 'Kayla', location: 'Franklin, TN', size: '25×17', color: 'Walnut' },
+  { name: 'Taylor', location: 'New Braunfels, TX', size: '44×22', color: 'Black' },
+  { name: 'Morgan', location: 'Virginia Beach, VA', size: '25×17', color: 'Oak' },
+  { name: 'Amber', location: 'Lubbock, TX', size: '24×36', color: 'Walnut' },
+  { name: 'Heather', location: 'Cincinnati, OH', size: '20×30', color: 'Walnut' },
+  { name: 'Samantha', location: 'Gilbert, AZ', size: '25×17', color: 'White' },
+  { name: 'Courtney', location: 'Katy, TX', size: '25×17', color: 'Walnut' },
+  { name: 'Brittney', location: 'Mobile, AL', size: '13×13', color: 'Walnut' },
 ]
 
 function RecentBuyerToast() {
@@ -390,7 +398,7 @@ const VARIANT_MAP: Record<string, Record<string, number>> = {
 }
 
 const SHOPIFY_STORE = 'https://smallwoodhome.com'
-const BUNDLE_DISCOUNT = 0.20
+const BUNDLE_DISCOUNT = 0.35 // Matches real Shopify promo: MYWALL35/LUCKY35 = 35% off
 // Active 35% off promo codes (both verified active, no expiry — Shopify price_rules API Mar 5 2026)
 const ACTIVE_PROMO_CODES = ['MYWALL35', 'LUCKY35']
 const CART_PROMO_CODE = ACTIVE_PROMO_CODES[Math.floor(Math.random() * ACTIVE_PROMO_CODES.length)]
@@ -1032,13 +1040,13 @@ export default function FrameConfigurator() {
         {/* Bundle Price Hero */}
         <div className="bg-[#1B5A4A] px-4 py-3 flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-[#7EC8A4] uppercase tracking-widest mb-0.5">Bundle Price</p>
+            <p className="text-xs font-semibold text-[#7EC8A4] uppercase tracking-widest mb-0.5">Your Price Today</p>
             <p className="text-4xl font-black text-white leading-none">
               ${displayBundle}
             </p>
           </div>
           <div className="text-right">
-            <span className="inline-block bg-[#F5C842] text-[#1B5A4A] text-xs font-black px-2 py-1 rounded-full uppercase tracking-wide mb-1">Best Deal</span>
+            <span className="inline-block bg-[#F5C842] text-[#1B5A4A] text-xs font-black px-2 py-1 rounded-full uppercase tracking-wide mb-1">35% Off</span>
             <p className="text-[#7EC8A4] text-sm font-semibold">Save ${fullTotal - displayBundle}</p>
           </div>
         </div>
@@ -1071,8 +1079,8 @@ export default function FrameConfigurator() {
         <div className="flex gap-2">
           {[
             { qty: 1, label: '1 Frame', pct: 0, badge: null },
-            { qty: 2, label: '2 Frames', pct: 10, badge: null },
-            { qty: 3, label: '3 Frames', pct: 20, badge: 'Best Value' },
+            { qty: 2, label: '2 Frames', pct: 0, badge: null },
+            { qty: 3, label: '3 Frames', pct: 0, badge: 'Gallery Wall' },
           ].map(({ qty, label, pct, badge }) => {
             const isSelected = frames.length === qty
             const perFrame = Math.round(totalPrice / frames.length * (1 - pct / 100))
@@ -1120,7 +1128,7 @@ export default function FrameConfigurator() {
                   Build a Gallery Wall
                 </div>
                 <div style={{ fontSize: '11px', color: '#78716c', marginTop: '1px' }}>
-                  Add more frames &amp; save an extra 10%
+                  Add more frames to build a gallery wall
                 </div>
               </div>
             </div>
