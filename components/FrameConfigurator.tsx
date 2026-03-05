@@ -1599,7 +1599,7 @@ export default function FrameConfigurator() {
           {[
             { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HangingCanvas_Hero_Studio.jpg?v=1771287846', title: 'Hanging Canvas', subtitle: 'Custom · Wood Frame', price: 'from $85', href: 'https://www.smallwoodhome.com/products/custom-framed-hanging-canvas' },
             { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0002_Canvas-min.jpg?v=1764103392', title: 'Wrapped Canvas', subtitle: 'Custom · Gallery Wrap', price: 'from $69', href: 'https://www.smallwoodhome.com/products/custom-wrapped-canvas' },
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS-BlackXL_ba652b45-37a3-4f18-8af8-d341b150f44a.jpg?v=1764101397', title: 'Best Sellers', subtitle: 'Top-rated designs', price: 'Shop all →', href: 'https://www.smallwoodhome.com/collections/bestseller' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS-BlackXL_ba652b45-37a3-4f18-8af8-d341b150f44a.jpg?v=1764101397', title: 'Best Sellers', subtitle: 'Top-rated designs', price: null, cta: 'Shop all →', href: 'https://www.smallwoodhome.com/collections/bestseller' },
           ].map(p => (
             <a
               key={p.title}
@@ -1614,7 +1614,11 @@ export default function FrameConfigurator() {
               <div className="p-2 flex flex-col gap-0.5">
                 <span className="text-[11px] font-bold text-gray-800 leading-tight">{p.title}</span>
                 <span className="text-[10px] text-gray-400 leading-tight">{p.subtitle}</span>
-                <span className="text-[12px] font-black text-[#1B5A4A]">{p.price}</span>
+                {p.cta ? (
+                  <span className="text-[10px] font-bold text-white bg-[#1B5A4A] rounded-md px-1.5 py-0.5 mt-0.5 text-center leading-tight">{p.cta}</span>
+                ) : (
+                  <span className="text-[12px] font-black text-[#1B5A4A]">{p.price}</span>
+                )}
               </div>
             </a>
           ))}
