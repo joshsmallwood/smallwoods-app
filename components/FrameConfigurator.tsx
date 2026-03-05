@@ -776,6 +776,27 @@ export default function FrameConfigurator() {
         </div>
       </div>
 
+      {/* How It Works */}
+      <div className="px-4 pb-3">
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center mb-2">How It Works</p>
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex flex-col items-center gap-1 flex-1">
+            <div className="w-10 h-10 rounded-full bg-[#1B5A4A]/08 flex items-center justify-center text-xl">📸</div>
+            <p className="text-[9px] font-semibold text-gray-600 text-center leading-tight">Upload<br/>Your Photo</p>
+          </div>
+          <div className="flex items-center mt-4 text-gray-300 text-base">→</div>
+          <div className="flex flex-col items-center gap-1 flex-1">
+            <div className="w-10 h-10 rounded-full bg-[#1B5A4A]/08 flex items-center justify-center text-xl">🖨️</div>
+            <p className="text-[9px] font-semibold text-gray-600 text-center leading-tight">We Print<br/>& Frame It</p>
+          </div>
+          <div className="flex items-center mt-4 text-gray-300 text-base">→</div>
+          <div className="flex flex-col items-center gap-1 flex-1">
+            <div className="w-10 h-10 rounded-full bg-[#1B5A4A]/08 flex items-center justify-center text-xl">📦</div>
+            <p className="text-[9px] font-semibold text-gray-600 text-center leading-tight">Delivered<br/>in 1–3 Days</p>
+          </div>
+        </div>
+      </div>
+
       {/* CTA Button */}
       <div className="px-4 pb-6" ref={ctaRef}>
         <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} />
