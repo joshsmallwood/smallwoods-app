@@ -1081,6 +1081,15 @@ export default function FrameConfigurator() {
       <FAQAccordion />
 
       {/* CTA Button */}
+      {/* Satisfaction Guarantee Banner */}
+      <div className="mx-4 mb-3 bg-green-50 border border-green-200 rounded-xl px-4 py-3 flex items-center gap-3">
+        <span className="text-2xl leading-none flex-shrink-0">🛡️</span>
+        <div>
+          <p className="text-[12px] font-black text-[#1B5A4A] leading-tight">100% Satisfaction Guarantee</p>
+          <p className="text-[11px] text-gray-600 leading-tight mt-0.5">Love it or we reprint it free. No questions asked.</p>
+        </div>
+      </div>
+
       <div className="px-4 pb-6" ref={ctaRef}>
         <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} />
       </div>
