@@ -45,13 +45,34 @@ function ShareDesignButton() {
   )
 }
 
+function getShipTagline() {
+  const now = new Date()
+  const ct = new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+  const dayOfWeek = ct.getDay()
+  const hour = ct.getHours()
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  let shipsInDays = 1
+  if (dayOfWeek === 0) shipsInDays = 1
+  else if (dayOfWeek === 6) shipsInDays = 2
+  else if (hour >= 15) shipsInDays = 1
+  else shipsInDays = 0
+  const shipDate = new Date(ct)
+  shipDate.setDate(shipDate.getDate() + shipsInDays)
+  if (shipDate.getDay() === 6) shipDate.setDate(shipDate.getDate() + 2)
+  if (shipDate.getDay() === 0) shipDate.setDate(shipDate.getDate() + 1)
+  if (shipsInDays === 0) return '⚡ Ships today! Order before 3 PM CT'
+  if (shipsInDays === 1) return `⚡ Ships tomorrow (${days[shipDate.getDay()]})`
+  return `⚡ Ships ${days[shipDate.getDay()]}`
+}
+
 function RotatingTagline() {
+  const [shipLine] = useState(() => getShipTagline())
   const lines = [
     '🎁 The gift everyone cries over',
     '🏡 Handcrafted in the USA',
     '📸 Your photo. Real wood. Forever.',
     '💚 3,000,000+ families love their frames',
-    '⚡ Ships in 1–3 business days',
+    shipLine,
   ]
   const [idx, setIdx] = useState(0)
   const [visible, setVisible] = useState(true)
