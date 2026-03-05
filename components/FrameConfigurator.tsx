@@ -10,6 +10,38 @@ const WALL_STYLES: Record<string, React.CSSProperties> = {
   warm:    { backgroundColor: '#d4b896', backgroundImage: 'repeating-linear-gradient(160deg,rgba(120,70,20,0.06) 0px,rgba(120,70,20,0.06) 2px,transparent 2px,transparent 12px)' },
 }
 
+function RotatingTagline() {
+  const lines = [
+    '🎁 The gift everyone cries over',
+    '🏡 Handcrafted in the USA',
+    '📸 Your photo. Real wood. Forever.',
+    '💚 50,000+ families love their frames',
+    '⚡ Ships in 1–3 business days',
+  ]
+  const [idx, setIdx] = useState(0)
+  const [visible, setVisible] = useState(true)
+  useEffect(() => {
+    const t = setInterval(() => {
+      setVisible(false)
+      setTimeout(() => {
+        setIdx(i => (i + 1) % lines.length)
+        setVisible(true)
+      }, 300)
+    }, 3500)
+    return () => clearInterval(t)
+  }, [])
+  return (
+    <div className="mt-1.5 min-h-[20px]">
+      <span
+        className="text-[12px] font-semibold text-[#1B5A4A] transition-opacity duration-300"
+        style={{ opacity: visible ? 1 : 0 }}
+      >
+        {lines[idx]}
+      </span>
+    </div>
+  )
+}
+
 function RoomPresetSwitcher({ wallStyle, onChangeWall }: { wallStyle: string; onChangeWall: (s: 'classic' | 'modern' | 'dark' | 'warm') => void }) {
   const presets = [
     { id: 'classic' as const, label: '🏠 Classic' },
@@ -606,6 +638,7 @@ export default function FrameConfigurator() {
           <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
           <span className="text-xs text-gray-500 font-medium"><ViewingCount /> people viewing this right now</span>
         </div>
+        <RotatingTagline />
       </div>
 
       {/* Gallery Wall Label */}
