@@ -1191,17 +1191,21 @@ export default function FrameConfigurator() {
               <div className="flex items-end gap-2 justify-start">
                 {[
                   { label: '8×10', w: 14, h: 18 },
+                  { label: '13×13', w: 20, h: 20 },
                   { label: '12×16', w: 18, h: 24 },
                   { label: '16×16', w: 24, h: 24 },
+                  { label: '25×17', w: 37, h: 25, popular: true },
                   { label: '20×30', w: 25, h: 37 },
-                  { label: '24×36', w: 30, h: 45 },
                   { label: '44×22', w: 44, h: 22 },
                 ].map(s => (
                   <div key={s.label} className="flex flex-col items-center gap-1">
-                    <div
-                      style={{ width: s.w, height: s.h, background: 'linear-gradient(135deg, #8B6914 0%, #C49A2B 50%, #8B6914 100%)', borderRadius: 2, border: '1.5px solid #6B4F10', boxShadow: '0 1px 3px rgba(0,0,0,0.25)' }}
-                    />
-                    <span className="text-[8px] text-gray-500 font-medium leading-none">{s.label}</span>
+                    <div className="relative">
+                      {'popular' in s && s.popular && <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[6px] font-black text-amber-600 whitespace-nowrap">#1</span>}
+                      <div
+                        style={{ width: s.w, height: s.h, background: 'popular' in s && s.popular ? 'linear-gradient(135deg, #5a3010 0%, #8B6014 50%, #5a3010 100%)' : 'linear-gradient(135deg, #8B6914 0%, #C49A2B 50%, #8B6914 100%)', borderRadius: 2, border: '1.5px solid #6B4F10', boxShadow: '0 1px 3px rgba(0,0,0,0.25)' }}
+                      />
+                    </div>
+                    <span className="text-[8px] font-medium leading-none" style={{ color: 'popular' in s && s.popular ? '#5a3010' : '#6b7280' }}>{s.label}</span>
                   </div>
                 ))}
                 <div className="flex flex-col items-center gap-1 ml-auto">
