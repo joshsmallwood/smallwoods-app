@@ -1896,6 +1896,10 @@ function FAQAccordion() {
       a: 'Every frame is wrapped in foam padding and shipped in a custom-fit box. We include corner protectors and a layer of bubble wrap. Damage during shipping is extremely rare — and if it happens, we reprint for free.'
     },
     {
+      q: 'Does it include hanging hardware?',
+      a: 'Yes! Every frame ships with a sawtooth hanger pre-attached to the back. All you need is a nail and a level. Hanging typically takes under 2 minutes.'
+    },
+    {
       q: 'Can I include a gift message?',
       a: 'Yes! Check the "This is a gift" box above and type your personal message. It\'ll be printed on a card and included inside the box at no extra cost.'
     },
