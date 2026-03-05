@@ -642,6 +642,7 @@ export default function FrameConfigurator() {
   const [frames, setFrames] = useState<FrameItem[]>([makeFrame('f1')])
   const [activeId, setActiveId] = useState<string>('f1')
   const [showFrameBar, setShowFrameBar] = useState(true)
+  const [flashColor, setFlashColor] = useState<string | null>(null)
   const [showInfo, setShowInfo] = useState(false)
   const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>('classic')
   const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
@@ -1151,7 +1152,11 @@ export default function FrameConfigurator() {
               {FRAME_COLORS.map(c => (
                 <button
                   key={c.id}
-                  onClick={() => updateFrame(activeId, { color: c.id })}
+                  onClick={() => {
+                    updateFrame(activeId, { color: c.id })
+                    setFlashColor(c.id)
+                    setTimeout(() => setFlashColor(null), 600)
+                  }}
                   className="flex flex-col items-center gap-1.5 flex-1"
                 >
                   <span
@@ -1165,9 +1170,10 @@ export default function FrameConfigurator() {
                       borderRadius: '8px',
                       background: c.gradient,
                       backgroundSize: '100% 100%',
+                      animation: flashColor === c.id ? 'colorSwatchPop 0.55s cubic-bezier(0.34,1.4,0.64,1)' : undefined,
                     }}
                   />
-                  <span className={`text-[10px] font-semibold leading-none ${activeFrame.color === c.id ? 'text-[#1B5A4A]' : 'text-gray-500'}`}>
+                  <span className={`text-[10px] font-semibold leading-none transition-all ${activeFrame.color === c.id ? 'text-[#1B5A4A]' : 'text-gray-500'}`}>
                     {c.label}
                   </span>
                 </button>
