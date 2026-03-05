@@ -565,34 +565,33 @@ export default function FrameConfigurator() {
           className="mx-4 mb-3 rounded-xl overflow-hidden"
           style={{ border: '2px dashed #F5C842', background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)' }}
         >
-          <div className="flex items-center justify-between px-4 py-3">
-            <div className="flex items-center gap-3">
-              <div style={{ fontSize: '28px', lineHeight: 1 }}>🖼️</div>
+          <div className="px-4 py-3">
+            <div className="flex items-center gap-2 mb-2">
+              <span style={{ fontSize: '22px', lineHeight: 1 }}>🖼️</span>
               <div>
                 <div style={{ fontSize: '13px', fontWeight: 800, color: '#1B5A4A', lineHeight: 1.2 }}>
                   Build a Gallery Wall
                 </div>
-                <div style={{ fontSize: '11px', color: '#78716c', marginTop: '2px' }}>
+                <div style={{ fontSize: '11px', color: '#78716c', marginTop: '1px' }}>
                   Add more frames &amp; save an extra 10%
                 </div>
               </div>
             </div>
             <button
               onClick={addFrame}
+              className="w-full"
               style={{
                 background: '#1B5A4A',
                 color: 'white',
                 border: 'none',
-                borderRadius: '20px',
-                padding: '7px 14px',
-                fontSize: '12px',
+                borderRadius: '8px',
+                padding: '8px 14px',
+                fontSize: '13px',
                 fontWeight: 800,
                 cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
               }}
             >
-              + Add Frame
+              + Add Frame to Gallery
             </button>
           </div>
         </div>
