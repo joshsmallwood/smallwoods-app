@@ -469,9 +469,12 @@ function SingleFrame({
       img.onload = () => {
         const { naturalWidth: w, naturalHeight: h } = img
         setPhotoPixels({ w, h })
-        const mp = (w * h) / 1_000_000
-        if (mp >= 3) setPhotoQuality('excellent')
-        else if (mp >= 1) setPhotoQuality('good')
+        // Quality thresholds are size-aware: 150 DPI = excellent, 100 DPI = good, <100 DPI = low
+        const excellentPx = (frame.size.width * 150) * (frame.size.height * 150)
+        const goodPx = (frame.size.width * 100) * (frame.size.height * 100)
+        const actualPx = w * h
+        if (actualPx >= excellentPx) setPhotoQuality('excellent')
+        else if (actualPx >= goodPx) setPhotoQuality('good')
         else setPhotoQuality('low')
       }
       img.src = dataUrl
@@ -700,8 +703,8 @@ function SingleFrame({
             {photoQuality === 'excellent' ? 'Excellent photo quality — great print!' :
              photoQuality === 'good' ? (photoPixels ? `Good quality (${photoPixels.w}×${photoPixels.h}px) — will print well` : 'Good quality — will print well') :
              (() => {
-               const minW = frame.size.width * 150
-               const minH = frame.size.height * 150
+               const minW = frame.size.width * 100
+               const minH = frame.size.height * 100
                return photoPixels
                  ? `Low res (${photoPixels.w}×${photoPixels.h}px) — for ${frame.size.label} we recommend ≥${minW}×${minH}px`
                  : 'Low resolution — may appear blurry when printed'
@@ -1818,7 +1821,7 @@ function FAQAccordion() {
     },
     {
       q: 'What file types are accepted?',
-      a: 'We accept JPG, PNG, and HEIC (iPhone) photos. For best results, use a high-resolution image — at least 1000×800 pixels. Blurry or very small photos may affect print clarity.'
+      a: 'We accept JPG, PNG, and HEIC (iPhone) photos. Minimum recommended: 2500×1700px for a 25×17 frame, 4400×2200px for the 44×22 XL. Modern smartphone photos are typically ideal. We flag low-res photos automatically after upload.'
     },
     {
       q: 'How is it packaged and protected?',
