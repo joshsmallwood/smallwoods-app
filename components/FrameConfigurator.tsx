@@ -1143,17 +1143,37 @@ export default function FrameConfigurator() {
           transform: ctaVisible ? 'translateY(100%)' : 'translateY(0)',
           transition: 'transform 0.3s ease',
           background: '#1B5A4A',
-          padding: '12px 16px',
-          paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
-          boxShadow: '0 -4px 20px rgba(0,0,0,0.2)',
+          padding: '10px 14px',
+          paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))',
+          boxShadow: '0 -4px 20px rgba(0,0,0,0.25)',
           display: 'flex',
           alignItems: 'center',
-          gap: '12px',
+          gap: '10px',
         }}
       >
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>Bundle Price</div>
-          <div style={{ fontSize: '20px', fontWeight: 900, color: 'white', lineHeight: 1 }}>${displayBundle}</div>
+        {/* Mini frame color swatch */}
+        <div style={{
+          width: 40,
+          height: 40,
+          borderRadius: 8,
+          background: FRAME_COLORS.find(c => c.id === activeFrame.color)?.gradient ?? '#5a3010',
+          border: '2.5px solid rgba(255,255,255,0.35)',
+          flexShrink: 0,
+          boxShadow: '0 1px 6px rgba(0,0,0,0.35)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          {/* inner frame cutout hint */}
+          <div style={{ position: 'absolute', inset: 6, border: '1.5px solid rgba(0,0,0,0.18)', borderRadius: 2 }} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {activeFrame.size.label} · {FRAME_COLORS.find(c => c.id === activeFrame.color)?.label ?? 'Walnut'} · Qty {frames.length}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, lineHeight: 1.1 }}>
+            <span style={{ fontSize: '22px', fontWeight: 900, color: 'white' }}>${displayBundle}</span>
+            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', fontWeight: 600, textDecoration: 'line-through' }}>${fullTotal}</span>
+          </div>
         </div>
         <button
           onClick={() => ctaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
@@ -1162,14 +1182,15 @@ export default function FrameConfigurator() {
             color: '#1B5A4A',
             border: 'none',
             borderRadius: '10px',
-            padding: '10px 20px',
-            fontSize: '14px',
+            padding: '10px 16px',
+            fontSize: '13px',
             fontWeight: 800,
             cursor: 'pointer',
             flexShrink: 0,
+            whiteSpace: 'nowrap',
           }}
         >
-          📸 Upload Photo &amp; Order
+          {activeFrame.photo ? '🛒 Add to Cart' : '📸 Upload & Order'}
         </button>
       </div>
     </div>
