@@ -91,16 +91,24 @@ export async function GET() {
       return NextResponse.json({ buyers: [], cached: false, source: 'fallback', rowCount: rows.length })
     }
 
+    // Clean city name: title case, skip entries with digits (bad data)
+    function cleanCity(city: string): string | null {
+      if (/\d/.test(city)) return null // skip "664 henagar" etc
+      return city.replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    }
+
     let nameIdx = 0
     const buyers = rows
       .map((r) => {
         const size = parseSize(r.variant)
         const color = parseColor(r.variant)
         if (!size || !color) return null
+        const city = cleanCity(r.city)
+        if (!city) return null
         const stateAbbr = PROVINCE_ABBR[r.state] ?? r.state
         const name = NAMES[nameIdx % NAMES.length]
         nameIdx++
-        return { name, location: `${r.city}, ${stateAbbr}`, size, color }
+        return { name, location: `${city}, ${stateAbbr}`, size, color }
       })
       .filter(Boolean)
       .slice(0, 20)
