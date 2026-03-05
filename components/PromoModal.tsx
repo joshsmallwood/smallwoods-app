@@ -40,19 +40,25 @@ export default function PromoModal({ onClose }: { onClose: () => void }) {
             </button>
           </div>
 
+          {/* Auto-apply notice */}
+          <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 mb-4 flex items-center gap-2.5">
+            <span className="text-green-600 text-lg flex-shrink-0">✅</span>
+            <p className="text-[12px] text-green-800 font-semibold leading-snug">Discount auto-applied at checkout — no need to enter anything!</p>
+          </div>
+
           {/* Instructions */}
           <div className="space-y-2 mb-5">
             <div className="flex items-center gap-2.5 text-sm text-gray-600">
               <span className="w-5 h-5 rounded-full bg-[#1B5A4A] text-white text-xs flex items-center justify-center font-bold flex-shrink-0">1</span>
-              <span>Finish customizing your design below</span>
+              <span>Customize your frame below &amp; upload your photo</span>
             </div>
             <div className="flex items-center gap-2.5 text-sm text-gray-600">
               <span className="w-5 h-5 rounded-full bg-[#1B5A4A] text-white text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>
-              <span>Visit <strong>smallwoodhome.com</strong> to place your order</span>
+              <span>Tap "Add to Cart" — your 35% discount is already applied</span>
             </div>
             <div className="flex items-center gap-2.5 text-sm text-gray-600">
               <span className="w-5 h-5 rounded-full bg-[#1B5A4A] text-white text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>
-              <span>Enter <strong>{code}</strong> at checkout for 35% off</span>
+              <span>Complete checkout on <strong>smallwoodhome.com</strong> 🎉</span>
             </div>
           </div>
 
