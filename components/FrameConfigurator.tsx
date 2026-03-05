@@ -1880,7 +1880,7 @@ function FAQAccordion() {
     },
     {
       q: 'How is it packaged and protected?',
-      a: 'Every frame is wrapped in foam padding and shipped in a custom-fit box. We include corner protectors and a layer of bubble wrap. Less than 0.5% of orders arrive with any damage.'
+      a: 'Every frame is wrapped in foam padding and shipped in a custom-fit box. We include corner protectors and a layer of bubble wrap. Damage during shipping is extremely rare — and if it happens, we reprint for free.'
     },
     {
       q: 'Can I include a gift message?',
