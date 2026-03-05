@@ -1619,10 +1619,11 @@ function DeliveryBanner() {
 
 function RoomSizePicker({ onSuggest, selectedSizeId }: { onSuggest: (sizeId: string) => void; selectedSizeId: string }) {
   const rooms = [
-    { label: '🛋️ Living Room', sizeId: '24x36', hint: '24×36' },
-    { label: '🛏️ Bedroom', sizeId: '16x16', hint: '16×16' },
+    { label: '🛋️ Living Room', sizeId: '25x17', hint: '25×17 · #1 seller' },
+    { label: '🖼 Gallery Wall', sizeId: '44x22', hint: '44×22 XL' },
+    { label: '🛏️ Bedroom', sizeId: '20x30', hint: '20×30' },
     { label: '🚶 Hallway', sizeId: '12x16', hint: '12×16' },
-    { label: '💼 Office', sizeId: '10x12', hint: '10×12' },
+    { label: '💼 Office', sizeId: '16x16', hint: '16×16' },
   ]
   const [selected, setSelected] = useState<string | null>(null)
   const handlePick = (r: typeof rooms[0]) => {
