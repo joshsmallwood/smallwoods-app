@@ -437,6 +437,7 @@ interface FrameItem {
   size: SizeOption
   photo: string | null
   orientation: 'portrait' | 'landscape'
+  photoQuality?: 'excellent' | 'good' | 'low' | null
 }
 
 function makeFrame(id: string): FrameItem {
@@ -505,9 +506,9 @@ function SingleFrame({
         const excellentPx = (frame.size.width * 150) * (frame.size.height * 150)
         const goodPx = (frame.size.width * 100) * (frame.size.height * 100)
         const actualPx = w * h
-        if (actualPx >= excellentPx) setPhotoQuality('excellent')
-        else if (actualPx >= goodPx) setPhotoQuality('good')
-        else setPhotoQuality('low')
+        const q: 'excellent' | 'good' | 'low' = actualPx >= excellentPx ? 'excellent' : actualPx >= goodPx ? 'good' : 'low'
+        setPhotoQuality(q)
+        onUpdate({ photoQuality: q })
         // Orientation mismatch: photo portrait (h>w) in landscape frame, or photo landscape (w>h) in portrait frame
         const isLandFrame = frame.orientation === 'landscape'
         const isLandPhoto = w > h
@@ -2380,6 +2381,12 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
                       {f.size.label} · {FRAME_COLORS.find(c => c.id === f.color)?.label ?? f.color}
                       {f.photo ? ' · Photo uploaded ✓' : ' · No photo'}
                     </div>
+                    {/* Low-res warning inline in order item */}
+                    {f.photoQuality === 'low' && (
+                      <div style={{ fontSize: '10px', color: '#b45309', fontWeight: 700, marginTop: '3px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                        ⚠️ Low resolution — may appear blurry when printed
+                      </div>
+                    )}
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: '15px', fontWeight: 800, color: '#1B5A4A' }}>${Math.round((f.color === 'noframe' ? f.size.noFramePrice : f.size.price) * 0.65)}</div>
@@ -2428,6 +2435,17 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
                 )
               })()}
             </div>
+
+            {/* Low-res global warning — if any frame has low quality photo */}
+            {frames.some(f => f.photoQuality === 'low') && (
+              <div className="mx-5 mb-2 px-4 py-3 rounded-xl flex items-start gap-2" style={{ background: '#fffbeb', border: '1px solid #fcd34d' }}>
+                <span style={{ fontSize: '18px', flexShrink: 0 }}>⚠️</span>
+                <div>
+                  <div style={{ fontSize: '12px', fontWeight: 800, color: '#92400e' }}>Low-resolution photo detected</div>
+                  <div style={{ fontSize: '11px', color: '#b45309', marginTop: '2px' }}>Your photo may appear blurry when printed at this size. For best results, use original camera photos (not screenshots or social media downloads). We offer free reprints if it doesn&apos;t look right.</div>
+                </div>
+              </div>
+            )}
 
             {/* Trust row */}
             <div className="px-5 py-3 border-t border-gray-100">
