@@ -1012,25 +1012,53 @@ export default function FrameConfigurator() {
       {/* Frame Preview Area */}
       <div className="flex-1 flex items-center justify-center px-4 py-6 rounded-2xl mx-4 my-2 transition-all duration-500" style={{ minHeight: '320px', ...WALL_STYLES[wallStyle] }}>
         {wallPreviewMode === 'empty' ? (
-          /* Empty wall view — show placeholder rectangle */
-          <div className="flex flex-col items-center gap-3">
-            <div
-              className="rounded-lg flex items-center justify-center"
-              style={{
-                width: 160,
-                height: 180,
-                border: '2.5px dashed rgba(0,0,0,0.18)',
-                background: 'rgba(255,255,255,0.25)',
-                backdropFilter: 'blur(2px)',
-              }}
-            >
-              <div className="flex flex-col items-center gap-1 opacity-50">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-                <p className="text-[10px] font-semibold text-gray-500">Your frame here</p>
+          /* Empty wall view — proportional frame outline to scale */
+          (() => {
+            const af = activeFrame
+            const isLand = af.orientation === 'landscape'
+            const frameW = isLand ? af.size.height : af.size.width
+            const frameH = isLand ? af.size.width : af.size.height
+            // Scale to fit in ~240px max in either direction
+            const scale = Math.min(240 / frameW, 200 / frameH)
+            const pxW = Math.round(frameW * scale)
+            const pxH = Math.round(frameH * scale)
+            return (
+              <div className="flex flex-col items-center gap-3">
+                <div className="relative flex items-center justify-center" style={{ width: pxW + 40, height: pxH + 40 }}>
+                  {/* Dimension arrows */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 flex items-center gap-1" style={{ width: pxW }}>
+                    <div className="flex-1 h-px bg-gray-400 opacity-60" />
+                    <span className="text-[9px] font-bold text-gray-500 whitespace-nowrap">{frameW}&quot;</span>
+                    <div className="flex-1 h-px bg-gray-400 opacity-60" />
+                  </div>
+                  {/* Side label */}
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1" style={{ height: pxH }}>
+                    <div className="flex-1 w-px bg-gray-400 opacity-60" />
+                    <span className="text-[9px] font-bold text-gray-500 whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>{frameH}&quot;</span>
+                    <div className="flex-1 w-px bg-gray-400 opacity-60" />
+                  </div>
+                  {/* Frame outline */}
+                  <div
+                    className="rounded-md flex items-center justify-center"
+                    style={{
+                      width: pxW,
+                      height: pxH,
+                      border: '2.5px dashed rgba(0,0,0,0.25)',
+                      background: 'rgba(255,255,255,0.3)',
+                      backdropFilter: 'blur(2px)',
+                      marginTop: 16,
+                    }}
+                  >
+                    <div className="flex flex-col items-center gap-1 opacity-60">
+                      <span className="text-[11px] font-black text-gray-600">{af.size.label}</span>
+                      <span className="text-[9px] text-gray-400 font-medium">{FRAME_COLORS.find(c => c.id === af.color)?.label}</span>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-[11px] text-gray-500 font-medium">Tap <span className="font-black">🖼️ With Frame</span> to see your photo</p>
               </div>
-            </div>
-            <p className="text-[11px] text-gray-500 font-medium">See how it looks → tap 🖼️ With Frame</p>
-          </div>
+            )
+          })()
         ) : isGallery ? (
           /* Gallery: side-by-side layout */
           <div className="flex items-center justify-center gap-4 w-full flex-wrap">
