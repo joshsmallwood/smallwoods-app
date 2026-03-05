@@ -326,6 +326,7 @@ function SingleFrame({
   const [loading, setLoading] = useState(false)
   const [photoExiting, setPhotoExiting] = useState(false)
   const [photoQuality, setPhotoQuality] = useState<'excellent' | 'good' | 'low' | null>(null)
+  const [showZoomHint, setShowZoomHint] = useState(false)
   const [sampleIdx, setSampleIdx] = useState(0)
   const SAMPLE_PHOTOS = [
     'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
@@ -362,6 +363,8 @@ function SingleFrame({
         setZoom(1); setOffset({ x: 0, y: 0 }); setCropMode(false)
         onUpdate({ photo: dataUrl })
         setLoading(false)
+        setShowZoomHint(true)
+        setTimeout(() => setShowZoomHint(false), 3200)
       }, 350)
     }
     reader.readAsDataURL(file)
@@ -485,6 +488,15 @@ function SingleFrame({
             <div className="absolute inset-0 pointer-events-none">
               <div className="absolute inset-0 border-2 border-dashed border-white/60"/>
               <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 bg-black/60 text-white text-[9px] px-2 py-0.5 rounded-full whitespace-nowrap">Drag to pan</div>
+            </div>
+          )}
+          {/* Zoom hint — shows briefly after photo upload */}
+          {showZoomHint && frame.photo && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 20 }}>
+              <div className="flex flex-col items-center gap-1.5 px-4 py-3 rounded-2xl" style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(4px)', animation: 'zoomHintFade 3.2s ease-in-out forwards' }}>
+                <span style={{ fontSize: 24 }}>✌️</span>
+                <p className="text-white text-[11px] font-bold text-center leading-tight">Tap ✂️ Crop to zoom &amp; pan<br/><span className="text-white/60 font-normal">Pinch to zoom · drag to reposition</span></p>
+              </div>
             </div>
           )}
         </div>

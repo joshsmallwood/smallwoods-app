@@ -276,6 +276,12 @@ body {
   0%, 100% { opacity: 0.5; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.015); }
 }
+@keyframes zoomHintFade {
+  0% { opacity: 0; transform: scale(0.85); }
+  15% { opacity: 1; transform: scale(1); }
+  75% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.9); }
+}
 
 /* Order Summary slide-up panel */
 @keyframes slideUpPanel {
