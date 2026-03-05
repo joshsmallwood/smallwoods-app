@@ -10,6 +10,40 @@ const WALL_STYLES: Record<string, React.CSSProperties> = {
   warm:    { backgroundColor: '#d4b896', backgroundImage: 'repeating-linear-gradient(160deg,rgba(120,70,20,0.06) 0px,rgba(120,70,20,0.06) 2px,transparent 2px,transparent 12px)' },
 }
 
+function ShareDesignButton() {
+  const [copied, setCopied] = useState(false)
+  const handleShare = async () => {
+    const url = window.location.href
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'My Custom Wood Frame', url })
+      } else {
+        await navigator.clipboard.writeText(url)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      }
+    } catch {
+      await navigator.clipboard.writeText(url).catch(() => {})
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+  return (
+    <div className="flex justify-end px-4 pt-1">
+      <button
+        onClick={handleShare}
+        className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-500 hover:text-[#1B5A4A] transition-colors"
+      >
+        {copied ? (
+          <><span className="text-[#1B5A4A]">✓</span><span className="text-[#1B5A4A]">Link copied!</span></>
+        ) : (
+          <><span>🔗</span><span>Share design</span></>
+        )}
+      </button>
+    </div>
+  )
+}
+
 function RotatingTagline() {
   const lines = [
     '🎁 The gift everyone cries over',
@@ -653,6 +687,7 @@ export default function FrameConfigurator() {
 
       {/* Room preset switcher */}
       <RoomPresetSwitcher wallStyle={wallStyle} onChangeWall={setWallStyle} />
+      <ShareDesignButton />
 
       {/* Frame Preview Area */}
       <div className="flex-1 flex items-center justify-center px-4 py-6 rounded-2xl mx-4 my-2 transition-all duration-500" style={{ minHeight: '320px', ...WALL_STYLES[wallStyle] }}>
