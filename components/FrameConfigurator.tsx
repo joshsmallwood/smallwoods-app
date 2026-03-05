@@ -1154,6 +1154,26 @@ export default function FrameConfigurator() {
         )}
       </div>
 
+      {/* Gallery swipe dots */}
+      {isGallery && (
+        <div className="flex items-center justify-center gap-2 mb-2">
+          {frames.map((f, i) => (
+            <button
+              key={f.id}
+              onClick={() => setActiveId(f.id)}
+              aria-label={`Frame ${i + 1}`}
+              className="transition-all duration-200 rounded-full"
+              style={{
+                width: f.id === activeId ? 20 : 8,
+                height: 8,
+                background: f.id === activeId ? '#1B5A4A' : '#d1d5db',
+              }}
+            />
+          ))}
+          <span className="text-[10px] text-gray-400 ml-1">swipe to switch</span>
+        </div>
+      )}
+
       {/* Pricing Row */}
       <div className="mx-4 mb-3 rounded-xl overflow-hidden shadow-sm">
         {/* Bundle Price Hero */}
