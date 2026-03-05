@@ -889,6 +889,8 @@ export default function FrameConfigurator() {
   }
 
   const clearAll = () => {
+    const hasPhotos = frames.some(f => f.photo)
+    if (hasPhotos && !window.confirm('Clear all frames? Your uploaded photo(s) will be removed.')) return
     setFrames([makeFrame('f1')])
     setActiveId('f1')
     counterRef.current = 2
