@@ -1291,6 +1291,22 @@ export default function FrameConfigurator() {
         </div>
       </div>
 
+      {/* "Featured In" Press Strip */}
+      <div className="px-4 pb-3">
+        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest text-center mb-2">As Seen In</p>
+        <div className="flex items-center justify-around gap-2 py-2.5 px-3 rounded-xl bg-gray-50 border border-gray-100">
+          {[
+            { name: 'TODAY', style: 'font-black text-[13px] tracking-wide text-gray-600' },
+            { name: 'GOOD MORNING AMERICA', style: 'font-black text-[8px] tracking-tighter text-gray-600 text-center leading-tight max-w-[44px]' },
+            { name: 'Forbes', style: 'font-black italic text-[13px] text-gray-600' },
+            { name: 'PEOPLE', style: 'font-black text-[12px] tracking-widest text-gray-600' },
+            { name: 'BuzzFeed', style: 'font-black text-[11px] text-[#EE3322]' },
+          ].map(p => (
+            <span key={p.name} className={p.style}>{p.name}</span>
+          ))}
+        </div>
+      </div>
+
       {/* Estimated Delivery Banner */}
       <DeliveryBanner />
 
