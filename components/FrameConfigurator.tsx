@@ -1751,6 +1751,11 @@ export default function FrameConfigurator() {
             <span className="text-lg leading-none">🚚</span>
             <span className="text-[9px] font-semibold text-gray-500 text-center leading-tight">Ships in<br/>1–3 Days</span>
           </div>
+          <div className="w-px h-8 bg-gray-200"/>
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-lg leading-none">🎁</span>
+            <span className="text-[9px] font-semibold text-green-600 text-center leading-tight">Free<br/>Shipping</span>
+          </div>
         </div>
       </div>
 
@@ -2090,7 +2095,7 @@ function FAQAccordion() {
   const faqs = [
     {
       q: 'How long until it arrives?',
-      a: 'Most orders are produced in 1–2 business days, then shipped via UPS. Standard shipping takes 2–5 business days. Expedited options are available at checkout. Order before 3 PM CT today and production starts today.'
+      a: 'Most orders are produced in 1–2 business days, then shipped via UPS with FREE shipping. Standard shipping takes 2–5 business days. Expedited options are available at checkout. Order before 3 PM CT today and production starts today.'
     },
     {
       q: 'How do I upload my photo?',
@@ -2356,7 +2361,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
             {/* Trust row */}
             <div className="px-5 py-3 border-t border-gray-100">
               <div className="flex justify-around">
-                {['🔒 Secure', '💯 Free Reprints', '🇺🇸 Made in USA', '🚚 Ships Fast'].map(t => (
+                {['🎁 Free Shipping', '💯 Free Reprints', '🇺🇸 Made in USA', '🚚 Ships Fast'].map(t => (
                   <span key={t} style={{ fontSize: '10px', color: '#666', fontWeight: 600, textAlign: 'center' }}>{t}</span>
                 ))}
               </div>
