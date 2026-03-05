@@ -49,7 +49,7 @@ function RotatingTagline() {
     '🎁 The gift everyone cries over',
     '🏡 Handcrafted in the USA',
     '📸 Your photo. Real wood. Forever.',
-    '💚 50,000+ families love their frames',
+    '💚 3,000,000+ families love their frames',
     '⚡ Ships in 1–3 business days',
   ]
   const [idx, setIdx] = useState(0)
@@ -1254,7 +1254,7 @@ export default function FrameConfigurator() {
       <div className="px-4 pb-2">
         <div className="flex items-center justify-center gap-2 bg-amber-50 border border-amber-200 rounded-xl py-2.5 px-4">
           <span className="text-amber-400 text-base leading-none tracking-tight">★★★★★</span>
-          <span className="text-sm font-semibold text-gray-700">50,000+ happy families</span>
+          <span className="text-sm font-semibold text-gray-700">3,000,000+ happy families</span>
         </div>
       </div>
 
