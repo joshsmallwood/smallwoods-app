@@ -328,6 +328,7 @@ function SingleFrame({
   const [photoQuality, setPhotoQuality] = useState<'excellent' | 'good' | 'low' | null>(null)
   const [showZoomHint, setShowZoomHint] = useState(false)
   const [showUploadCelebration, setShowUploadCelebration] = useState(false)
+  const [showPhotoTips, setShowPhotoTips] = useState(false)
   const [sampleIdx, setSampleIdx] = useState(0)
   const SAMPLE_PHOTOS = [
     'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
@@ -587,6 +588,45 @@ function SingleFrame({
           </span>
         </div>
       )}
+
+      {/* Photo Tips Drawer */}
+      <div className="mx-3 mt-2">
+        <button
+          onClick={() => setShowPhotoTips(v => !v)}
+          className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-[11px] font-semibold transition-all"
+          style={{ background: showPhotoTips ? '#f0fdf4' : '#f8f6f2', color: '#1B5A4A', border: '1px solid', borderColor: showPhotoTips ? '#bbf7d0' : '#e5e0d8' }}
+        >
+          <span className="flex items-center gap-1.5">
+            <span>💡</span>
+            <span>Photo tips for best results</span>
+          </span>
+          <span style={{ fontSize: '10px', transition: 'transform 0.25s', transform: showPhotoTips ? 'rotate(180deg)' : 'rotate(0deg)', display: 'inline-block' }}>▼</span>
+        </button>
+        {showPhotoTips && (
+          <div
+            className="rounded-b-xl px-3 pb-3 pt-2 border border-t-0"
+            style={{ background: '#f0fdf4', borderColor: '#bbf7d0', animation: 'slideDownFade 0.25s ease' }}
+          >
+            <div className="grid grid-cols-2 gap-2 mt-1">
+              {[
+                { icon: '🌟', title: 'High resolution', tip: 'Use a photo at least 1–2 MB for crisp print quality' },
+                { icon: '☀️', title: 'Good lighting', tip: 'Well-lit photos print beautifully — avoid dark or grainy shots' },
+                { icon: '🎯', title: 'Center your subject', tip: 'Place faces or key moments in the center of the frame' },
+                { icon: '📐', title: 'Avoid heavy filters', tip: 'Natural colors look best — heavy filters can wash out in print' },
+              ].map(item => (
+                <div key={item.icon} className="flex gap-2 items-start bg-white rounded-lg px-2 py-2" style={{ border: '1px solid #d1fae5' }}>
+                  <span className="text-lg leading-none flex-shrink-0">{item.icon}</span>
+                  <div>
+                    <p className="text-[10px] font-black text-[#1B5A4A] leading-tight">{item.title}</p>
+                    <p className="text-[9px] text-gray-500 leading-tight mt-0.5">{item.tip}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-[9px] text-gray-400 mt-2 text-center">JPG, PNG, and HEIC supported · We&apos;ll notify you if resolution is low</p>
+          </div>
+        )}
+      </div>
 
       {/* Price tag */}
       <div className="text-center mt-2">
