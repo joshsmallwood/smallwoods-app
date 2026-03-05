@@ -78,10 +78,10 @@ function RotatingTagline() {
 
 function RoomPresetSwitcher({ wallStyle, onChangeWall }: { wallStyle: string; onChangeWall: (s: 'classic' | 'modern' | 'dark' | 'warm') => void }) {
   const presets = [
-    { id: 'classic' as const, label: '🏠 Classic' },
-    { id: 'modern'  as const, label: '🏢 Modern'  },
-    { id: 'dark'    as const, label: '🌙 Dark'    },
-    { id: 'warm'    as const, label: '🪵 Wood'    },
+    { id: 'classic' as const, label: 'Classic', swatch: 'linear-gradient(135deg, #f5f0e8 50%, #e8dfd0 100%)', emoji: '🏠' },
+    { id: 'modern'  as const, label: 'Modern',  swatch: 'linear-gradient(135deg, #dde3e8 50%, #c8d4dc 100%)', emoji: '🏢' },
+    { id: 'dark'    as const, label: 'Dark',    swatch: 'linear-gradient(135deg, #2a2a2e 50%, #1a1a20 100%)', emoji: '🌙' },
+    { id: 'warm'    as const, label: 'Wood',    swatch: 'linear-gradient(135deg, #c8944a 50%, #a07030 100%)', emoji: '🪵' },
   ]
   return (
     <div className="flex gap-1.5 px-4 pt-2 pb-0">
@@ -89,13 +89,21 @@ function RoomPresetSwitcher({ wallStyle, onChangeWall }: { wallStyle: string; on
         <button
           key={p.id}
           onClick={() => onChangeWall(p.id)}
-          className={`flex-1 text-[10px] font-bold py-1 rounded-lg border transition-all ${
+          className={`flex-1 flex flex-col items-center gap-0.5 py-1.5 rounded-lg border transition-all ${
             wallStyle === p.id
-              ? 'bg-[#1B5A4A] text-white border-[#1B5A4A]'
+              ? 'bg-[#1B5A4A] text-white border-[#1B5A4A] shadow-md'
               : 'bg-white text-gray-500 border-gray-200'
           }`}
         >
-          {p.label}
+          <span
+            className="w-6 h-4 rounded-sm flex-shrink-0"
+            style={{
+              background: p.swatch,
+              border: wallStyle === p.id ? '1.5px solid rgba(255,255,255,0.4)' : '1.5px solid #e0dbd0',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+            }}
+          />
+          <span className="text-[9px] font-bold leading-none">{p.label}</span>
         </button>
       ))}
     </div>
