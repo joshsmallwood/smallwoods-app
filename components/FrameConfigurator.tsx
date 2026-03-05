@@ -2255,7 +2255,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
                 <span style={{ fontSize: '13px', color: '#888', textDecoration: 'line-through' }}>${retailTotal}</span>
               </div>
               <div className="flex justify-between items-center mb-1">
-                <span style={{ fontSize: "13px", color: "#c0392b", fontWeight: 600 }}>🍀 Lucky You Savings (35% Off)</span>
+                <span style={{ fontSize: "13px", color: "#c0392b", fontWeight: 600 }}>{isSaleActive() ? '🍀 Lucky You Savings (35% Off)' : '🏷️ Promo Savings (35% Off)'}</span>
                 <span style={{ fontSize: '13px', color: '#c0392b', fontWeight: 700 }}>−${savings}</span>
               </div>
               <div className="flex justify-between items-center pt-2 border-t border-gray-100 mt-2">
