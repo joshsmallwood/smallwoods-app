@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --green: #1B5A4A;
+  --green-dark: #154739;
+  --red: #C0392B;
+}
+
+body {
+  background: #f5f0eb;
+  min-height: 100vh;
+}
+
+.frame-walnut {
+  background: linear-gradient(135deg, #4a2c0a 0%, #6b3d12 20%, #8b5a1e 40%, #6b3d12 60%, #4a2c0a 80%, #3d2008 100%);
+  box-shadow: inset 0 0 0 3px rgba(0,0,0,0.3), inset 0 0 0 6px rgba(255,200,100,0.15), 4px 4px 20px rgba(0,0,0,0.4);
+}
+
+.frame-oak {
+  background: linear-gradient(135deg, #c8a060 0%, #d4aa70 20%, #c89a50 40%, #d4aa70 60%, #c8a060 80%, #b8904a 100%);
+  box-shadow: inset 0 0 0 3px rgba(0,0,0,0.2), inset 0 0 0 6px rgba(255,220,140,0.2), 4px 4px 20px rgba(0,0,0,0.3);
+}
+
+.frame-black {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 20%, #1a1a1a 40%, #333 60%, #1a1a1a 80%, #0d0d0d 100%);
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,0.1), inset 0 0 0 6px rgba(255,255,255,0.05), 4px 4px 20px rgba(0,0,0,0.5);
+}
+
+.frame-white {
+  background: linear-gradient(135deg, #f0ece4 0%, #faf8f4 20%, #ece8e0 40%, #faf8f4 60%, #f0ece4 80%, #e8e4dc 100%);
+  box-shadow: inset 0 0 0 3px rgba(0,0,0,0.08), inset 0 0 0 6px rgba(0,0,0,0.04), 4px 4px 20px rgba(0,0,0,0.15);
+}
+
+.mat-inner {
+  background: #faf8f4;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(0,0,0,0.08);
+}
