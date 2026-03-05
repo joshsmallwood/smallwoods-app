@@ -151,15 +151,24 @@ function CartScarcityBadge() {
   )
 }
 
+// Real sale end: "Lucky You Sale — Now Through St. Patrick's Day" (March 17, 2026)
+// Source: smallwoodhome.com homepage as of Mar 5, 2026
+const SALE_END_DATE = new Date('2026-03-17T23:59:59-06:00') // Midnight CT on St. Patrick's Day
+
 function OfferCountdown() {
-  const [secs, setSecs] = useState(() => 12 * 60 + Math.floor(Math.random() * 600))
+  const getSecsLeft = () => Math.max(0, Math.floor((SALE_END_DATE.getTime() - Date.now()) / 1000))
+  const [secs, setSecs] = useState(getSecsLeft)
   useEffect(() => {
-    const t = setInterval(() => setSecs(s => s > 0 ? s - 1 : 14 * 60 + Math.floor(Math.random() * 300)), 1000)
+    const t = setInterval(() => setSecs(getSecsLeft), 1000)
     return () => clearInterval(t)
   }, [])
-  const m = Math.floor(secs / 60).toString().padStart(2, '0')
-  const s = (secs % 60).toString().padStart(2, '0')
-  return <>{m}:{s}</>
+  const days = Math.floor(secs / 86400)
+  const hours = Math.floor((secs % 86400) / 3600)
+  const mins = Math.floor((secs % 3600) / 60)
+  const s = secs % 60
+  if (days > 0) return <>{days}d {hours.toString().padStart(2,'0')}h {mins.toString().padStart(2,'0')}m</>
+  if (hours > 0) return <>{hours}h {mins.toString().padStart(2,'0')}m {s.toString().padStart(2,'0')}s</>
+  return <>{mins.toString().padStart(2,'0')}:{s.toString().padStart(2,'0')}</>
 }
 
 function ShippingBadge() {
@@ -992,7 +1001,7 @@ export default function FrameConfigurator() {
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F5C842" strokeWidth="2.5">
             <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
           </svg>
-          <span className="text-[11px] text-[#F5C842] font-bold uppercase tracking-wide">Limited Time — Offer expires in <OfferCountdown /></span>
+          <span className="text-[11px] text-[#F5C842] font-bold uppercase tracking-wide">Lucky You Sale ends Mar 17 — <OfferCountdown /> left</span>
         </div>
         {/* Cart scarcity */}
         <CartScarcityBadge />
