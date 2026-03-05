@@ -1438,7 +1438,7 @@ export default function FrameConfigurator() {
             <div className="grid grid-cols-4 gap-1.5">
               {SIZES.map(size => {
                 // Size rank badges — based on real Neon DB order data (by size, all colors combined)
-                // 25x17: 21,023 | 44x22: 6,342 | 20x30: 6,197 | 24x36: 6,018 | 12x16: 4,024 | 16x16: 3,193 | 13x13: 3,051
+                // 25x17: 21,304 | 44x22: 6,488 | 20x30: 6,352 | 24x36: 6,051 | 12x16: 4,106 | 16x16: 3,309 | 13x13: 3,097 (90-day, Mar 5 2026)
                 const stockHints: Record<string, { label: string; color: string }> = {
                   '25x17': { label: '🏆 #1', color: '#1B5A4A' },
                   '44x22': { label: '🥈 #2', color: '#c8830a' },
@@ -1866,7 +1866,7 @@ export default function FrameConfigurator() {
                       setQuizDist(opt.val)
                       // Size recommendation logic
                       // Sizes calibrated to real order data from Neon DB
-                      // #1 seller: 25x17 (10,488), #5: 20x30 (3,113), #4: 24x36 (3,225), #6: 44x22 (2,594)
+                      // #1 seller: 25x17 (21,304), #2: 44x22 (6,488), #3: 20x30 (6,352), #4: 24x36 (6,051) — 90-day Mar 5 2026
                       const map: Record<string, Record<string, string>> = {
                         small:  { close: '8x10',  medium: '10x12', far: '12x16' },
                         medium: { close: '12x16', medium: '25x17', far: '20x30' },
