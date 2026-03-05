@@ -317,3 +317,50 @@ body {
   60%  { transform: scale(1.06); box-shadow: 0 0 0 10px rgba(27,90,74,0.1); }
   100% { transform: scale(1.05); box-shadow: 0 0 0 0 rgba(27,90,74,0); }
 }
+
+/* NATURAL */
+.frame-natural {
+  background:
+    repeating-linear-gradient(
+      91deg,
+      transparent 0px,
+      transparent 5px,
+      rgba(0,0,0,0.03) 5px,
+      rgba(0,0,0,0.03) 6px,
+      transparent 6px,
+      transparent 13px,
+      rgba(200,160,80,0.04) 13px,
+      rgba(200,160,80,0.04) 14px
+    ),
+    repeating-linear-gradient(
+      88deg,
+      transparent 0px,
+      transparent 16px,
+      rgba(0,0,0,0.05) 16px,
+      rgba(0,0,0,0.05) 18px
+    ),
+    linear-gradient(
+      172deg,
+      #e8d4a8 0%,
+      #ddc890 12%,
+      #ead8b0 25%,
+      #cdb878 38%,
+      #e2cc9c 52%,
+      #c8aa68 65%,
+      #d8c088 78%,
+      #bea060 90%,
+      #d0b87a 100%
+    );
+  box-shadow:
+    inset 3px 3px 0 rgba(255,248,200,0.35),
+    inset -3px -3px 0 rgba(0,0,0,0.22),
+    inset 0 0 10px rgba(0,0,0,0.28);
+}
+
+/* NO FRAME — borderless print */
+.frame-noframe {
+  background: transparent;
+  padding: 0 !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15), 0 1px 4px rgba(0,0,0,0.1);
+  border-radius: 2px !important;
+}

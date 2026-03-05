@@ -253,47 +253,50 @@ function RecentBuyerToast() {
   )
 }
 
-type FrameColor = 'walnut' | 'oak' | 'black' | 'white'
+type FrameColor = 'walnut' | 'oak' | 'black' | 'white' | 'natural' | 'noframe'
 
 const FRAME_COLORS: { id: FrameColor; label: string; swatch: string; gradient: string; shopifyColor: string }[] = [
-  { id: 'walnut', label: 'Walnut', swatch: '#5a3010', gradient: 'repeating-linear-gradient(170deg, #5a3010 0px, #7a4520 4px, #4a2508 8px, #6b3c18 12px, #5a3010 16px)', shopifyColor: 'Stained' },
-  { id: 'oak',    label: 'Oak',    swatch: '#c8a060', gradient: 'repeating-linear-gradient(170deg, #c8a060 0px, #deb878 4px, #b89048 8px, #caa868 12px, #c8a060 16px)', shopifyColor: 'Almond' },
-  { id: 'black',  label: 'Black',  swatch: '#1a1a1a', gradient: 'repeating-linear-gradient(170deg, #1a1a1a 0px, #2a2a2a 4px, #111 8px, #222 12px, #1a1a1a 16px)', shopifyColor: 'Black'  },
-  { id: 'white',  label: 'White',  swatch: '#f0ece4', gradient: 'repeating-linear-gradient(170deg, #f0ece4 0px, #e8e4dc 4px, #f5f1e9 8px, #ece8e0 12px, #f0ece4 16px)', shopifyColor: 'White'  },
+  { id: 'walnut',  label: 'Walnut',   swatch: '#5a3010', gradient: 'repeating-linear-gradient(170deg, #5a3010 0px, #7a4520 4px, #4a2508 8px, #6b3c18 12px, #5a3010 16px)', shopifyColor: 'Stained'  },
+  { id: 'oak',     label: 'Oak',      swatch: '#c8a060', gradient: 'repeating-linear-gradient(170deg, #c8a060 0px, #deb878 4px, #b89048 8px, #caa868 12px, #c8a060 16px)', shopifyColor: 'Almond'   },
+  { id: 'natural', label: 'Natural',  swatch: '#d4b87a', gradient: 'repeating-linear-gradient(170deg, #d4b87a 0px, #e2c88a 4px, #c4a86a 8px, #d8bc80 12px, #d4b87a 16px)', shopifyColor: 'Natural'  },
+  { id: 'black',   label: 'Black',    swatch: '#1a1a1a', gradient: 'repeating-linear-gradient(170deg, #1a1a1a 0px, #2a2a2a 4px, #111 8px, #222 12px, #1a1a1a 16px)',       shopifyColor: 'Black'    },
+  { id: 'white',   label: 'White',    swatch: '#f0ece4', gradient: 'repeating-linear-gradient(170deg, #f0ece4 0px, #e8e4dc 4px, #f5f1e9 8px, #ece8e0 12px, #f0ece4 16px)', shopifyColor: 'White'    },
+  { id: 'noframe', label: 'No Frame', swatch: '#e8e0d5', gradient: 'linear-gradient(135deg, #f5f0eb 0%, #ece6de 100%)',                                                    shopifyColor: 'No Frame' },
 ]
 
 interface SizeOption {
-  id: string; label: string; width: number; height: number; price: number
+  id: string; label: string; width: number; height: number; price: number; noFramePrice: number
   shopifySize: string // matches Shopify variant option1
 }
 
 // Real Smallwoods sizes mapped to Shopify product 7241370435721 (Frames / copy-of-frames)
+// Prices sourced from live Shopify variants (Mar 2026)
 const SIZES: SizeOption[] = [
-  { id: '8x10',  label: '8×10',  width: 8,  height: 10, price: 69,  shopifySize: '8x10'              },
-  { id: '10x12', label: '10×12', width: 10, height: 12, price: 75,  shopifySize: '10x12'             },
-  { id: '12x16', label: '12×16', width: 12, height: 16, price: 89,  shopifySize: '12x16'             },
-  { id: '16x16', label: '16×16', width: 16, height: 16, price: 99,  shopifySize: '16x16'             },
-  { id: '25x17', label: '25×17', width: 25, height: 17, price: 109, shopifySize: 'Medium 25" x 17"' },
-  { id: '20x30', label: '20×30', width: 20, height: 30, price: 119, shopifySize: '20x30'             },
-  { id: '25x25', label: '25×25', width: 25, height: 25, price: 129, shopifySize: 'Square 25" x 25"' },
-  { id: '24x36', label: '24×36', width: 24, height: 36, price: 129, shopifySize: '24x36'             },
-  { id: '44x22', label: '44×22', width: 44, height: 22, price: 139, shopifySize: 'Extra Large 44" x 22"' },
-  { id: '13x13', label: '13×13', width: 13, height: 13, price: 79,  shopifySize: 'Small Square 13" x 13"' },
+  { id: '8x10',  label: '8×10',  width: 8,  height: 10, price: 69,  noFramePrice: 39,  shopifySize: '8x10'              },
+  { id: '10x12', label: '10×12', width: 10, height: 12, price: 75,  noFramePrice: 42,  shopifySize: '10x12'             },
+  { id: '12x16', label: '12×16', width: 12, height: 16, price: 89,  noFramePrice: 49,  shopifySize: '12x16'             },
+  { id: '16x16', label: '16×16', width: 16, height: 16, price: 99,  noFramePrice: 55,  shopifySize: '16x16'             },
+  { id: '25x17', label: '25×17', width: 25, height: 17, price: 109, noFramePrice: 59,  shopifySize: 'Medium 25" x 17"' },
+  { id: '20x30', label: '20×30', width: 20, height: 30, price: 119, noFramePrice: 69,  shopifySize: '20x30'             },
+  { id: '25x25', label: '25×25', width: 25, height: 25, price: 129, noFramePrice: 79,  shopifySize: 'Square 25" x 25"' },
+  { id: '24x36', label: '24×36', width: 24, height: 36, price: 129, noFramePrice: 79,  shopifySize: '24x36'             },
+  { id: '44x22', label: '44×22', width: 44, height: 22, price: 139, noFramePrice: 89,  shopifySize: 'Extra Large 44" x 22"' },
+  { id: '13x13', label: '13×13', width: 13, height: 13, price: 79,  noFramePrice: 45,  shopifySize: 'Small Square 13" x 13"' },
 ]
 
 // Hardcoded variant ID lookup: variantMap[shopifySize][shopifyColor] = variantId
 // Source: Shopify product 7241370435721 (Frames)
 const VARIANT_MAP: Record<string, Record<string, number>> = {
-  '8x10':              { Stained: 41365292810377, Almond: 41365292843145, Black: 41365292875913, White: 41365292908681 },
-  '10x12':             { Stained: 41365292646537, Almond: 41365292679305, Black: 41365292712073, White: 41365292744841 },
-  '12x16':             { Stained: 41365292155017, Almond: 41365292187785, Black: 41365292220553, White: 41365292253321 },
-  '16x16':             { Stained: 41365292318857, Almond: 41365292351625, Black: 41365292384393, White: 41365292417161 },
-  'Medium 25" x 17"': { Stained: 41365291663497, Almond: 41365291696265, Black: 41365291729033, White: 41365291761801 },
-  '20x30':             { Stained: 41843744768137, Almond: 41843744800905, Black: 41843744833673, White: 41843744866441 },
-  'Square 25" x 25"': { Stained: 41365291991177, Almond: 41365292023945, Black: 41365292056713, White: 41365292089481 },
-  '24x36':             { Stained: 43361951154313, Almond: 43361954857097, Black: 43361957707913, White: 43361959936137 },
-  'Extra Large 44" x 22"': { Stained: 41365291827337, Almond: 41365291860105, Black: 41365291892873, White: 41365291925641 },
-  'Small Square 13" x 13"': { Stained: 41365292482697, Almond: 41365292515465, Black: 41365292548233, White: 41365292581001 },
+  '8x10':                   { Stained: 41365292810377, Almond: 41365292843145, Natural: 41365292941449, Black: 41365292875913, White: 41365292908681, 'No Frame': 42725040554121 },
+  '10x12':                  { Stained: 41365292646537, Almond: 41365292679305, Natural: 41365292777609, Black: 41365292712073, White: 41365292744841, 'No Frame': 42725040521353 },
+  '12x16':                  { Stained: 41365292155017, Almond: 41365292187785, Natural: 41365292286089, Black: 41365292220553, White: 41365292253321, 'No Frame': 42725040423049 },
+  '16x16':                  { Stained: 41365292318857, Almond: 41365292351625, Natural: 41365292449929, Black: 41365292384393, White: 41365292417161, 'No Frame': 42725040455817 },
+  'Medium 25" x 17"':       { Stained: 41365291663497, Almond: 41365291696265, Natural: 41365291794569, Black: 41365291729033, White: 41365291761801, 'No Frame': 42725040291977 },
+  '20x30':                  { Stained: 41843744768137, Almond: 41843744800905, Natural: 41843744899209, Black: 41843744833673, White: 41843744866441, 'No Frame': 42725040357513 },
+  'Square 25" x 25"':       { Stained: 41365291991177, Almond: 41365292023945, Natural: 41365292122249, Black: 41365292056713, White: 41365292089481, 'No Frame': 42725040390281 },
+  '24x36':                  { Stained: 43361951154313, Almond: 43361954857097, Natural: 43361960329353, Black: 43361957707913, White: 43361959936137, 'No Frame': 43361961214089 },
+  'Extra Large 44" x 22"':  { Stained: 41365291827337, Almond: 41365291860105, Natural: 41365291958409, Black: 41365291892873, White: 41365291925641, 'No Frame': 42725040324745 },
+  'Small Square 13" x 13"': { Stained: 41365292482697, Almond: 41365292515465, Natural: 41365292613769, Black: 41365292548233, White: 41365292581001, 'No Frame': 42725040488585 },
 }
 
 const SHOPIFY_STORE = 'https://smallwoodhome.com'
@@ -646,7 +649,7 @@ function SingleFrame({
       {/* Price tag */}
       <div className="text-center mt-2">
         <span className="text-xs font-bold text-gray-700">{frame.size.label}</span>
-        <span className="text-xs text-gray-400 ml-1.5">${frame.size.price}</span>
+        <span className="text-xs text-gray-400 ml-1.5">${frame.color === 'noframe' ? frame.size.noFramePrice : frame.size.price}</span>
       </div>
     </div>
   )
@@ -665,7 +668,7 @@ function parseDesignFromUrl(): { frames: FrameItem[]; wall: 'classic' | 'modern'
     const frames: FrameItem[] = parts.map((part, i) => {
       const [sizeId, color] = part.split('-')
       const size = SIZES.find(s => s.id === sizeId) || SIZES[3]
-      const c = (['walnut','oak','black','white'].includes(color) ? color : 'walnut') as FrameColor
+      const c = (['walnut','oak','natural','black','white','noframe'].includes(color) ? color : 'walnut') as FrameColor
       return { id: `f${i+1}`, color: c, size, photo: null, orientation: 'portrait' }
     })
     return frames.length > 0 ? { frames, wall } : null
@@ -732,10 +735,12 @@ export default function FrameConfigurator() {
     counterRef.current = 2
   }
 
-  const totalPrice = frames.reduce((s, f) => s + f.size.price, 0)
+  const getFramePrice = (f: FrameItem) => f.color === 'noframe' ? f.size.noFramePrice : f.size.price
+  const totalPrice = frames.reduce((s, f) => s + getFramePrice(f), 0)
   const bundleTotal = frames.length > 1 ? Math.round(totalPrice * (1 - BUNDLE_DISCOUNT)) : null
   const fullTotal = Math.round(totalPrice * 1.375)
-  const displayBundle = bundleTotal ?? Math.round((activeFrame?.size.price ?? 0) * (1 - BUNDLE_DISCOUNT))
+  const activeFramePrice = activeFrame ? getFramePrice(activeFrame) : 0
+  const displayBundle = bundleTotal ?? Math.round(activeFramePrice * (1 - BUNDLE_DISCOUNT))
 
   // Gallery layout: side by side for 2+
   const isGallery = frames.length > 1
@@ -1148,7 +1153,7 @@ export default function FrameConfigurator() {
                     )}
                     <span className="size-label">{size.label}</span>
                     <span className={`size-inches ${activeFrame.size.id === size.id ? 'text-white/80' : 'text-gray-400'}`}>
-                      ${size.price}
+                      ${activeFrame.color === 'noframe' ? size.noFramePrice : size.price}
                     </span>
                   </button>
                 )
@@ -1415,7 +1420,7 @@ export default function FrameConfigurator() {
       </div>
 
       <div className="px-4 pb-6" ref={ctaRef}>
-        <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} />
+        <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} activeFrame={activeFrame} />
       </div>
 
       {showInfo && <InfoModal onClose={() => setShowInfo(false)} />}
@@ -1727,8 +1732,8 @@ function GiftMessageBox() {
   )
 }
 
-function AddToCartButton({ frames, bundleTotal, totalPrice }: {
-  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number
+function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame }: {
+  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem
 }) {
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
@@ -1772,10 +1777,12 @@ function AddToCartButton({ frames, bundleTotal, totalPrice }: {
     : (hasPhotos ? `Add to Cart — $${totalPrice}` : '📷  Upload Your Photo to Continue')
 
   const FRAME_COLORS_MAP: Record<string, string> = {
-    walnut: 'repeating-linear-gradient(170deg, #5a3010 0px, #7a4520 4px, #4a2508 8px, #6b3c18 12px, #5a3010 16px)',
-    oak: 'repeating-linear-gradient(170deg, #c8a060 0px, #deb878 4px, #b89048 8px, #caa868 12px, #c8a060 16px)',
-    black: 'repeating-linear-gradient(170deg, #1a1a1a 0px, #2a2a2a 4px, #111 8px, #222 12px, #1a1a1a 16px)',
-    white: 'repeating-linear-gradient(170deg, #f0ece4 0px, #e8e4dc 4px, #f5f1e9 8px, #ece8e0 12px, #f0ece4 16px)',
+    walnut:  'repeating-linear-gradient(170deg, #5a3010 0px, #7a4520 4px, #4a2508 8px, #6b3c18 12px, #5a3010 16px)',
+    oak:     'repeating-linear-gradient(170deg, #c8a060 0px, #deb878 4px, #b89048 8px, #caa868 12px, #c8a060 16px)',
+    natural: 'repeating-linear-gradient(170deg, #d4b87a 0px, #e2c88a 4px, #c4a86a 8px, #d8bc80 12px, #d4b87a 16px)',
+    black:   'repeating-linear-gradient(170deg, #1a1a1a 0px, #2a2a2a 4px, #111 8px, #222 12px, #1a1a1a 16px)',
+    white:   'repeating-linear-gradient(170deg, #f0ece4 0px, #e8e4dc 4px, #f5f1e9 8px, #ece8e0 12px, #f0ece4 16px)',
+    noframe: 'linear-gradient(135deg, #f5f0eb 0%, #ece6de 100%)',
   }
 
   return (
@@ -1832,7 +1839,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice }: {
                       {f.photo ? ' · Photo uploaded ✓' : ' · No photo'}
                     </div>
                   </div>
-                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#1B5A4A' }}>${f.size.price}</div>
+                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#1B5A4A' }}>${f.color === 'noframe' ? f.size.noFramePrice : f.size.price}</div>
                 </div>
               ))}
             </div>
