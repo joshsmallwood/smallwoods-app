@@ -2507,6 +2507,13 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
         </span>
       )}
     </button>
+
+    {/* Live social proof — below CTA */}
+    {todayOrders !== null && todayOrders > 0 && (
+      <p className="text-center mt-2" style={{ fontSize: '11px', color: '#6b7280', fontWeight: 600 }}>
+        🔥 <span style={{ color: '#1B5A4A', fontWeight: 800 }}>{todayOrders.toLocaleString()}</span> frames ordered today · ships in 1–3 days 🇺🇸
+      </p>
+    )}
     </>
   )
 }
