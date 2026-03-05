@@ -2330,6 +2330,26 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
               <div className="w-10 h-1 rounded-full" style={{ background: '#d0ccc6' }} />
             </div>
 
+            {/* 🎉 Savings celebration banner */}
+            {savings > 0 && (
+              <div
+                className="mx-4 mt-2 mb-1 rounded-xl px-4 py-2.5 flex items-center justify-between"
+                style={{
+                  background: 'linear-gradient(135deg, #1B5A4A 0%, #2d7a65 100%)',
+                  animation: 'savingsBounce 0.5s cubic-bezier(0.34, 1.4, 0.64, 1)',
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <span style={{ fontSize: '20px' }}>🎉</span>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: 'white', lineHeight: 1.2 }}>You&apos;re saving ${savings}!</div>
+                    <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.2 }}>35% off applied automatically</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: '22px', fontWeight: 900, color: '#7edc9e' }}>${savings}</div>
+              </div>
+            )}
+
             {/* Header */}
             <div className="px-5 pt-2 pb-4 border-b border-gray-100">
               <div className="flex items-center justify-between">
