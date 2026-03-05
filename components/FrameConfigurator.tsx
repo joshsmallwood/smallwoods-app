@@ -129,7 +129,7 @@ function SingleFrame({
 
       {/* Frame */}
       <div
-        className={`frame-wrap frame-${frame.color}`}
+        className={`frame-wrap frame-${frame.color} frame-pop`}
         style={{ padding: '16px', borderRadius: '3px' }}
       >
         <div
@@ -340,7 +340,7 @@ export default function FrameConfigurator() {
       )}
 
       {/* Frame Preview Area */}
-      <div className="flex-1 flex items-center justify-center px-4 py-4">
+      <div className="flex-1 flex items-center justify-center px-4 py-6 wall-bg rounded-2xl mx-4 my-2" style={{ minHeight: '320px' }}>
         {isGallery ? (
           /* Gallery: side-by-side layout */
           <div className="flex items-center justify-center gap-4 w-full flex-wrap">
