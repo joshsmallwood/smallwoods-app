@@ -1621,6 +1621,17 @@ export default function FrameConfigurator() {
                 <p className="text-[10px] text-gray-400 leading-snug mt-1.5 text-center px-1" style={{ minHeight: '2.2em', transition: 'opacity 0.2s' }}>{sel.tooltip}</p>
               ) : null
             })()}
+
+            {/* No Frame — explanation callout when selected */}
+            {activeFrame.color === 'noframe' && (
+              <div className="mx-1 mt-2 px-3 py-2.5 rounded-xl flex items-start gap-2" style={{ background: '#faf7f2', border: '1px solid #e5ddd0', animation: 'slideDownFade 0.25s ease' }}>
+                <span style={{ fontSize: '16px', flexShrink: 0, lineHeight: 1 }}>🪵</span>
+                <div>
+                  <div style={{ fontSize: '11px', fontWeight: 800, color: '#5a3a1a', lineHeight: 1.3 }}>No Frame — Printed Wood Panel</div>
+                  <div style={{ fontSize: '10px', color: '#8a6a4a', lineHeight: 1.4, marginTop: '2px' }}>Your photo is printed directly onto a real wood panel. Ships flat, no frame needed. Great for gallery walls and a modern look.</div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
