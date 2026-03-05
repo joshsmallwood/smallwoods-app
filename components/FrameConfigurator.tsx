@@ -141,6 +141,31 @@ function OfferCountdown() {
   return <>{m}:{s}</>
 }
 
+function ShippingBadge() {
+  const [label, setLabel] = useState('Ships in 1-3 Days')
+  useEffect(() => {
+    // Compute shipping date: CT timezone, cutoff 3pm, Mon-Fri
+    const now = new Date()
+    const ct = new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+    const dayOfWeek = ct.getDay() // 0=Sun,6=Sat
+    const hour = ct.getHours()
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    let shipsInDays = 1
+    if (dayOfWeek === 0) shipsInDays = 1 // Sunday → ships Monday
+    else if (dayOfWeek === 6) shipsInDays = 2 // Saturday → ships Monday
+    else if (hour >= 15) shipsInDays = 1 // After 3pm CT → ships next business day
+    else shipsInDays = 0 // Before 3pm CT → ships today
+    const shipDate = new Date(ct)
+    shipDate.setDate(shipDate.getDate() + shipsInDays)
+    // Skip weekends
+    if (shipDate.getDay() === 6) shipDate.setDate(shipDate.getDate() + 2)
+    if (shipDate.getDay() === 0) shipDate.setDate(shipDate.getDate() + 1)
+    const dayLabel = shipsInDays === 0 ? 'today' : shipsInDays === 1 ? `tomorrow (${days[shipDate.getDay()]})` : days[shipDate.getDay()]
+    setLabel(`📦 Ships ${dayLabel}`)
+  }, [])
+  return <span className="bg-[#C0392B] text-white text-xs font-bold px-3 py-1 rounded-full">{label}</span>
+}
+
 function ViewingCount() {
   const [count, setCount] = useState(() => 34 + Math.floor(Math.random() * 18))
   useEffect(() => {
@@ -803,9 +828,7 @@ export default function FrameConfigurator() {
           </svg>
           Gallery
         </a>
-        <span className="bg-[#C0392B] text-white text-xs font-bold px-3 py-1 rounded-full">
-          📦 Ships in 1-3 Days
-        </span>
+        <ShippingBadge />
       </div>
 
       {/* Product Title + Urgency */}
