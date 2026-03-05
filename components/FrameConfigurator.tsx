@@ -1847,7 +1847,8 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame }: {
       return vid ? `${vid}:1` : ''
     }).filter(Boolean).join(',')
     if (!cartItems) return `${SHOPIFY_STORE}/products/copy-of-frames`
-    return `${SHOPIFY_STORE}/cart/${cartItems}`
+    // Auto-apply the MYWALL35 discount code so users don't have to type it manually
+    return `${SHOPIFY_STORE}/cart/${cartItems}?discount=MYWALL35`
   }
 
   const handleAddToCart = () => {
