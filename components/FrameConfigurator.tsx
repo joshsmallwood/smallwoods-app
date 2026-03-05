@@ -1424,10 +1424,10 @@ export default function FrameConfigurator() {
                       setQuizDist(opt.val)
                       // Size recommendation logic
                       const map: Record<string, Record<string, string>> = {
-                        small:  { close: '8x10',  medium: '10x10', far: '12x12' },
-                        medium: { close: '12x12', medium: '16x16', far: '16x20' },
-                        large:  { close: '16x20', medium: '20x24', far: '20x30' },
-                        xlarge: { close: '20x24', medium: '20x30', far: '24x36' },
+                        small:  { close: '8x10',  medium: '10x12', far: '12x16' },
+                        medium: { close: '12x16', medium: '16x16', far: '20x30' },
+                        large:  { close: '16x16', medium: '20x30', far: '24x36' },
+                        xlarge: { close: '20x30', medium: '24x36', far: '44x22' },
                       }
                       const sizeId = map[quizWall || 'medium']?.[opt.val] || '16x16'
                       const found = SIZES.find(s => s.id === sizeId) || SIZES.find(s => s.id === '16x16')!
