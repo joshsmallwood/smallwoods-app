@@ -2199,6 +2199,16 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
     if (giftMessage && giftMessage.trim()) {
       url += `&note=${encodeURIComponent(`🎁 Gift message: ${giftMessage.trim()}`)}`
     }
+    // Pass UTM parameters from the configurator URL through to the cart for attribution
+    // This helps Meta/Google/TikTok ads be attributed correctly in Shopify orders
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search)
+      const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid', 'ttclid']
+      for (const key of utmKeys) {
+        const val = sp.get(key)
+        if (val) url += `&${key}=${encodeURIComponent(val)}`
+      }
+    }
     return url
   }
 
