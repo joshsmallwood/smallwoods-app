@@ -151,24 +151,22 @@ function CartScarcityBadge() {
   )
 }
 
-// Real sale end: "Lucky You Sale — Now Through St. Patrick's Day" (March 17, 2026)
-// Source: smallwoodhome.com homepage as of Mar 5, 2026
-const SALE_END_DATE = new Date('2026-03-17T23:59:59-06:00') // Midnight CT on St. Patrick's Day
+// Real countdown to St. Patrick's Day Sale end — March 17, 2026 11:59 PM CT
+const SALE_END_CT = new Date('2026-03-17T23:59:59-06:00')
 
 function OfferCountdown() {
-  const getSecsLeft = () => Math.max(0, Math.floor((SALE_END_DATE.getTime() - Date.now()) / 1000))
-  const [secs, setSecs] = useState(getSecsLeft)
+  const [remaining, setRemaining] = useState(() => Math.max(0, SALE_END_CT.getTime() - Date.now()))
   useEffect(() => {
-    const t = setInterval(() => setSecs(getSecsLeft), 1000)
+    const t = setInterval(() => setRemaining(r => Math.max(0, SALE_END_CT.getTime() - Date.now())), 1000)
     return () => clearInterval(t)
   }, [])
-  const days = Math.floor(secs / 86400)
-  const hours = Math.floor((secs % 86400) / 3600)
-  const mins = Math.floor((secs % 3600) / 60)
-  const s = secs % 60
-  if (days > 0) return <>{days}d {hours.toString().padStart(2,'0')}h {mins.toString().padStart(2,'0')}m</>
-  if (hours > 0) return <>{hours}h {mins.toString().padStart(2,'0')}m {s.toString().padStart(2,'0')}s</>
-  return <>{mins.toString().padStart(2,'0')}:{s.toString().padStart(2,'0')}</>
+  const totalSecs = Math.floor(remaining / 1000)
+  const days = Math.floor(totalSecs / 86400)
+  const hrs = Math.floor((totalSecs % 86400) / 3600)
+  const mins = Math.floor((totalSecs % 3600) / 60)
+  const secs = totalSecs % 60
+  if (days > 0) return <>{days}d {hrs.toString().padStart(2,'0')}h {mins.toString().padStart(2,'0')}m</>
+  return <>{hrs.toString().padStart(2,'0')}:{mins.toString().padStart(2,'0')}:{secs.toString().padStart(2,'0')}</>
 }
 
 function ShippingBadge() {
@@ -810,7 +808,7 @@ export default function FrameConfigurator() {
     <div className="flex flex-col min-h-screen bg-[#f5f0eb] max-w-md mx-auto md:max-w-2xl">
       {/* Top Banner */}
       <div className="bg-[#1B5A4A] text-white text-center py-2 px-4 flex items-center justify-center gap-2 text-sm font-medium">
-        <span>Unlock an EXTRA 35% Off!</span>
+        <span>🍀 Lucky You Sale — Unlock 35% Off!</span>
         <button
           onClick={() => setShowPromo(true)}
           className="bg-white text-[#1B5A4A] text-xs font-bold px-3 py-1 rounded-full ml-2 hover:bg-gray-100 transition-colors active:scale-95"
@@ -1001,7 +999,7 @@ export default function FrameConfigurator() {
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F5C842" strokeWidth="2.5">
             <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
           </svg>
-          <span className="text-[11px] text-[#F5C842] font-bold uppercase tracking-wide">Lucky You Sale ends Mar 17 — <OfferCountdown /> left</span>
+          <span className="text-[11px] text-[#F5C842] font-bold uppercase tracking-wide">🍀 Lucky You Sale ends in <OfferCountdown /></span>
         </div>
         {/* Cart scarcity */}
         <CartScarcityBadge />
