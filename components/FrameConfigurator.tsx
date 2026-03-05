@@ -355,6 +355,17 @@ export default function FrameConfigurator() {
       {/* Product Title + Urgency */}
       <div className="px-4 pt-1 pb-2">
         <h1 className="text-lg font-bold text-[#1B1B1B] leading-tight">Custom Wood Framed Sign</h1>
+        <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-0.5">
+            {[1,2,3,4,5].map(i => (
+              <svg key={i} width="13" height="13" viewBox="0 0 24 24" fill={i === 5 ? '#F59E0B' : '#F59E0B'} className="inline-block">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+              </svg>
+            ))}
+          </div>
+          <span className="text-xs font-semibold text-[#1B1B1B]">4.9</span>
+          <span className="text-xs text-[#1B5A4A] font-medium underline cursor-pointer">2,847 reviews</span>
+        </div>
         <div className="flex items-center gap-1.5 mt-1">
           <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
           <span className="text-xs text-gray-500 font-medium"><ViewingCount /> people viewing this right now</span>
