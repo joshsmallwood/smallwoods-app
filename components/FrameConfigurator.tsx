@@ -156,17 +156,19 @@ function ViewingCount() {
   return <>{count}</>
 }
 
+// Cities/states sourced from real recent Neon DB orders (Mar 5 2026)
+// Sizes reflect actual top-selling variants from order data
 const RECENT_BUYERS = [
-  { name: 'Sarah', location: 'TX', size: '16×16', color: 'Walnut' },
-  { name: 'Emily', location: 'CA', size: '20×30', color: 'Black' },
-  { name: 'Jessica', location: 'FL', size: '12×16', color: 'White' },
-  { name: 'Ashley', location: 'OH', size: '24×36', color: 'Oak' },
-  { name: 'Megan', location: 'GA', size: '16×16', color: 'Walnut' },
-  { name: 'Lauren', location: 'NC', size: '8×10', color: 'Black' },
-  { name: 'Rachel', location: 'IL', size: '20×30', color: 'White' },
-  { name: 'Amanda', location: 'TN', size: '25×25', color: 'Walnut' },
-  { name: 'Jennifer', location: 'TX', size: '16×16', color: 'Oak' },
-  { name: 'Brittany', location: 'VA', size: '12×16', color: 'Black' },
+  { name: 'Sarah', location: 'TX', size: '25×17', color: 'Walnut' },
+  { name: 'Emily', location: 'GA', size: '20×30', color: 'Walnut' },
+  { name: 'Jessica', location: 'FL', size: '24×36', color: 'Walnut' },
+  { name: 'Ashley', location: 'TX', size: '25×17', color: 'Black' },
+  { name: 'Megan', location: 'WI', size: '16×16', color: 'Walnut' },
+  { name: 'Lauren', location: 'IL', size: '20×30', color: 'Black' },
+  { name: 'Rachel', location: 'MO', size: '25×17', color: 'Oak' },
+  { name: 'Amanda', location: 'CA', size: '24×36', color: 'Walnut' },
+  { name: 'Jennifer', location: 'CO', size: '44×22', color: 'Walnut' },
+  { name: 'Brittany', location: 'IA', size: '12×16', color: 'White' },
 ]
 
 function RecentBuyerToast() {
