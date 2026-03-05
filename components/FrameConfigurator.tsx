@@ -1642,27 +1642,61 @@ export default function FrameConfigurator() {
 }
 
 function DeliveryBanner() {
-  const deliveryDate = (() => {
-    const d = new Date()
-    // Add 1-3 business days (skip weekends)
-    let days = 0
+  // Compute ship date using same 3pm CT cutoff as ShippingBadge
+  const getNextBusinessDay = (from: Date, skip: number): Date => {
+    const d = new Date(from)
+    let added = 0
+    while (added < skip) {
+      d.setDate(d.getDate() + 1)
+      if (d.getDay() !== 0 && d.getDay() !== 6) added++
+    }
+    return d
+  }
+
+  const { deliveryDate, soonDate, shipsToday } = (() => {
+    const now = new Date()
+    const ct = new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+    const dayOfWeek = ct.getDay()
+    const hour = ct.getHours()
+
+    // Determine when it ships (same logic as ShippingBadge)
+    let shipsToday = false
+    let shipBase = new Date(ct)
+    if (dayOfWeek === 0) {
+      // Sunday → ships Monday
+      shipBase = getNextBusinessDay(ct, 1)
+    } else if (dayOfWeek === 6) {
+      // Saturday → ships Monday
+      shipBase = getNextBusinessDay(ct, 1)
+    } else if (hour < 15) {
+      // Before 3pm CT → ships today
+      shipsToday = true
+    } else {
+      // After 3pm CT → ships next business day
+      shipBase = getNextBusinessDay(ct, 1)
+    }
+
+    // Standard delivery: +3 business days from ship date
+    const deliveryBase = new Date(shipBase)
     let added = 0
     while (added < 3) {
-      d.setDate(d.getDate() + 1)
-      days++
-      if (d.getDay() !== 0 && d.getDay() !== 6) added++
+      deliveryBase.setDate(deliveryBase.getDate() + 1)
+      if (deliveryBase.getDay() !== 0 && deliveryBase.getDay() !== 6) added++
     }
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })
-  })()
 
-  const soonDate = (() => {
-    const d = new Date()
-    let added = 0
-    while (added < 1) {
-      d.setDate(d.getDate() + 1)
-      if (d.getDay() !== 0 && d.getDay() !== 6) added++
+    // Express delivery: +1 business day from ship date
+    const expressBase = new Date(shipBase)
+    let eAdded = 0
+    while (eAdded < 1) {
+      expressBase.setDate(expressBase.getDate() + 1)
+      if (expressBase.getDay() !== 0 && expressBase.getDay() !== 6) eAdded++
     }
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })
+
+    return {
+      deliveryDate: deliveryBase.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' }),
+      soonDate: expressBase.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' }),
+      shipsToday,
+    }
   })()
 
   return (
@@ -1670,7 +1704,9 @@ function DeliveryBanner() {
       <div className="flex items-center gap-2.5 bg-[#f0faf5] border border-[#1B5A4A]/20 rounded-xl px-3 py-2.5">
         <span className="text-xl leading-none flex-shrink-0">🚚</span>
         <div>
-          <p className="text-[11px] font-black text-[#1B5A4A] leading-tight">Order today — arrives by {deliveryDate}</p>
+          <p className="text-[11px] font-black text-[#1B5A4A] leading-tight">
+            {shipsToday ? 'Order now — ships today! Arrives by' : 'Order today — arrives by'} {deliveryDate}
+          </p>
           <p className="text-[9px] text-[#1B5A4A]/60 mt-0.5">Express available: as soon as {soonDate}</p>
         </div>
       </div>
