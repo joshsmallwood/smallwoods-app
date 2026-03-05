@@ -2274,7 +2274,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: '15px', fontWeight: 800, color: '#1B5A4A' }}>${Math.round((f.color === 'noframe' ? f.size.noFramePrice : f.size.price) * 0.65)}</div>
-                    <div style={{ fontSize: '10px', color: '#aaa', textDecoration: 'line-through', lineHeight: 1 }}>${f.color === 'noframe' ? f.size.noFramePrice : f.size.price}</div>
+                    <div style={{ fontSize: '10px', color: '#aaa', textDecoration: 'line-through', lineHeight: 1 }}>${f.color === 'noframe' ? f.size.noFrameCompareAt : f.size.compareAt}</div>
                   </div>
                 </div>
               ))}
