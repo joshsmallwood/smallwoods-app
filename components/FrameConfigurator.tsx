@@ -1497,7 +1497,7 @@ export default function FrameConfigurator() {
                 <div style={{ fontSize: 48, marginBottom: 8 }}>🎯</div>
                 <p style={{ fontWeight: 800, fontSize: 18, color: '#1B5A4A', marginBottom: 8 }}>Perfect match found!</p>
                 <p style={{ fontSize: 14, color: '#374151', marginBottom: 4 }}>We recommend:</p>
-                <p style={{ fontWeight: 900, fontSize: 28, color: '#111827', marginBottom: 4 }}>{activeFrame.size.label}"</p>
+                <p style={{ fontWeight: 900, fontSize: 28, color: '#111827', marginBottom: 4 }}>{activeFrame.size.label}&quot;</p>
                 <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 24 }}>Selected & ready to order ✓</p>
                 <button onClick={() => { setShowSizeQuiz(false); setQuizStep(0); setQuizWall(null); setQuizDist(null) }}
                   style={{ background: '#1B5A4A', color: '#fff', border: 'none', borderRadius: 12, padding: '14px 32px', fontSize: 15, fontWeight: 800, cursor: 'pointer', width: '100%' }}>
