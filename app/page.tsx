@@ -1,5 +1,48 @@
 import FrameConfigurator from '@/components/FrameConfigurator'
 
+// Product structured data for Google Shopping / rich product results
+const productSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'Custom Wood Framed Sign',
+  description: 'Personalized custom wood framed sign with your photo. Handcrafted in the USA. Choose from 9 sizes and 5 frame colors. Ships in 1–3 days.',
+  brand: { '@type': 'Brand', name: 'Smallwoods' },
+  url: 'https://app.smallwoods.io',
+  image: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397',
+  sku: 'CWFS-CUSTOM',
+  offers: {
+    '@type': 'AggregateOffer',
+    lowPrice: '52',
+    highPrice: '249',
+    priceCurrency: 'USD',
+    offerCount: '9',
+    offers: [
+      { '@type': 'Offer', name: '8×10 Custom Frame', price: '52', priceCurrency: 'USD', availability: 'https://schema.org/InStock', itemCondition: 'https://schema.org/NewCondition', shippingDetails: { '@type': 'OfferShippingDetails', shippingRate: { '@type': 'MonetaryAmount', value: '0', currency: 'USD' }, deliveryTime: { '@type': 'ShippingDeliveryTime', businessDays: { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'], opens: '00:00', closes: '23:59' }, handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 2, unitCode: 'DAY' }, transitTime: { '@type': 'QuantitativeValue', minValue: 2, maxValue: 5, unitCode: 'DAY' } } } },
+    ],
+  },
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '4.74',
+    reviewCount: '6494',
+    bestRating: '5',
+    worstRating: '1',
+  },
+  review: [
+    {
+      '@type': 'Review',
+      author: { '@type': 'Person', name: 'J.M.' },
+      reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
+      reviewBody: 'Love all three of my prints. By far the best company to order prints/frames from. Shipping is phenomenal.',
+    },
+    {
+      '@type': 'Review',
+      author: { '@type': 'Person', name: 'Rene K.' },
+      reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
+      reviewBody: 'Our family\'s photo looks beautiful! Service was prompt. I highly recommend! Quality is top notch.',
+    },
+  ],
+}
+
 // FAQ structured data for Google rich results (FAQ snippet in search)
 const faqSchema = {
   '@context': 'https://schema.org',
@@ -51,6 +94,10 @@ const faqSchema = {
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
