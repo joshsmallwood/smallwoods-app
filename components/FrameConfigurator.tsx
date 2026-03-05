@@ -1222,8 +1222,8 @@ export default function FrameConfigurator() {
             { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397', room: 'Living Room', name: 'Sarah M.', size: '16×16 Walnut' },
             { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/220224Practicals_20.jpg?v=1764101397', room: 'Bedroom', name: 'Jessica L.', size: '16×16 Oak' },
             { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS_E_1x1_a97b2134-fd1d-4aeb-8cb8-6c4fc0f31d6e.jpg?v=1764101397', room: 'Office', name: 'Mike R.', size: '12×16 Black' },
-            { img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80', room: 'Hallway', name: 'Amy K.', size: '20×30 Walnut' },
-            { img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&q=80', room: 'Nursery', name: 'Rachel T.', size: '10×12 White' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS-BlackXL_ba652b45-37a3-4f18-8af8-d341b150f44a.jpg?v=1764101397', room: 'Hallway', name: 'Amy K.', size: '44×22 Black' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/sweethomememories1-Copy_da4bc885-36fb-4cba-94a2-39b8bae83b7f.jpg?v=1764101397', room: 'Nursery', name: 'Rachel T.', size: '12×16 White' },
           ].map(c => (
             <div key={c.name} className="flex-shrink-0 relative rounded-xl overflow-hidden" style={{ width: 130, height: 160, scrollSnapAlign: 'start', boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }}>
               <img src={c.img} alt={c.room} className="absolute inset-0 w-full h-full object-cover" style={{ filter: 'brightness(0.85)' }} />
