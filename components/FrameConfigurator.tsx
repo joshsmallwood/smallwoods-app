@@ -650,21 +650,50 @@ function SingleFrame({
 }
 
 // ─── Main Configurator ────────────────────────────────────────────
+// Parse design state from URL params
+function parseDesignFromUrl(): { frames: FrameItem[]; wall: 'classic' | 'modern' | 'dark' | 'warm' } | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const p = new URLSearchParams(window.location.search)
+    const d = p.get('d')
+    const wall = (p.get('w') as 'classic' | 'modern' | 'dark' | 'warm') || 'classic'
+    if (!d) return null
+    const parts = d.split(',')
+    const frames: FrameItem[] = parts.map((part, i) => {
+      const [sizeId, color] = part.split('-')
+      const size = SIZES.find(s => s.id === sizeId) || SIZES[3]
+      const c = (['walnut','oak','black','white'].includes(color) ? color : 'walnut') as FrameColor
+      return { id: `f${i+1}`, color: c, size, photo: null, orientation: 'portrait' }
+    })
+    return frames.length > 0 ? { frames, wall } : null
+  } catch { return null }
+}
+
 export default function FrameConfigurator() {
-  const [frames, setFrames] = useState<FrameItem[]>([makeFrame('f1')])
-  const [activeId, setActiveId] = useState<string>('f1')
+  const savedDesign = typeof window !== 'undefined' ? parseDesignFromUrl() : null
+  const [frames, setFrames] = useState<FrameItem[]>(savedDesign?.frames ?? [makeFrame('f1')])
+  const [activeId, setActiveId] = useState<string>(savedDesign?.frames?.[0]?.id ?? 'f1')
   const [showFrameBar, setShowFrameBar] = useState(true)
   const [flashColor, setFlashColor] = useState<string | null>(null)
   const [showInfo, setShowInfo] = useState(false)
-  const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>('classic')
+  const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>(savedDesign?.wall ?? 'classic')
   const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
   const [ctaVisible, setCtaVisible] = useState(true)
   const [showSizeQuiz, setShowSizeQuiz] = useState(false)
   const [quizStep, setQuizStep] = useState(0)
   const [quizWall, setQuizWall] = useState<string | null>(null)
   const [quizDist, setQuizDist] = useState<string | null>(null)
-  const counterRef = useRef(2)
+  const counterRef = useRef(savedDesign ? savedDesign.frames.length + 1 : 2)
   const ctaRef = useRef<HTMLDivElement>(null)
+
+  // Sync design state to URL so shared links restore the configuration
+  useEffect(() => {
+    const d = frames.map(f => `${f.size.id}-${f.color}`).join(',')
+    const url = new URL(window.location.href)
+    url.searchParams.set('d', d)
+    url.searchParams.set('w', wallStyle)
+    window.history.replaceState({}, '', url.toString())
+  }, [frames, wallStyle])
 
   useEffect(() => {
     const el = ctaRef.current
