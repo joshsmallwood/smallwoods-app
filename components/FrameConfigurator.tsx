@@ -207,6 +207,18 @@ function SingleFrame({
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [loading, setLoading] = useState(false)
   const [photoExiting, setPhotoExiting] = useState(false)
+  const [sampleIdx, setSampleIdx] = useState(0)
+  const SAMPLE_PHOTOS = [
+    'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
+    'https://images.unsplash.com/photo-1511895426328-dc8714191011?w=800&q=80',
+    'https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?w=800&q=80',
+    'https://images.unsplash.com/photo-1536640712-4d4c36ff0e4e?w=800&q=80',
+  ]
+  useEffect(() => {
+    if (frame.photo) return
+    const t = setInterval(() => setSampleIdx(i => (i + 1) % SAMPLE_PHOTOS.length), 4000)
+    return () => clearInterval(t)
+  }, [frame.photo])
   const fileRef = useRef<HTMLInputElement>(null)
   const dragStart = useRef<{ mx: number; my: number; ox: number; oy: number } | null>(null)
   const touchRef = useRef<{ tx: number; ty: number; ox: number; oy: number } | null>(null)
@@ -301,14 +313,21 @@ function SingleFrame({
             />
           ) : (
             <div className="absolute inset-0 select-none overflow-hidden">
-              {/* Sample inspirational photo — shows what the finished product looks like */}
-              <img
-                src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80"
-                alt="Example family photo in frame"
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{ filter: 'brightness(0.88) saturate(1.1)' }}
-                draggable={false}
-              />
+              {/* Sample inspirational photos — rotates every 4s to show different family moments */}
+              {SAMPLE_PHOTOS.map((src, i) => (
+                <img
+                  key={src}
+                  src={src}
+                  alt="Example photo in frame"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{
+                    filter: 'brightness(0.88) saturate(1.1)',
+                    opacity: i === sampleIdx ? 1 : 0,
+                    transition: 'opacity 1s ease-in-out',
+                  }}
+                  draggable={false}
+                />
+              ))}
               {/* "SAMPLE" pill top-right */}
               <div className="absolute top-2 right-2 bg-black/40 text-white text-[9px] font-bold px-2 py-0.5 rounded-full tracking-wide uppercase pointer-events-none">
                 Sample
