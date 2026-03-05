@@ -29,6 +29,103 @@ function ViewingCount() {
   return <>{count}</>
 }
 
+const RECENT_BUYERS = [
+  { name: 'Sarah', location: 'TX', size: '16×16', color: 'Walnut' },
+  { name: 'Emily', location: 'CA', size: '20×30', color: 'Black' },
+  { name: 'Jessica', location: 'FL', size: '12×16', color: 'White' },
+  { name: 'Ashley', location: 'OH', size: '24×36', color: 'Oak' },
+  { name: 'Megan', location: 'GA', size: '16×16', color: 'Walnut' },
+  { name: 'Lauren', location: 'NC', size: '8×10', color: 'Black' },
+  { name: 'Rachel', location: 'IL', size: '20×30', color: 'White' },
+  { name: 'Amanda', location: 'TN', size: '25×25', color: 'Walnut' },
+  { name: 'Jennifer', location: 'TX', size: '16×16', color: 'Oak' },
+  { name: 'Brittany', location: 'VA', size: '12×16', color: 'Black' },
+]
+
+function RecentBuyerToast() {
+  const [visible, setVisible] = useState(false)
+  const [buyer, setBuyer] = useState(RECENT_BUYERS[0])
+  const [minsAgo, setMinsAgo] = useState(3)
+  const idxRef = useRef(0)
+
+  useEffect(() => {
+    // Show first toast after 4 seconds
+    const initial = setTimeout(() => {
+      setBuyer(RECENT_BUYERS[0])
+      setMinsAgo(2 + Math.floor(Math.random() * 8))
+      setVisible(true)
+      const hide = setTimeout(() => setVisible(false), 4500)
+      return () => clearTimeout(hide)
+    }, 4000)
+
+    // Then cycle every 18 seconds
+    const interval = setInterval(() => {
+      idxRef.current = (idxRef.current + 1) % RECENT_BUYERS.length
+      setBuyer(RECENT_BUYERS[idxRef.current])
+      setMinsAgo(1 + Math.floor(Math.random() * 12))
+      setVisible(true)
+      setTimeout(() => setVisible(false), 4500)
+    }, 18000)
+
+    return () => { clearTimeout(initial); clearInterval(interval) }
+  }, [])
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        left: '16px',
+        zIndex: 9999,
+        transform: visible ? 'translateY(0)' : 'translateY(120px)',
+        opacity: visible ? 1 : 0,
+        transition: 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease',
+        pointerEvents: visible ? 'auto' : 'none',
+      }}
+    >
+      <div style={{
+        background: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+        padding: '10px 14px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        maxWidth: '280px',
+        border: '1px solid #e5e7eb',
+      }}>
+        <div style={{
+          width: '36px',
+          height: '36px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #1B5A4A, #2d7a65)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          fontSize: '16px',
+        }}>🛒</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: '12px', fontWeight: 700, color: '#111', lineHeight: 1.3 }}>
+            {buyer.name} from {buyer.location} just ordered!
+          </div>
+          <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>
+            {buyer.size} {buyer.color} Frame · {minsAgo}m ago
+          </div>
+        </div>
+        <div style={{
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          background: '#22c55e',
+          flexShrink: 0,
+          boxShadow: '0 0 0 3px rgba(34,197,94,0.2)',
+        }} />
+      </div>
+    </div>
+  )
+}
+
 type FrameColor = 'walnut' | 'oak' | 'black' | 'white'
 
 const FRAME_COLORS: { id: FrameColor; label: string; swatch: string; shopifyColor: string }[] = [
@@ -565,6 +662,7 @@ export default function FrameConfigurator() {
       </div>
 
       {showInfo && <InfoModal onClose={() => setShowInfo(false)} />}
+      <RecentBuyerToast />
     </div>
   )
 }
