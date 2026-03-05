@@ -452,8 +452,13 @@ export default function FrameConfigurator() {
                 <button
                   key={size.id}
                   onClick={() => updateFrame(activeId, { size })}
-                  className={`size-btn ${activeFrame.size.id === size.id ? 'active' : ''}`}
+                  className={`size-btn relative ${activeFrame.size.id === size.id ? 'active' : ''}`}
                 >
+                  {size.id === '16x16' && (
+                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-amber-400 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap z-10">
+                      POPULAR
+                    </span>
+                  )}
                   <span className="size-label">{size.label}</span>
                   <span className={`size-inches ${activeFrame.size.id === size.id ? 'text-white/80' : 'text-gray-400'}`}>
                     ${size.price}
