@@ -655,6 +655,10 @@ export default function FrameConfigurator() {
   const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>('classic')
   const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
   const [ctaVisible, setCtaVisible] = useState(true)
+  const [showSizeQuiz, setShowSizeQuiz] = useState(false)
+  const [quizStep, setQuizStep] = useState(0)
+  const [quizWall, setQuizWall] = useState<string | null>(null)
+  const [quizDist, setQuizDist] = useState<string | null>(null)
   const counterRef = useRef(2)
   const ctaRef = useRef<HTMLDivElement>(null)
 
@@ -1049,7 +1053,13 @@ export default function FrameConfigurator() {
           {/* Size picker */}
           <div className="mb-3">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Size (inches)</p>
+              <div className="flex items-center gap-2">
+                <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Size (inches)</p>
+                <button onClick={() => { setShowSizeQuiz(true); setQuizStep(0); setQuizWall(null); setQuizDist(null) }}
+                  style={{ fontSize: 10, color: '#1B5A4A', fontWeight: 700, background: '#f0faf6', border: '1px solid #1B5A4A', borderRadius: 20, padding: '2px 8px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                  🎯 Not sure?
+                </button>
+              </div>
               {/* Orientation toggle */}
               <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
                 <button
@@ -1361,6 +1371,93 @@ export default function FrameConfigurator() {
 
       {showInfo && <InfoModal onClose={() => setShowInfo(false)} />}
       <RecentBuyerToast />
+
+      {/* Size Quiz Modal */}
+      {showSizeQuiz && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+          onClick={() => setShowSizeQuiz(false)}>
+          <div style={{ background: '#fff', borderRadius: '20px 20px 0 0', width: '100%', maxWidth: 480, padding: '24px 20px 36px', position: 'relative' }}
+            onClick={e => e.stopPropagation()}>
+            {/* Handle */}
+            <div style={{ width: 40, height: 4, background: '#e5e7eb', borderRadius: 9, margin: '0 auto 16px' }} />
+            {/* Close */}
+            <button onClick={() => setShowSizeQuiz(false)} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', fontSize: 20, color: '#9ca3af', cursor: 'pointer' }}>✕</button>
+
+            {quizStep === 0 && (
+              <div>
+                <p style={{ fontWeight: 800, fontSize: 17, color: '#111827', marginBottom: 4 }}>Find your perfect size 🎯</p>
+                <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 20 }}>Q1 of 2 — How wide is your wall space?</p>
+                {[
+                  { label: 'Under 2 feet', sub: 'Small accent wall or shelf', val: 'small' },
+                  { label: '2–4 feet', sub: 'Standard wall section', val: 'medium' },
+                  { label: '4–6 feet', sub: 'Large feature wall', val: 'large' },
+                  { label: '6 feet+', sub: 'Grand statement wall', val: 'xlarge' },
+                ].map(opt => (
+                  <button key={opt.val}
+                    onClick={() => { setQuizWall(opt.val); setQuizStep(1) }}
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', marginBottom: 8, borderRadius: 12, border: `2px solid ${quizWall === opt.val ? '#1B5A4A' : '#e5e7eb'}`, background: quizWall === opt.val ? '#f0faf6' : '#fff', cursor: 'pointer', textAlign: 'left' }}>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>{opt.label}</div>
+                      <div style={{ fontSize: 12, color: '#6b7280' }}>{opt.sub}</div>
+                    </div>
+                    <span style={{ fontSize: 18, color: '#1B5A4A' }}>›</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {quizStep === 1 && (
+              <div>
+                <p style={{ fontWeight: 800, fontSize: 17, color: '#111827', marginBottom: 4 }}>One more question 👀</p>
+                <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 20 }}>Q2 of 2 — How far will viewers stand from it?</p>
+                {[
+                  { label: 'Up close (under 5 ft)', sub: 'Desk, shelf, or entryway', val: 'close' },
+                  { label: 'Medium (5–10 ft)', sub: 'Living room or bedroom', val: 'medium' },
+                  { label: 'Far away (10 ft+)', sub: 'Large room or open plan', val: 'far' },
+                ].map(opt => (
+                  <button key={opt.val}
+                    onClick={() => {
+                      setQuizDist(opt.val)
+                      // Size recommendation logic
+                      const map: Record<string, Record<string, string>> = {
+                        small:  { close: '8x10',  medium: '10x10', far: '12x12' },
+                        medium: { close: '12x12', medium: '16x16', far: '16x20' },
+                        large:  { close: '16x20', medium: '20x24', far: '20x30' },
+                        xlarge: { close: '20x24', medium: '20x30', far: '24x36' },
+                      }
+                      const sizeId = map[quizWall || 'medium']?.[opt.val] || '16x16'
+                      const found = SIZES.find(s => s.id === sizeId) || SIZES.find(s => s.id === '16x16')!
+                      updateFrame(activeId, { size: found })
+                      setQuizStep(2)
+                    }}
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', marginBottom: 8, borderRadius: 12, border: '2px solid #e5e7eb', background: '#fff', cursor: 'pointer', textAlign: 'left' }}>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>{opt.label}</div>
+                      <div style={{ fontSize: 12, color: '#6b7280' }}>{opt.sub}</div>
+                    </div>
+                    <span style={{ fontSize: 18, color: '#1B5A4A' }}>›</span>
+                  </button>
+                ))}
+                <button onClick={() => setQuizStep(0)} style={{ background: 'none', border: 'none', fontSize: 13, color: '#9ca3af', cursor: 'pointer', marginTop: 4 }}>← Back</button>
+              </div>
+            )}
+
+            {quizStep === 2 && (
+              <div style={{ textAlign: 'center', padding: '12px 0' }}>
+                <div style={{ fontSize: 48, marginBottom: 8 }}>🎯</div>
+                <p style={{ fontWeight: 800, fontSize: 18, color: '#1B5A4A', marginBottom: 8 }}>Perfect match found!</p>
+                <p style={{ fontSize: 14, color: '#374151', marginBottom: 4 }}>We recommend:</p>
+                <p style={{ fontWeight: 900, fontSize: 28, color: '#111827', marginBottom: 4 }}>{activeFrame.size.label}"</p>
+                <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 24 }}>Selected & ready to order ✓</p>
+                <button onClick={() => { setShowSizeQuiz(false); setQuizStep(0); setQuizWall(null); setQuizDist(null) }}
+                  style={{ background: '#1B5A4A', color: '#fff', border: 'none', borderRadius: 12, padding: '14px 32px', fontSize: 15, fontWeight: 800, cursor: 'pointer', width: '100%' }}>
+                  Looks great — continue! →
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Sticky Bottom Bar — shown when CTA scrolls out of view */}
       <div
