@@ -1448,7 +1448,7 @@ export default function FrameConfigurator() {
                   <span className="bg-amber-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wide">🏆 #1 Best Seller</span>
                 </div>
                 <p className="text-white font-bold text-[12px] leading-tight">25×17 Walnut Frame</p>
-                <p className="text-white/70 text-[10px]">Our #1 selling size — by far</p>
+                <p className="text-white/70 text-[10px]">4,611 orders in 90 days · #1 combo</p>
               </div>
               <button
                 onClick={() => {
