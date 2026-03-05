@@ -906,6 +906,22 @@ export default function FrameConfigurator() {
   // Gallery layout: side by side for 2+
   const isGallery = frames.length > 1
 
+  // Swipe to switch frames in gallery mode
+  const swipeRef = useRef<{ x: number } | null>(null)
+  const handleWallTouchStart = (e: React.TouchEvent) => {
+    if (!isGallery) return
+    swipeRef.current = { x: e.touches[0].clientX }
+  }
+  const handleWallTouchEnd = (e: React.TouchEvent) => {
+    if (!isGallery || !swipeRef.current) return
+    const dx = e.changedTouches[0].clientX - swipeRef.current.x
+    swipeRef.current = null
+    if (Math.abs(dx) < 40) return
+    const idx = frames.findIndex(f => f.id === activeId)
+    if (dx < 0 && idx < frames.length - 1) setActiveId(frames[idx + 1].id)
+    else if (dx > 0 && idx > 0) setActiveId(frames[idx - 1].id)
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-[#f5f0eb] max-w-md mx-auto md:max-w-2xl">
       {/* Top Banner — shown only during active sale */}
@@ -1058,7 +1074,7 @@ export default function FrameConfigurator() {
       </div>
 
       {/* Frame Preview Area */}
-      <div className="flex-1 flex items-center justify-center px-4 py-6 rounded-2xl mx-4 my-2 transition-all duration-500" style={{ minHeight: '320px', ...WALL_STYLES[wallStyle] }}>
+      <div className="flex-1 flex items-center justify-center px-4 py-6 rounded-2xl mx-4 my-2 transition-all duration-500" style={{ minHeight: '320px', ...WALL_STYLES[wallStyle] }} onTouchStart={handleWallTouchStart} onTouchEnd={handleWallTouchEnd}>
         {wallPreviewMode === 'empty' ? (
           /* Empty wall view — proportional frame outline to scale */
           (() => {
