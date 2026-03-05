@@ -698,8 +698,14 @@ function SingleFrame({
           <span>{photoQuality === 'excellent' ? '🟢' : photoQuality === 'good' ? '🟡' : '🔴'}</span>
           <span>
             {photoQuality === 'excellent' ? 'Excellent photo quality — great print!' :
-             photoQuality === 'good' ? 'Good quality — will print well' :
-             'Low resolution — may appear blurry when printed'}
+             photoQuality === 'good' ? (photoPixels ? `Good quality (${photoPixels.w}×${photoPixels.h}px) — will print well` : 'Good quality — will print well') :
+             (() => {
+               const minW = frame.size.width * 150
+               const minH = frame.size.height * 150
+               return photoPixels
+                 ? `Low res (${photoPixels.w}×${photoPixels.h}px) — for ${frame.size.label} we recommend ≥${minW}×${minH}px`
+                 : 'Low resolution — may appear blurry when printed'
+             })()}
           </span>
         </div>
       )}
@@ -724,7 +730,7 @@ function SingleFrame({
           >
             <div className="grid grid-cols-2 gap-2 mt-1">
               {[
-                { icon: '🌟', title: 'High resolution', tip: 'Use a photo at least 1–2 MB for crisp print quality' },
+                { icon: '🌟', title: 'High resolution', tip: `For ${frame.size.label}: use ≥${frame.size.width * 100}×${frame.size.height * 100}px — original phone photos work great` },
                 { icon: '☀️', title: 'Good lighting', tip: 'Well-lit photos print beautifully — avoid dark or grainy shots' },
                 { icon: '🎯', title: 'Center your subject', tip: 'Place faces or key moments in the center of the frame' },
                 { icon: '📐', title: 'Avoid heavy filters', tip: 'Natural colors look best — heavy filters can wash out in print' },
