@@ -367,7 +367,17 @@ export default function FrameConfigurator() {
   const [activeId, setActiveId] = useState<string>('f1')
   const [showFrameBar, setShowFrameBar] = useState(true)
   const [showInfo, setShowInfo] = useState(false)
+  const [ctaVisible, setCtaVisible] = useState(true)
   const counterRef = useRef(2)
+  const ctaRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = ctaRef.current
+    if (!el) return
+    const obs = new IntersectionObserver(([entry]) => setCtaVisible(entry.isIntersecting), { threshold: 0.1 })
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
 
   const activeFrame = frames.find(f => f.id === activeId) ?? frames[0]
 
@@ -700,12 +710,53 @@ export default function FrameConfigurator() {
       </div>
 
       {/* CTA Button */}
-      <div className="px-4 pb-6">
+      <div className="px-4 pb-6" ref={ctaRef}>
         <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} />
       </div>
 
       {showInfo && <InfoModal onClose={() => setShowInfo(false)} />}
       <RecentBuyerToast />
+
+      {/* Sticky Bottom Bar — shown when CTA scrolls out of view */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 9998,
+          transform: ctaVisible ? 'translateY(100%)' : 'translateY(0)',
+          transition: 'transform 0.3s ease',
+          background: '#1B5A4A',
+          padding: '12px 16px',
+          paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
+          boxShadow: '0 -4px 20px rgba(0,0,0,0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+        }}
+      >
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>Bundle Price</div>
+          <div style={{ fontSize: '20px', fontWeight: 900, color: 'white', lineHeight: 1 }}>${displayBundle}</div>
+        </div>
+        <button
+          onClick={() => ctaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+          style={{
+            background: 'white',
+            color: '#1B5A4A',
+            border: 'none',
+            borderRadius: '10px',
+            padding: '10px 20px',
+            fontSize: '14px',
+            fontWeight: 800,
+            cursor: 'pointer',
+            flexShrink: 0,
+          }}
+        >
+          📸 Upload Photo &amp; Order
+        </button>
+      </div>
     </div>
   )
 }
