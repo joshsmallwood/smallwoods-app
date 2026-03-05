@@ -905,6 +905,9 @@ export default function FrameConfigurator() {
       {/* Gift Message */}
       <GiftMessageBox />
 
+      {/* FAQ Accordion */}
+      <FAQAccordion />
+
       {/* CTA Button */}
       <div className="px-4 pb-6" ref={ctaRef}>
         <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} />
@@ -990,6 +993,51 @@ function DeliveryBanner() {
           <p className="text-[9px] text-[#1B5A4A]/60 mt-0.5">Express available: as soon as {soonDate}</p>
         </div>
       </div>
+    </div>
+  )
+}
+
+function FAQAccordion() {
+  const [open, setOpen] = useState<number | null>(null)
+  const faqs = [
+    {
+      q: 'How do I upload my photo?',
+      a: 'Tap "Upload Your Photo to Continue" and select any photo from your device. JPG, PNG, and HEIC files are all supported. We recommend at least 1MB for best print quality.'
+    },
+    {
+      q: 'What file types are accepted?',
+      a: 'We accept JPG, PNG, and HEIC (iPhone) photos. For best results, use a high-resolution image — at least 1000×800 pixels. Blurry or very small photos may affect print clarity.'
+    },
+    {
+      q: 'How is it packaged and protected?',
+      a: 'Every frame is wrapped in foam padding and shipped in a custom-fit box. We include corner protectors and a layer of bubble wrap. Less than 0.5% of orders arrive with any damage.'
+    },
+    {
+      q: 'Can I include a gift message?',
+      a: 'Yes! Check the "This is a gift" box above and type your personal message. It\'ll be printed on a card and included inside the box at no extra cost.'
+    },
+    {
+      q: 'What is your return policy?',
+      a: 'We offer free returns within 30 days of delivery. If your print arrives damaged or doesn\'t look right, we\'ll reprint it for free — no questions asked.'
+    },
+  ]
+  return (
+    <div className="mx-4 mb-4 rounded-xl border border-gray-200 overflow-hidden">
+      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center py-3 border-b border-gray-100 bg-gray-50">Common Questions</p>
+      {faqs.map((faq, i) => (
+        <div key={i} className="border-b border-gray-100 last:border-0">
+          <button
+            className="w-full flex items-center justify-between px-4 py-3 text-left"
+            onClick={() => setOpen(open === i ? null : i)}
+          >
+            <span className="text-[13px] font-semibold text-gray-800 leading-snug pr-2">{faq.q}</span>
+            <span className="text-gray-400 text-lg flex-shrink-0 transition-transform duration-200" style={{ transform: open === i ? 'rotate(45deg)' : 'none' }}>+</span>
+          </button>
+          {open === i && (
+            <p className="px-4 pb-4 text-[12px] text-gray-600 leading-relaxed">{faq.a}</p>
+          )}
+        </div>
+      ))}
     </div>
   )
 }
