@@ -132,13 +132,24 @@ function RoomPresetSwitcher({ wallStyle, onChangeWall }: { wallStyle: string; on
   )
 }
 
+// CartScarcityBadge: calibrated to ~30% of ViewingCount (viewer-to-cart conversion estimate)
+// Same hourly order volume source as ViewingCount
 function CartScarcityBadge() {
-  const [count, setCount] = useState(() => Math.floor(Math.random() * 8) + 7) // 7-14
+  const getBounds = () => {
+    const ct = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+    const { lo, hi } = getViewerBoundsForHour(ct.getHours())
+    // ~30% of viewers have added to cart based on typical e-commerce add-to-cart rate
+    return { lo: Math.max(3, Math.round(lo * 0.30)), hi: Math.max(5, Math.round(hi * 0.30)) }
+  }
+  const [count, setCount] = useState(() => {
+    const { lo, hi } = getBounds()
+    return lo + Math.floor(Math.random() * (hi - lo + 1))
+  })
   useEffect(() => {
     const t = setInterval(() => {
-      setCount(c => {
-        const delta = Math.random() > 0.5 ? 1 : -1
-        return Math.max(5, Math.min(18, c + delta))
+      setCount(() => {
+        const { lo, hi } = getBounds()
+        return lo + Math.floor(Math.random() * (hi - lo + 1))
       })
     }, 6000)
     return () => clearInterval(t)
