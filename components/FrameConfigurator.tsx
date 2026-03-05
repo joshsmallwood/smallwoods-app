@@ -373,13 +373,13 @@ function RecentBuyerToast() {
 
 type FrameColor = 'walnut' | 'oak' | 'black' | 'white' | 'natural' | 'noframe'
 
-const FRAME_COLORS: { id: FrameColor; label: string; swatch: string; gradient: string; shopifyColor: string }[] = [
-  { id: 'walnut',  label: 'Walnut',   swatch: '#5a3010', gradient: 'repeating-linear-gradient(170deg, #5a3010 0px, #7a4520 4px, #4a2508 8px, #6b3c18 12px, #5a3010 16px)', shopifyColor: 'Stained'  },
-  { id: 'oak',     label: 'Oak',      swatch: '#c8a060', gradient: 'repeating-linear-gradient(170deg, #c8a060 0px, #deb878 4px, #b89048 8px, #caa868 12px, #c8a060 16px)', shopifyColor: 'Almond'   },
-  { id: 'natural', label: 'Natural',  swatch: '#d4b87a', gradient: 'repeating-linear-gradient(170deg, #d4b87a 0px, #e2c88a 4px, #c4a86a 8px, #d8bc80 12px, #d4b87a 16px)', shopifyColor: 'Natural'  },
-  { id: 'black',   label: 'Black',    swatch: '#1a1a1a', gradient: 'repeating-linear-gradient(170deg, #1a1a1a 0px, #2a2a2a 4px, #111 8px, #222 12px, #1a1a1a 16px)',       shopifyColor: 'Black'    },
-  { id: 'white',   label: 'White',    swatch: '#f0ece4', gradient: 'repeating-linear-gradient(170deg, #f0ece4 0px, #e8e4dc 4px, #f5f1e9 8px, #ece8e0 12px, #f0ece4 16px)', shopifyColor: 'White'    },
-  { id: 'noframe', label: 'No Frame', swatch: '#e8e0d5', gradient: 'linear-gradient(135deg, #f5f0eb 0%, #ece6de 100%)',                                                    shopifyColor: 'No Frame' },
+const FRAME_COLORS: { id: FrameColor; label: string; swatch: string; gradient: string; shopifyColor: string; tooltip: string }[] = [
+  { id: 'walnut',  label: 'Walnut',   swatch: '#5a3010', gradient: 'repeating-linear-gradient(170deg, #5a3010 0px, #7a4520 4px, #4a2508 8px, #6b3c18 12px, #5a3010 16px)', shopifyColor: 'Stained',  tooltip: 'Deep espresso stain — rich, dark & dramatic' },
+  { id: 'oak',     label: 'Oak',      swatch: '#c8a060', gradient: 'repeating-linear-gradient(170deg, #c8a060 0px, #deb878 4px, #b89048 8px, #caa868 12px, #c8a060 16px)', shopifyColor: 'Almond',   tooltip: 'Warm honey-golden tone — classic farmhouse feel' },
+  { id: 'natural', label: 'Natural',  swatch: '#d4b87a', gradient: 'repeating-linear-gradient(170deg, #d4b87a 0px, #e2c88a 4px, #c4a86a 8px, #d8bc80 12px, #d4b87a 16px)', shopifyColor: 'Natural',  tooltip: 'Light unfinished wood — airy, Scandinavian look' },
+  { id: 'black',   label: 'Black',    swatch: '#1a1a1a', gradient: 'repeating-linear-gradient(170deg, #1a1a1a 0px, #2a2a2a 4px, #111 8px, #222 12px, #1a1a1a 16px)',       shopifyColor: 'Black',    tooltip: 'Matte black — bold, modern, gallery-style' },
+  { id: 'white',   label: 'White',    swatch: '#f0ece4', gradient: 'repeating-linear-gradient(170deg, #f0ece4 0px, #e8e4dc 4px, #f5f1e9 8px, #ece8e0 12px, #f0ece4 16px)', shopifyColor: 'White',    tooltip: 'Soft white — clean, minimal, brightens any wall' },
+  { id: 'noframe', label: 'No Frame', swatch: '#e8e0d5', gradient: 'linear-gradient(135deg, #f5f0eb 0%, #ece6de 100%)',                                                    shopifyColor: 'No Frame', tooltip: 'No frame — printed wood panel only, ships flat' },
 ]
 
 interface SizeOption {
@@ -1532,6 +1532,8 @@ export default function FrameConfigurator() {
                   }}
                   className="flex flex-col items-center gap-1.5 flex-1 relative"
                   style={{ paddingTop: badge ? 10 : 0 }}
+                  title={c.tooltip}
+                  aria-label={`${c.label}: ${c.tooltip}`}
                 >
                   {badge && (
                     <span style={{
