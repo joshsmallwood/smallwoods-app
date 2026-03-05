@@ -790,7 +790,7 @@ export default function FrameConfigurator() {
   const getFramePrice = (f: FrameItem) => f.color === 'noframe' ? f.size.noFramePrice : f.size.price
   const totalPrice = frames.reduce((s, f) => s + getFramePrice(f), 0)
   const bundleTotal = frames.length > 1 ? Math.round(totalPrice * (1 - BUNDLE_DISCOUNT)) : null
-  const fullTotal = frames.reduce((s, f) => s + f.size.compareAt, 0)
+  const fullTotal = frames.reduce((s, f) => s + (f.color === 'noframe' ? f.size.noFrameCompareAt : f.size.compareAt), 0)
   const activeFramePrice = activeFrame ? getFramePrice(activeFrame) : 0
   const displayBundle = bundleTotal ?? Math.round(activeFramePrice * (1 - BUNDLE_DISCOUNT))
 
@@ -1380,6 +1380,9 @@ export default function FrameConfigurator() {
             { name: 'J.M.', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'Love all three of my prints. By far the best company to order prints/frames from. Shipping is phenomenal. As a repeat customer I\'ve never encountered a problem.', initials: 'JM', color: '#C65D2B' },
             { name: 'Eithan R.', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'I ordered our maternity pictures in large frames for our living room, and couldn\'t have asked for better! They are so beautiful. Couldn\'t be more thrilled.', initials: 'ER', color: '#2B6CB0' },
             { name: 'Sarah', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'Absolutely love. This is our second time ordering. I ordered a little bigger and used pictures from the same photo shoot and I absolutely am in love.', initials: 'S', color: '#276749' },
+            { name: 'Kalley', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'Amazing quality and fast shipping! Exactly what I was hoping for — the frame looks incredible on our wall.', initials: 'K', color: '#7B5EA7' },
+            { name: 'Rene K.', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'Our family\'s photo looks beautiful! Service was prompt. I highly recommend! It\'s the perfect gift and quality is top notch.', initials: 'RK', color: '#B45309' },
+            { name: 'Teri', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'Perfect as always! This is my third order from Smallwoods — the quality never disappoints and they always arrive so well packaged.', initials: 'T', color: '#0F766E' },
           ].map((review) => (
             <div key={review.name} className="flex items-start gap-2.5 bg-white rounded-xl px-3 py-2.5 border border-gray-100 shadow-sm">
               <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-white text-[11px] font-black" style={{ background: review.color }}>
