@@ -606,6 +606,42 @@ export default function FrameConfigurator() {
         </div>
       </div>
 
+      {/* Quantity / Bulk Discount Selector */}
+      <div className="px-4 mb-3">
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 text-center">Save More — Order Multiple</p>
+        <div className="flex gap-2">
+          {[
+            { qty: 1, label: '1 Frame', pct: 0, badge: null },
+            { qty: 2, label: '2 Frames', pct: 10, badge: null },
+            { qty: 3, label: '3 Frames', pct: 20, badge: 'Best Value' },
+          ].map(({ qty, label, pct, badge }) => {
+            const isSelected = frames.length === qty
+            const perFrame = Math.round(totalPrice / frames.length * (1 - pct / 100))
+            return (
+              <button
+                key={qty}
+                onClick={() => {
+                  const diff = qty - frames.length
+                  if (diff > 0) {
+                    for (let i = 0; i < diff; i++) addFrame()
+                  }
+                }}
+                className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 rounded-xl border-2 transition-all relative ${
+                  isSelected ? 'border-[#1B5A4A] bg-[#f0faf5]' : 'border-gray-200 bg-white'
+                }`}
+              >
+                {badge && (
+                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-[#F5C842] text-[#1B5A4A] text-[8px] font-black px-2 py-0.5 rounded-full whitespace-nowrap">{badge}</span>
+                )}
+                <span className={`text-[11px] font-black ${isSelected ? 'text-[#1B5A4A]' : 'text-gray-600'}`}>{label}</span>
+                {pct > 0 && <span className="text-[9px] font-bold text-green-600">Save {pct}%</span>}
+                <span className={`text-[10px] font-semibold ${isSelected ? 'text-[#1B5A4A]/70' : 'text-gray-400'}`}>${perFrame}/ea</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
       {/* Gallery Upsell Card — shown when single frame only */}
       {frames.length === 1 && (
         <div
