@@ -782,6 +782,31 @@ export default function FrameConfigurator() {
                 </button>
               ))}
             </div>
+            {/* Size comparison visual */}
+            <div className="mt-3 px-1 pb-1">
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-2">Size comparison</p>
+              <div className="flex items-end gap-2 justify-start">
+                {[
+                  { label: '8×10', w: 16, h: 20 },
+                  { label: '12×16', w: 20, h: 27 },
+                  { label: '16×16', w: 27, h: 27 },
+                  { label: '20×30', w: 28, h: 42 },
+                  { label: '24×36', w: 34, h: 51 },
+                ].map(s => (
+                  <div key={s.label} className="flex flex-col items-center gap-1">
+                    <div
+                      style={{ width: s.w, height: s.h, background: 'linear-gradient(135deg, #8B6914 0%, #C49A2B 50%, #8B6914 100%)', borderRadius: 2, border: '1.5px solid #6B4F10', boxShadow: '0 1px 3px rgba(0,0,0,0.25)' }}
+                    />
+                    <span className="text-[8px] text-gray-500 font-medium leading-none">{s.label}</span>
+                  </div>
+                ))}
+                <div className="flex flex-col items-center gap-1 ml-auto">
+                  <div style={{ width: 18, height: 54, background: 'linear-gradient(180deg, #e8d5b7 0%, #c9a96e 100%)', borderRadius: 2, border: '1px solid #bfa060', opacity: 0.5 }} />
+                  <span className="text-[8px] text-gray-400 leading-none">door</span>
+                </div>
+              </div>
+              <p className="text-[9px] text-gray-400 mt-1">All frames shown to scale relative to each other</p>
+            </div>
           </div>
 
           <div className="h-px bg-gray-100 mb-3"/>
