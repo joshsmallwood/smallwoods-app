@@ -2169,6 +2169,31 @@ function GiftMessageBox({ onMessageChange }: { onMessageChange?: (msg: string) =
         </button>
         {isGift && (
           <div className="px-3 pb-3">
+            {/* Quick-fill templates */}
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {[
+                '🎂 Happy Birthday!',
+                '💍 Happy Anniversary',
+                '🎄 Merry Christmas',
+                '🤍 With all my love',
+                '🏡 Welcome Home',
+                '🎉 Congratulations!',
+              ].map(template => (
+                <button
+                  key={template}
+                  onClick={() => {
+                    setMessage(template)
+                    onMessageChange?.(template)
+                  }}
+                  className="text-[10px] font-semibold px-2 py-1 rounded-full border transition-colors"
+                  style={message === template
+                    ? { background: '#1B5A4A', color: 'white', borderColor: '#1B5A4A' }
+                    : { background: 'white', color: '#1B5A4A', borderColor: '#1B5A4A33' }}
+                >
+                  {template}
+                </button>
+              ))}
+            </div>
             <textarea
               value={message}
               onChange={handleChange}
@@ -2177,7 +2202,7 @@ function GiftMessageBox({ onMessageChange }: { onMessageChange?: (msg: string) =
               placeholder="Write your personal message here... e.g. &quot;Happy Anniversary, love always 💛&quot;"
               className="w-full text-[12px] text-gray-700 placeholder-gray-400 border border-[#1B5A4A]/20 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-[#1B5A4A]/40 bg-white"
             />
-            <p className="text-[9px] text-gray-400 text-right mt-0.5">{message.length}/200</p>
+            <p className="text-[9px] text-gray-400 text-right mt-0.5">{message.length}/200 · printed on a card inside the box, free</p>
           </div>
         )}
       </div>
