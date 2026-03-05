@@ -1,33 +1,55 @@
 'use client'
 
-import { useState, useRef, useCallback, useId } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import InfoModal from './InfoModal'
 
 type FrameColor = 'walnut' | 'oak' | 'black' | 'white'
 
-const FRAME_COLORS: { id: FrameColor; label: string; swatch: string }[] = [
-  { id: 'walnut', label: 'Walnut', swatch: '#5a3010' },
-  { id: 'oak',    label: 'Oak',    swatch: '#c8a060' },
-  { id: 'black',  label: 'Black',  swatch: '#1a1a1a' },
-  { id: 'white',  label: 'White',  swatch: '#f0ece4' },
+const FRAME_COLORS: { id: FrameColor; label: string; swatch: string; shopifyColor: string }[] = [
+  { id: 'walnut', label: 'Walnut', swatch: '#5a3010', shopifyColor: 'Stained' },
+  { id: 'oak',    label: 'Oak',    swatch: '#c8a060', shopifyColor: 'Almond' },
+  { id: 'black',  label: 'Black',  swatch: '#1a1a1a', shopifyColor: 'Black'  },
+  { id: 'white',  label: 'White',  swatch: '#f0ece4', shopifyColor: 'White'  },
 ]
 
 interface SizeOption {
   id: string; label: string; width: number; height: number; price: number
+  shopifySize: string // matches Shopify variant option1
 }
 
+// Real Smallwoods sizes mapped to Shopify product 7241370435721 (Frames / copy-of-frames)
 const SIZES: SizeOption[] = [
-  { id: '5x7',   label: '5×7',   width: 5,  height: 7,  price: 49  },
-  { id: '8x10',  label: '8×10',  width: 8,  height: 10, price: 69  },
-  { id: '11x14', label: '11×14', width: 11, height: 14, price: 89  },
-  { id: '16x20', label: '16×20', width: 16, height: 20, price: 109 },
-  { id: '25x17', label: '25×17', width: 25, height: 17, price: 109 },
-  { id: '20x24', label: '20×24', width: 20, height: 24, price: 129 },
-  { id: '24x30', label: '24×30', width: 24, height: 30, price: 149 },
-  { id: '30x40', label: '30×40', width: 30, height: 40, price: 189 },
+  { id: '8x10',  label: '8×10',  width: 8,  height: 10, price: 69,  shopifySize: '8x10'              },
+  { id: '10x12', label: '10×12', width: 10, height: 12, price: 75,  shopifySize: '10x12'             },
+  { id: '12x16', label: '12×16', width: 12, height: 16, price: 89,  shopifySize: '12x16'             },
+  { id: '16x16', label: '16×16', width: 16, height: 16, price: 99,  shopifySize: '16x16'             },
+  { id: '25x17', label: '25×17', width: 25, height: 17, price: 109, shopifySize: 'Medium 25" x 17"' },
+  { id: '20x30', label: '20×30', width: 20, height: 30, price: 119, shopifySize: '20x30'             },
+  { id: '25x25', label: '25×25', width: 25, height: 25, price: 129, shopifySize: 'Square 25" x 25"' },
+  { id: '24x36', label: '24×36', width: 24, height: 36, price: 129, shopifySize: '24x36'             },
 ]
 
+// Hardcoded variant ID lookup: variantMap[shopifySize][shopifyColor] = variantId
+// Source: Shopify product 7241370435721 (Frames)
+const VARIANT_MAP: Record<string, Record<string, number>> = {
+  '8x10':              { Stained: 41365292810377, Almond: 41365292843145, Black: 41365292875913, White: 41365292908681 },
+  '10x12':             { Stained: 41365292646537, Almond: 41365292679305, Black: 41365292712073, White: 41365292744841 },
+  '12x16':             { Stained: 41365292155017, Almond: 41365292187785, Black: 41365292220553, White: 41365292253321 },
+  '16x16':             { Stained: 41365292318857, Almond: 41365292351625, Black: 41365292384393, White: 41365292417161 },
+  'Medium 25" x 17"': { Stained: 41365291663497, Almond: 41365291696265, Black: 41365291729033, White: 41365291761801 },
+  '20x30':             { Stained: 41843744768137, Almond: 41843744800905, Black: 41843744833673, White: 41843744866441 },
+  'Square 25" x 25"': { Stained: 41365291991177, Almond: 41365292023945, Black: 41365292056713, White: 41365292089481 },
+  '24x36':             { Stained: 43361951154313, Almond: 43361954857097, Black: 43361957707913, White: 43361959936137 },
+}
+
+const SHOPIFY_STORE = 'https://smallwoodhome.com'
 const BUNDLE_DISCOUNT = 0.20
+
+function getVariantId(size: SizeOption, color: FrameColor): number | null {
+  const colorObj = FRAME_COLORS.find(c => c.id === color)
+  if (!colorObj) return null
+  return VARIANT_MAP[size.shopifySize]?.[colorObj.shopifyColor] ?? null
+}
 
 interface FrameItem {
   id: string
@@ -467,15 +489,71 @@ export default function FrameConfigurator() {
 
       {/* CTA Button */}
       <div className="px-4 pb-6">
-        <button className="w-full bg-[#1B5A4A] hover:bg-[#154739] text-white font-bold text-base py-4 rounded-xl transition-colors shadow-md active:scale-[0.98]">
-          {frames.length > 1
-            ? `Add ${frames.length} Frames to Cart — $${bundleTotal ?? totalPrice}`
-            : (activeFrame.photo ? 'Add to Cart' : 'Upload Photos')}
-        </button>
+        <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} />
       </div>
 
       {showInfo && <InfoModal onClose={() => setShowInfo(false)} />}
     </div>
+  )
+}
+
+function AddToCartButton({ frames, bundleTotal, totalPrice }: {
+  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number
+}) {
+  const [adding, setAdding] = useState(false)
+  const [added, setAdded] = useState(false)
+
+  const handleAddToCart = () => {
+    setAdding(true)
+    // Build cart URL with all frame variants
+    const items = frames.map(f => {
+      const variantId = getVariantId(f.size, f.color)
+      return variantId ? `id[]=${variantId}&quantity[]=1` : null
+    }).filter(Boolean)
+
+    if (items.length === 0) {
+      // No real variant IDs resolved — open product page instead
+      window.open(`${SHOPIFY_STORE}/products/copy-of-frames`, '_blank')
+      setAdding(false)
+      return
+    }
+
+    setTimeout(() => {
+      setAdded(true)
+      setAdding(false)
+      // Navigate to Shopify cart
+      const cartUrl = `${SHOPIFY_STORE}/cart/${frames.map(f => {
+        const vid = getVariantId(f.size, f.color)
+        return vid ? `${vid}:1` : ''
+      }).filter(Boolean).join(',')}`
+      window.open(cartUrl, '_blank')
+      setTimeout(() => setAdded(false), 3000)
+    }, 800)
+  }
+
+  const hasPhotos = frames.some(f => f.photo)
+  const label = frames.length > 1
+    ? `Add ${frames.length} Frames to Cart — $${bundleTotal ?? totalPrice}`
+    : (hasPhotos ? `Add to Cart — $${totalPrice}` : 'Upload Photos to Continue')
+
+  return (
+    <button
+      onClick={hasPhotos ? handleAddToCart : undefined}
+      className={`w-full font-bold text-base py-4 rounded-xl transition-all shadow-md active:scale-[0.98] relative overflow-hidden ${
+        hasPhotos
+          ? 'bg-[#1B5A4A] hover:bg-[#154739] text-white cursor-pointer'
+          : 'bg-gray-200 text-gray-400 cursor-default'
+      }`}
+    >
+      {adding ? (
+        <span className="flex items-center justify-center gap-2">
+          <span className="w-4 h-4 rounded-full animate-spin inline-block" style={{ borderWidth: '2px', borderStyle: 'solid', borderColor: 'white', borderTopColor: 'transparent' }}/>
+          Adding to Cart…
+        </span>
+      ) : added ? (
+        <span className="flex items-center justify-center gap-2">✓ Added! Redirecting to cart…</span>
+      ) : label}
+    </button>
   )
 }
 
