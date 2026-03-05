@@ -422,7 +422,7 @@ function SingleFrame({
       {/* Frame */}
       <div
         className={`frame-wrap frame-${frame.color} frame-pop`}
-        style={{ padding: '16px', borderRadius: '3px' }}
+        style={{ padding: frame.color === 'noframe' ? '0' : '16px', borderRadius: '3px' }}
       >
         <div
           className="mat-inner overflow-hidden relative"
@@ -1835,7 +1835,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame }: {
                       Custom Wood Framed Sign
                     </div>
                     <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
-                      {f.size.label} · {f.color.charAt(0).toUpperCase() + f.color.slice(1)}
+                      {f.size.label} · {FRAME_COLORS.find(c => c.id === f.color)?.label ?? f.color}
                       {f.photo ? ' · Photo uploaded ✓' : ' · No photo'}
                     </div>
                   </div>
@@ -1932,7 +1932,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame }: {
           <span className="flex flex-col items-start">
             <span style={{ fontSize: '15px', fontWeight: 800, lineHeight: 1.2 }}>Upload Your Photo to Continue</span>
             <span style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(255,255,255,0.82)', lineHeight: 1.2 }}>
-              {`✓ ${activeFrame.size.label} · ${activeFrame.color.charAt(0).toUpperCase()}${activeFrame.color.slice(1)} selected — one step left!`}
+              {`✓ ${activeFrame.size.label} · ${FRAME_COLORS.find(c => c.id === activeFrame.color)?.label ?? activeFrame.color} selected — one step left!`}
             </span>
           </span>
         </span>
