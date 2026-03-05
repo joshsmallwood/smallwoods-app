@@ -179,10 +179,11 @@ interface FrameItem {
   color: FrameColor
   size: SizeOption
   photo: string | null
+  orientation: 'portrait' | 'landscape'
 }
 
 function makeFrame(id: string): FrameItem {
-  return { id, color: 'walnut', size: SIZES[3], photo: null }
+  return { id, color: 'walnut', size: SIZES[3], photo: null, orientation: 'portrait' }
 }
 
 // ─── Single Frame ────────────────────────────────────────────────
@@ -234,8 +235,9 @@ function SingleFrame({
     }, 260)
   }
 
-  const aspectW = frame.size.width
-  const aspectH = frame.size.height
+  const isLandscape = frame.orientation === 'landscape'
+  const aspectW = isLandscape ? frame.size.height : frame.size.width
+  const aspectH = isLandscape ? frame.size.width : frame.size.height
 
   return (
     <div
@@ -686,7 +688,26 @@ export default function FrameConfigurator() {
 
           {/* Size picker */}
           <div className="mb-3">
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Size (inches)</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Size (inches)</p>
+              {/* Orientation toggle */}
+              <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
+                <button
+                  onClick={() => updateFrame(activeId, { orientation: 'portrait' })}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold transition-all ${activeFrame.orientation !== 'landscape' ? 'bg-white shadow text-[#1B5A4A]' : 'text-gray-400'}`}
+                >
+                  <svg width="10" height="12" viewBox="0 0 10 12" fill="currentColor"><rect x="1" y="0" width="8" height="12" rx="1.5"/></svg>
+                  Portrait
+                </button>
+                <button
+                  onClick={() => updateFrame(activeId, { orientation: 'landscape' })}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold transition-all ${activeFrame.orientation === 'landscape' ? 'bg-white shadow text-[#1B5A4A]' : 'text-gray-400'}`}
+                >
+                  <svg width="12" height="10" viewBox="0 0 12 10" fill="currentColor"><rect x="0" y="1" width="12" height="8" rx="1.5"/></svg>
+                  Landscape
+                </button>
+              </div>
+            </div>
             <div className="grid grid-cols-4 gap-1.5">
               {SIZES.map(size => (
                 <button
