@@ -1122,6 +1122,10 @@ export default function FrameConfigurator() {
                     for (let i = 0; i < diff; i++) addFrame()
                   } else if (diff < 0) {
                     // Remove frames from the end to reach target qty
+                    // Warn if any frames being removed have photos uploaded
+                    const toRemove = frames.slice(qty)
+                    const hasPhotos = toRemove.some(f => f.photo)
+                    if (hasPhotos && !window.confirm(`Remove ${Math.abs(diff)} frame${Math.abs(diff) > 1 ? 's' : ''} with uploaded photo${Math.abs(diff) > 1 ? 's' : ''}?`)) return
                     setFrames(prev => {
                       const next = prev.slice(0, qty)
                       setActiveId(next[next.length - 1]?.id ?? '')
