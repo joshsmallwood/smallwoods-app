@@ -379,12 +379,12 @@ export default function FrameConfigurator() {
           <div>
             <p className="text-xs font-semibold text-[#7EC8A4] uppercase tracking-widest mb-0.5">Bundle Price</p>
             <p className="text-4xl font-black text-white leading-none">
-              ${frames.length > 1 ? bundleTotal : Math.round(activeFrame.size.price * (1 - BUNDLE_DISCOUNT))}
+              ${frames.length > 1 ? bundleTotal : Math.round((activeFrame?.size.price ?? 0) * (1 - BUNDLE_DISCOUNT))}
             </p>
           </div>
           <div className="text-right">
             <span className="inline-block bg-[#F5C842] text-[#1B5A4A] text-xs font-black px-2 py-1 rounded-full uppercase tracking-wide mb-1">Best Deal</span>
-            <p className="text-[#7EC8A4] text-sm font-semibold">Save ${fullTotal - (frames.length > 1 ? bundleTotal : Math.round(activeFrame.size.price * (1 - BUNDLE_DISCOUNT)))}</p>
+            <p className="text-[#7EC8A4] text-sm font-semibold">Save ${fullTotal - (frames.length > 1 ? bundleTotal : Math.round((activeFrame?.size.price ?? 0) * (1 - BUNDLE_DISCOUNT)))}</p>
           </div>
         </div>
         {/* Full & Sale prices as context */}
