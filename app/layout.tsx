@@ -4,14 +4,14 @@ import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
-// Lucky You Sale — live through March 17, 2026 (verified from smallwoodhome.com homepage)
+// Lucky You Sale — live through March 17, 2026 (MYWALL35/LUCKY35 = 35% off, both verified active with no expiry via Shopify API Mar 5 2026)
 export const metadata: Metadata = {
-  title: 'Lucky You Sale — Up to 70% Off | Custom Wood Framed Signs | Smallwoods',
-  description: 'Lucky You Sale ends Mar 17 — design your custom wood framed sign, up to 70% off. Handcrafted in the USA. 4.7★ · 6,494 reviews · Ships in 1–3 days.',
+  title: 'Lucky You Sale — 35% Off | Custom Wood Framed Signs | Smallwoods',
+  description: 'Lucky You Sale ends Mar 17 — design your custom wood framed sign, 35% off. Handcrafted in the USA. 4.74★ · 6,494 reviews · Ships in 1–3 days.',
   metadataBase: new URL('https://app.smallwoods.io'),
   openGraph: {
-    title: 'Lucky You Sale — Up to 70% Off Custom Wood Frames | Smallwoods',
-    description: 'Lucky You Sale ends St. Patrick\'s Day (Mar 17). Upload your photo, design a custom wood framed sign. 4.7★ · 6,494 reviews. Ships in 1–3 days.',
+    title: 'Lucky You Sale — 35% Off Custom Wood Frames | Smallwoods',
+    description: 'Lucky You Sale ends St. Patrick\'s Day (Mar 17). Upload your photo, design a custom wood framed sign. 35% off auto-applied. 4.74★ · 6,494 reviews. Ships in 1–3 days.',
     url: 'https://app.smallwoods.io',
     siteName: 'Smallwoods',
     images: [
@@ -27,8 +27,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Lucky You Sale — Up to 70% Off Custom Wood Frames | Smallwoods',
-    description: 'Lucky You Sale ends Mar 17! Upload your photo, design a custom wood framed sign. 4.7★ rated. Ships in 1–3 days.',
+    title: 'Lucky You Sale — 35% Off Custom Wood Frames | Smallwoods',
+    description: 'Lucky You Sale ends Mar 17! 35% off auto-applied. Upload your photo, design a custom wood framed sign. 4.74★ rated. Ships in 1–3 days.',
     images: ['https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397'],
   },
   keywords: ['custom wood frames', 'personalized photo frames', 'wood framed signs', 'custom photo gifts', 'smallwoods'],
