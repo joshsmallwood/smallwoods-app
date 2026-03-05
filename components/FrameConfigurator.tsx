@@ -848,8 +848,25 @@ function parseDesignFromUrl(): { frames: FrameItem[]; wall: 'classic' | 'modern'
   } catch { return null }
 }
 
+const LS_KEY = 'sw_last_design'
+
+function loadSavedDesign() {
+  if (typeof window === 'undefined') return null
+  // URL params take priority over localStorage (for shared links / ad redirects)
+  const fromUrl = parseDesignFromUrl()
+  if (fromUrl) return fromUrl
+  try {
+    const raw = localStorage.getItem(LS_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    // Validate structure
+    if (!Array.isArray(parsed.frames) || parsed.frames.length === 0) return null
+    return parsed as ReturnType<typeof parseDesignFromUrl>
+  } catch { return null }
+}
+
 export default function FrameConfigurator() {
-  const savedDesign = typeof window !== 'undefined' ? parseDesignFromUrl() : null
+  const savedDesign = typeof window !== 'undefined' ? loadSavedDesign() : null
   const [frames, setFrames] = useState<FrameItem[]>(savedDesign?.frames ?? [makeFrame('f1')])
   const [activeId, setActiveId] = useState<string>(savedDesign?.frames?.[0]?.id ?? 'f1')
   const [showFrameBar, setShowFrameBar] = useState(true)
@@ -891,6 +908,14 @@ export default function FrameConfigurator() {
     url.searchParams.set('d', d)
     url.searchParams.set('w', wallStyle)
     window.history.replaceState({}, '', url.toString())
+    // Persist to localStorage (photo excluded — too large; just size/color/orientation/wall)
+    try {
+      const toSave = {
+        frames: frames.map(f => ({ id: f.id, size: f.size, color: f.color, orientation: f.orientation, photo: null })),
+        wall: wallStyle,
+      }
+      localStorage.setItem(LS_KEY, JSON.stringify(toSave))
+    } catch {}
   }, [frames, wallStyle])
 
   useEffect(() => {
