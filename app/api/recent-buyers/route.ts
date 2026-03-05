@@ -29,6 +29,11 @@ function parseSize(variant: string): string | null {
   return m ? `${m[1]}\u00d7${m[2]}` : null
 }
 
+function cleanCity(city: string): string | null {
+  if (/\d/.test(city)) return null // skip "664 henagar" etc
+  return city.replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+}
+
 function parseColor(variant: string): string | null {
   const parts = variant.split('/')
   if (parts.length >= 2) {
@@ -89,12 +94,6 @@ export async function GET() {
 
     if (rows.length < 5) {
       return NextResponse.json({ buyers: [], cached: false, source: 'fallback', rowCount: rows.length })
-    }
-
-    // Clean city name: title case, skip entries with digits (bad data)
-    function cleanCity(city: string): string | null {
-      if (/\d/.test(city)) return null // skip "664 henagar" etc
-      return city.replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     }
 
     let nameIdx = 0
