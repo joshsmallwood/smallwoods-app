@@ -771,13 +771,21 @@ export default function FrameConfigurator() {
         <div className="flex items-center gap-2 mt-1">
           <div className="flex items-center gap-0.5">
             {[1,2,3,4,5].map(i => (
-              <svg key={i} width="13" height="13" viewBox="0 0 24 24" fill={i === 5 ? '#F59E0B' : '#F59E0B'} className="inline-block">
-                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+              <svg key={i} width="13" height="13" viewBox="0 0 24 24" className="inline-block">
+                {i <= 4 ? (
+                  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#F59E0B"/>
+                ) : (
+                  <>
+                    <defs><clipPath id="half"><rect x="0" y="0" width="12" height="24"/></clipPath></defs>
+                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#E5E7EB"/>
+                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#F59E0B" clipPath="url(#half)"/>
+                  </>
+                )}
               </svg>
             ))}
           </div>
-          <span className="text-xs font-semibold text-[#1B1B1B]">4.9</span>
-          <span className="text-xs text-[#1B5A4A] font-medium underline cursor-pointer">2,847 reviews</span>
+          <span className="text-xs font-semibold text-[#1B1B1B]">4.7</span>
+          <span className="text-xs text-[#1B5A4A] font-medium underline cursor-pointer">6,494 reviews</span>
         </div>
         <div className="flex items-center gap-1.5 mt-1">
           <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
