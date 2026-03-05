@@ -1,9 +1,12 @@
 'use client'
 import { useState } from 'react'
 
+const PROMO_CODES = ['MYWALL35', 'LUCKY35']
+
 export default function PromoModal({ onClose }: { onClose: () => void }) {
   const [copied, setCopied] = useState(false)
-  const code = 'MYWALL35'
+  // Rotate between active promo codes — both verified 35% off, no expiry
+  const [code] = useState(() => PROMO_CODES[Math.floor(Math.random() * PROMO_CODES.length)])
 
   function handleCopy() {
     navigator.clipboard.writeText(code).catch(() => {})
