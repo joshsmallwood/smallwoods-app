@@ -815,8 +815,8 @@ export default function FrameConfigurator() {
               </svg>
             ))}
           </div>
-          <span className="text-xs font-semibold text-[#1B1B1B]">4.7</span>
-          <span className="text-xs text-[#1B5A4A] font-medium underline cursor-pointer">6,494 reviews</span>
+          <span className="text-xs font-semibold text-[#1B1B1B]">4.96</span>
+          <span className="text-xs text-[#1B5A4A] font-medium underline cursor-pointer">77,130 reviews</span>
         </div>
         <div className="flex items-center gap-1.5 mt-1">
           <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
@@ -1307,9 +1307,9 @@ export default function FrameConfigurator() {
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center mb-2">What Customers Say</p>
         <div className="flex flex-col gap-2">
           {[
-            { name: 'Sarah M.', location: 'Austin, TX', product: '16×16 Walnut', quote: 'Absolutely beautiful — the wood grain is stunning and it arrived in perfect condition. My family loves it!', initials: 'SM', color: '#C65D2B' },
-            { name: 'Jessica L.', location: 'Denver, CO', product: '20×30 Oak', quote: 'Ordered as a anniversary gift. My husband cried when he opened it. The quality exceeded our expectations.', initials: 'JL', color: '#2B6CB0' },
-            { name: 'Mike R.', location: 'Nashville, TN', product: '12×16 Black', quote: 'Third one I\'ve ordered — addicted. Ships SO fast and looks exactly like the preview. 10/10.', initials: 'MR', color: '#276749' },
+            { name: 'J.M.', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'Love all three of my prints. By far the best company to order prints/frames from. Shipping is phenomenal. As a repeat customer I\'ve never encountered a problem.', initials: 'JM', color: '#C65D2B' },
+            { name: 'Eithan R.', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'I ordered our maternity pictures in large frames for our living room, and couldn\'t have asked for better! They are so beautiful. Couldn\'t be more thrilled.', initials: 'ER', color: '#2B6CB0' },
+            { name: 'Sarah', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'Absolutely love. This is our second time ordering. I ordered a little bigger and used pictures from the same photo shoot and I absolutely am in love.', initials: 'S', color: '#276749' },
           ].map((review) => (
             <div key={review.name} className="flex items-start gap-2.5 bg-white rounded-xl px-3 py-2.5 border border-gray-100 shadow-sm">
               <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-white text-[11px] font-black" style={{ background: review.color }}>
