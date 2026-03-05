@@ -1385,12 +1385,6 @@ export default function FrameConfigurator() {
                   🎯 Not sure?
                 </button>
               </div>
-              {/* Orientation mismatch hint */}
-              {orientMismatch && (
-                <span className="text-[9px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1 animate-pulse">
-                  💡 Flip to {orientMismatch === 'suggest-landscape' ? 'Landscape' : 'Portrait'}?
-                </span>
-              )}
               {/* Orientation toggle */}
               <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
                 <button
