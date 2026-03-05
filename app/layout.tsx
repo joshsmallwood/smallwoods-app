@@ -5,22 +5,50 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 const SALE_END = new Date('2026-03-17T23:59:59-05:00') // Mar 17 end of day CT
+const NEON_URL = 'https://ep-divine-bird-ai2sr3dd-pooler.c-4.us-east-1.aws.neon.tech/sql'
+const NEON_CONN = 'postgresql://neondb_owner:npg_50fAjkvCiztp@ep-divine-bird-ai2sr3dd-pooler.c-4.us-east-1.aws.neon.tech/neondb'
+
+// Cache review stats for metadata (revalidated every 6 hours)
+let metaStatsCache: { reviewCount: number; starRating: number; ts: number } | null = null
+async function getMetaStats() {
+  if (metaStatsCache && Date.now() - metaStatsCache.ts < 6 * 60 * 60 * 1000) return metaStatsCache
+  try {
+    const res = await fetch(NEON_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Neon-Connection-String': NEON_CONN },
+      body: JSON.stringify({ query: `SELECT key, value FROM app_config WHERE key IN ('judgeme_review_count','judgeme_star_rating')`, params: [] }),
+      next: { revalidate: 21600 }, // 6h Next.js cache
+    })
+    if (!res.ok) throw new Error('DB err')
+    const data = await res.json()
+    let reviewCount = 6494, starRating = 4.74
+    for (const row of (data?.rows ?? [])) {
+      if (row.key === 'judgeme_review_count') reviewCount = parseInt(row.value, 10) || 6494
+      if (row.key === 'judgeme_star_rating') starRating = parseFloat(row.value) || 4.74
+    }
+    metaStatsCache = { reviewCount, starRating, ts: Date.now() }
+    return metaStatsCache
+  } catch { return { reviewCount: 6494, starRating: 4.74, ts: Date.now() } }
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const isSaleActive = new Date() < SALE_END
+  const { reviewCount, starRating } = await getMetaStats()
+  const reviewStr = reviewCount.toLocaleString()
+  const ratingStr = starRating.toFixed(2)
 
   const title = isSaleActive
     ? 'Lucky You Sale — 35% Off | Custom Wood Framed Signs | Smallwoods'
     : 'Custom Wood Framed Signs | 35% Off | Smallwoods'
   const description = isSaleActive
-    ? 'Lucky You Sale ends Mar 17 — design your custom wood framed sign, 35% off. Handcrafted in the USA. 4.74★ · 6,494 reviews · Ships in 1–3 days.'
-    : 'Design your custom wood framed sign online. 35% off auto-applied. Handcrafted in the USA. 4.74★ · 6,494 reviews · Ships in 1–3 days.'
+    ? `Lucky You Sale ends Mar 17 — design your custom wood framed sign, 35% off. Handcrafted in the USA. ${ratingStr}★ · ${reviewStr} reviews · Ships in 1–3 days.`
+    : `Design your custom wood framed sign online. 35% off auto-applied. Handcrafted in the USA. ${ratingStr}★ · ${reviewStr} reviews · Ships in 1–3 days.`
   const ogTitle = isSaleActive
     ? 'Lucky You Sale — 35% Off Custom Wood Frames | Smallwoods'
     : '35% Off Custom Wood Frames | Smallwoods'
   const ogDescription = isSaleActive
-    ? 'Lucky You Sale ends St. Patrick\'s Day (Mar 17). Upload your photo, design a custom wood framed sign. 35% off auto-applied. 4.74★ · 6,494 reviews. Ships in 1–3 days.'
-    : 'Upload your photo, design a custom wood framed sign. 35% off auto-applied. 4.74★ · 6,494 reviews. Ships in 1–3 days.'
+    ? `Lucky You Sale ends St. Patrick's Day (Mar 17). Upload your photo, design a custom wood framed sign. 35% off auto-applied. ${ratingStr}★ · ${reviewStr} reviews. Ships in 1–3 days.`
+    : `Upload your photo, design a custom wood framed sign. 35% off auto-applied. ${ratingStr}★ · ${reviewStr} reviews. Ships in 1–3 days.`
 
   return {
     title,
