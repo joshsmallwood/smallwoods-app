@@ -563,6 +563,7 @@ export default function FrameConfigurator() {
   const [showFrameBar, setShowFrameBar] = useState(true)
   const [showInfo, setShowInfo] = useState(false)
   const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>('classic')
+  const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
   const [ctaVisible, setCtaVisible] = useState(true)
   const counterRef = useRef(2)
   const ctaRef = useRef<HTMLDivElement>(null)
@@ -701,9 +702,49 @@ export default function FrameConfigurator() {
       <RoomPresetSwitcher wallStyle={wallStyle} onChangeWall={setWallStyle} />
       <ShareDesignButton />
 
+      {/* Before/After Wall Toggle */}
+      <div className="flex items-center justify-center gap-1 mx-4 mb-1">
+        <div className="flex rounded-full p-0.5 gap-0.5" style={{ background: '#f3f4f6' }}>
+          <button
+            onClick={() => setWallPreviewMode('with-frame')}
+            className="flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold transition-all"
+            style={wallPreviewMode === 'with-frame' ? { background: '#1B5A4A', color: 'white' } : { color: '#6b7280' }}
+          >
+            🖼️ With Frame
+          </button>
+          <button
+            onClick={() => setWallPreviewMode('empty')}
+            className="flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold transition-all"
+            style={wallPreviewMode === 'empty' ? { background: '#1B5A4A', color: 'white' } : { color: '#6b7280' }}
+          >
+            🏠 Empty Wall
+          </button>
+        </div>
+      </div>
+
       {/* Frame Preview Area */}
       <div className="flex-1 flex items-center justify-center px-4 py-6 rounded-2xl mx-4 my-2 transition-all duration-500" style={{ minHeight: '320px', ...WALL_STYLES[wallStyle] }}>
-        {isGallery ? (
+        {wallPreviewMode === 'empty' ? (
+          /* Empty wall view — show placeholder rectangle */
+          <div className="flex flex-col items-center gap-3">
+            <div
+              className="rounded-lg flex items-center justify-center"
+              style={{
+                width: 160,
+                height: 180,
+                border: '2.5px dashed rgba(0,0,0,0.18)',
+                background: 'rgba(255,255,255,0.25)',
+                backdropFilter: 'blur(2px)',
+              }}
+            >
+              <div className="flex flex-col items-center gap-1 opacity-50">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                <p className="text-[10px] font-semibold text-gray-500">Your frame here</p>
+              </div>
+            </div>
+            <p className="text-[11px] text-gray-500 font-medium">See how it looks → tap 🖼️ With Frame</p>
+          </div>
+        ) : isGallery ? (
           /* Gallery: side-by-side layout */
           <div className="flex items-center justify-center gap-4 w-full flex-wrap">
             {frames.map(frame => (
