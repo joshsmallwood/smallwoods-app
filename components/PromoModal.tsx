@@ -24,7 +24,7 @@ export default function PromoModal({ onClose }: { onClose: () => void }) {
         <div className="bg-[#1B5A4A] rounded-t-2xl px-6 py-5 text-white text-center">
           <div className="text-3xl mb-1">🎉</div>
           <h2 className="text-xl font-black tracking-tight">You Unlocked 35% Off!</h2>
-          <p className="text-[#a7d5c6] text-sm mt-1">Apply at checkout on smallwoodhome.com</p>
+          <p className="text-[#a7d5c6] text-sm mt-1">Auto-applies at checkout on smallwoodhome.com</p>
         </div>
 
         <div className="px-6 pt-5">
