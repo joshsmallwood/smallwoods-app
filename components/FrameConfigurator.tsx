@@ -128,11 +128,11 @@ function RecentBuyerToast() {
 
 type FrameColor = 'walnut' | 'oak' | 'black' | 'white'
 
-const FRAME_COLORS: { id: FrameColor; label: string; swatch: string; shopifyColor: string }[] = [
-  { id: 'walnut', label: 'Walnut', swatch: '#5a3010', shopifyColor: 'Stained' },
-  { id: 'oak',    label: 'Oak',    swatch: '#c8a060', shopifyColor: 'Almond' },
-  { id: 'black',  label: 'Black',  swatch: '#1a1a1a', shopifyColor: 'Black'  },
-  { id: 'white',  label: 'White',  swatch: '#f0ece4', shopifyColor: 'White'  },
+const FRAME_COLORS: { id: FrameColor; label: string; swatch: string; gradient: string; shopifyColor: string }[] = [
+  { id: 'walnut', label: 'Walnut', swatch: '#5a3010', gradient: 'repeating-linear-gradient(170deg, #5a3010 0px, #7a4520 4px, #4a2508 8px, #6b3c18 12px, #5a3010 16px)', shopifyColor: 'Stained' },
+  { id: 'oak',    label: 'Oak',    swatch: '#c8a060', gradient: 'repeating-linear-gradient(170deg, #c8a060 0px, #deb878 4px, #b89048 8px, #caa868 12px, #c8a060 16px)', shopifyColor: 'Almond' },
+  { id: 'black',  label: 'Black',  swatch: '#1a1a1a', gradient: 'repeating-linear-gradient(170deg, #1a1a1a 0px, #2a2a2a 4px, #111 8px, #222 12px, #1a1a1a 16px)', shopifyColor: 'Black'  },
+  { id: 'white',  label: 'White',  swatch: '#f0ece4', gradient: 'repeating-linear-gradient(170deg, #f0ece4 0px, #e8e4dc 4px, #f5f1e9 8px, #ece8e0 12px, #f0ece4 16px)', shopifyColor: 'White'  },
 ]
 
 interface SizeOption {
@@ -623,22 +623,27 @@ export default function FrameConfigurator() {
           {/* Color swatches */}
           <div>
             <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Frame Color</p>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {FRAME_COLORS.map(c => (
                 <button
                   key={c.id}
                   onClick={() => updateFrame(activeId, { color: c.id })}
-                  className="flex flex-col items-center gap-1"
+                  className="flex flex-col items-center gap-1.5 flex-1"
                 >
                   <span
-                    className={`w-10 h-10 rounded-full transition-all block shadow-sm ${
+                    className={`w-full transition-all block shadow-sm overflow-hidden ${
                       activeFrame.color === c.id
-                        ? 'border-[3px] border-[#1B5A4A] scale-110 shadow-md'
-                        : 'border-[2px] border-gray-200 hover:border-gray-400'
+                        ? 'ring-[3px] ring-[#1B5A4A] ring-offset-1 scale-105 shadow-md'
+                        : 'ring-1 ring-gray-200 hover:ring-gray-400'
                     }`}
-                    style={{ backgroundColor: c.swatch }}
+                    style={{
+                      height: '36px',
+                      borderRadius: '8px',
+                      background: c.gradient,
+                      backgroundSize: '100% 100%',
+                    }}
                   />
-                  <span className={`text-[10px] font-semibold ${activeFrame.color === c.id ? 'text-[#1B5A4A]' : 'text-gray-500'}`}>
+                  <span className={`text-[10px] font-semibold leading-none ${activeFrame.color === c.id ? 'text-[#1B5A4A]' : 'text-gray-500'}`}>
                     {c.label}
                   </span>
                 </button>
