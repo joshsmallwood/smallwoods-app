@@ -974,9 +974,9 @@ export default function FrameConfigurator() {
                   <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#F59E0B"/>
                 ) : (
                   <>
-                    <defs><clipPath id="half"><rect x="0" y="0" width="12" height="24"/></clipPath></defs>
+                    <defs><clipPath id="star-half-474"><rect x="0" y="0" width="12" height="24"/></clipPath></defs>
                     <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#E5E7EB"/>
-                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#F59E0B" clipPath="url(#half)"/>
+                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#F59E0B" clipPath="url(#star-half-474)"/>
                   </>
                 )}
               </svg>
