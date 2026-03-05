@@ -1284,9 +1284,9 @@ export default function FrameConfigurator() {
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Customers also love</p>
         <div className="flex gap-2 overflow-x-auto pb-1">
           {[
-            { emoji: '🎨', title: 'Canvas Print', subtitle: '16×20 · Rolled', price: '$49', href: 'https://smallwoodhome.com/collections/canvas-prints' },
-            { emoji: '🖼️', title: 'Gallery Wall Set', subtitle: '3-pack · Mixed sizes', price: '$179', href: 'https://smallwoodhome.com/collections/gallery-wall' },
-            { emoji: '📸', title: 'Photo Book', subtitle: 'Hardcover · 20 pgs', price: '$39', href: 'https://smallwoodhome.com/collections/photo-books' },
+            { emoji: '🖼️', title: 'Hanging Canvas', subtitle: 'Custom · Wood Frame', price: 'from $109', href: 'https://www.smallwoodhome.com/products/custom-framed-hanging-canvas' },
+            { emoji: '🎨', title: 'Wrapped Canvas', subtitle: 'Custom · Gallery Wrap', price: 'from $69', href: 'https://www.smallwoodhome.com/products/custom-wrapped-canvas' },
+            { emoji: '⭐', title: 'Best Sellers', subtitle: 'Top-rated designs', price: 'Shop now', href: 'https://www.smallwoodhome.com/collections/bestseller' },
           ].map(p => (
             <a
               key={p.title}
