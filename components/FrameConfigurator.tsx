@@ -3,6 +3,17 @@
 import { useState, useRef, useEffect } from 'react'
 import InfoModal from './InfoModal'
 
+function OfferCountdown() {
+  const [secs, setSecs] = useState(() => 12 * 60 + Math.floor(Math.random() * 600))
+  useEffect(() => {
+    const t = setInterval(() => setSecs(s => s > 0 ? s - 1 : 14 * 60 + Math.floor(Math.random() * 300)), 1000)
+    return () => clearInterval(t)
+  }, [])
+  const m = Math.floor(secs / 60).toString().padStart(2, '0')
+  const s = (secs % 60).toString().padStart(2, '0')
+  return <>{m}:{s}</>
+}
+
 function ViewingCount() {
   const [count, setCount] = useState(() => 34 + Math.floor(Math.random() * 18))
   useEffect(() => {
@@ -429,6 +440,13 @@ export default function FrameConfigurator() {
             <span className="inline-block bg-[#F5C842] text-[#1B5A4A] text-xs font-black px-2 py-1 rounded-full uppercase tracking-wide mb-1">Best Deal</span>
             <p className="text-[#7EC8A4] text-sm font-semibold">Save ${fullTotal - displayBundle}</p>
           </div>
+        </div>
+        {/* Countdown bar */}
+        <div className="bg-[#0f3d2e] px-4 py-1.5 flex items-center gap-2">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F5C842" strokeWidth="2.5">
+            <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
+          </svg>
+          <span className="text-[11px] text-[#F5C842] font-bold uppercase tracking-wide">Limited Time — Offer expires in <OfferCountdown /></span>
         </div>
         {/* Full & Sale prices as context */}
         <div className="bg-white flex items-center justify-center gap-6 px-4 py-2">
