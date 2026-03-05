@@ -24,9 +24,12 @@ export async function GET() {
         method: 'POST',
         headers,
         body: JSON.stringify({
+          // Filter to Smallwoods frame orders only (excludes SweetHoney clothing orders in same DB)
           query: `SELECT
-            COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days')::int AS week_count,
-            COUNT(*) FILTER (WHERE created_at >= CURRENT_DATE)::int AS today_count
+            COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days'
+              AND EXISTS (SELECT 1 FROM jsonb_array_elements(line_items) li WHERE li->>'title' = 'Frames'))::int AS week_count,
+            COUNT(*) FILTER (WHERE created_at >= CURRENT_DATE
+              AND EXISTS (SELECT 1 FROM jsonb_array_elements(line_items) li WHERE li->>'title' = 'Frames'))::int AS today_count
           FROM shopify_orders`,
           params: []
         }),
@@ -43,7 +46,7 @@ export async function GET() {
 
     if (!ordersRes.ok) throw new Error(`DB error: ${ordersRes.status}`)
     const ordersData = await ordersRes.json()
-    const ordersThisWeek = ordersData?.rows?.[0]?.week_count ?? 6177
+    const ordersThisWeek = ordersData?.rows?.[0]?.week_count ?? 4407
     const ordersToday = ordersData?.rows?.[0]?.today_count ?? 0
 
     let reviewCount = 6494
@@ -60,6 +63,6 @@ export async function GET() {
     return NextResponse.json({ ordersThisWeek, ordersToday, reviewCount, starRating, cached: false })
   } catch (err: any) {
     // Fallback to static values if DB unavailable
-    return NextResponse.json({ ordersThisWeek: 6177, ordersToday: 0, reviewCount: 6494, starRating: 4.74, cached: false, fallback: true })
+    return NextResponse.json({ ordersThisWeek: 4407, ordersToday: 0, reviewCount: 6494, starRating: 4.74, cached: false, fallback: true })
   }
 }
