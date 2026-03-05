@@ -276,3 +276,9 @@ body {
   0%, 100% { opacity: 0.5; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.015); }
 }
+
+/* Order Summary slide-up panel */
+@keyframes slideUpPanel {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}

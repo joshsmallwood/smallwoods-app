@@ -1421,42 +1421,159 @@ function AddToCartButton({ frames, bundleTotal, totalPrice }: {
 }) {
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
+  const [showOrderSummary, setShowOrderSummary] = useState(false)
+
+  const buildCartUrl = () => {
+    const cartItems = frames.map(f => {
+      const vid = getVariantId(f.size, f.color)
+      return vid ? `${vid}:1` : ''
+    }).filter(Boolean).join(',')
+    if (!cartItems) return `${SHOPIFY_STORE}/products/copy-of-frames`
+    return `${SHOPIFY_STORE}/cart/${cartItems}`
+  }
 
   const handleAddToCart = () => {
-    setAdding(true)
-    // Build cart URL with all frame variants
-    const items = frames.map(f => {
-      const variantId = getVariantId(f.size, f.color)
-      return variantId ? `id[]=${variantId}&quantity[]=1` : null
-    }).filter(Boolean)
-
+    const items = frames.map(f => getVariantId(f.size, f.color)).filter(Boolean)
     if (items.length === 0) {
-      // No real variant IDs resolved — open product page instead
       window.open(`${SHOPIFY_STORE}/products/copy-of-frames`, '_blank')
-      setAdding(false)
       return
     }
+    setShowOrderSummary(true)
+  }
 
+  const handleConfirmCheckout = () => {
+    setShowOrderSummary(false)
+    setAdding(true)
     setTimeout(() => {
       setAdded(true)
       setAdding(false)
-      // Navigate to Shopify cart
-      const cartUrl = `${SHOPIFY_STORE}/cart/${frames.map(f => {
-        const vid = getVariantId(f.size, f.color)
-        return vid ? `${vid}:1` : ''
-      }).filter(Boolean).join(',')}`
-      window.open(cartUrl, '_blank')
+      window.open(buildCartUrl(), '_blank')
       setTimeout(() => setAdded(false), 3000)
-    }, 800)
+    }, 600)
   }
 
   const hasPhotos = frames.some(f => f.photo)
+  const displayTotal = bundleTotal ?? totalPrice
+  const retailTotal = Math.round(displayTotal * 1.4)
+  const savings = retailTotal - displayTotal
   const label = frames.length > 1
-    ? `Add ${frames.length} Frames to Cart — $${bundleTotal ?? totalPrice}`
+    ? `Add ${frames.length} Frames to Cart — $${displayTotal}`
     : (hasPhotos ? `Add to Cart — $${totalPrice}` : '📷  Upload Your Photo to Continue')
 
+  const FRAME_COLORS_MAP: Record<string, string> = {
+    walnut: 'repeating-linear-gradient(170deg, #5a3010 0px, #7a4520 4px, #4a2508 8px, #6b3c18 12px, #5a3010 16px)',
+    oak: 'repeating-linear-gradient(170deg, #c8a060 0px, #deb878 4px, #b89048 8px, #caa868 12px, #c8a060 16px)',
+    black: 'repeating-linear-gradient(170deg, #1a1a1a 0px, #2a2a2a 4px, #111 8px, #222 12px, #1a1a1a 16px)',
+    white: 'repeating-linear-gradient(170deg, #f0ece4 0px, #e8e4dc 4px, #f5f1e9 8px, #ece8e0 12px, #f0ece4 16px)',
+  }
+
   return (
-    <button
+    <>
+      {/* ORDER SUMMARY OVERLAY */}
+      {showOrderSummary && (
+        <div
+          className="fixed inset-0 z-[9999] flex flex-col justify-end"
+          style={{ background: 'rgba(0,0,0,0.55)' }}
+          onClick={e => { if (e.target === e.currentTarget) setShowOrderSummary(false) }}
+        >
+          <div
+            className="w-full rounded-t-3xl overflow-hidden"
+            style={{
+              background: 'white',
+              animation: 'slideUpPanel 0.35s cubic-bezier(0.34, 1.2, 0.64, 1)',
+              maxHeight: '82vh',
+              overflowY: 'auto',
+            }}
+          >
+            {/* Handle bar */}
+            <div className="flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full" style={{ background: '#d0ccc6' }} />
+            </div>
+
+            {/* Header */}
+            <div className="px-5 pt-2 pb-4 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#1a1a1a' }}>Order Summary</h2>
+                <button
+                  onClick={() => setShowOrderSummary(false)}
+                  className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ background: '#f0ece4', color: '#666' }}
+                >✕</button>
+              </div>
+              <p style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>Review your custom frame before checkout</p>
+            </div>
+
+            {/* Frame items */}
+            <div className="px-5 py-4 flex flex-col gap-3">
+              {frames.map((f, i) => (
+                <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#faf9f7', border: '1px solid #ede9e3' }}>
+                  {/* Wood swatch */}
+                  <div
+                    className="w-12 h-12 rounded-lg flex-shrink-0"
+                    style={{ backgroundImage: FRAME_COLORS_MAP[f.color] || FRAME_COLORS_MAP.walnut, border: '2px solid rgba(0,0,0,0.12)' }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a1a' }}>
+                      Custom Wood Framed Sign
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
+                      {f.size.label} · {f.color.charAt(0).toUpperCase() + f.color.slice(1)}
+                      {f.photo ? ' · Photo uploaded ✓' : ' · No photo'}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#1B5A4A' }}>${f.size.price}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Price breakdown */}
+            <div className="px-5 py-3 border-t border-gray-100">
+              <div className="flex justify-between items-center mb-1">
+                <span style={{ fontSize: '13px', color: '#888' }}>Subtotal</span>
+                <span style={{ fontSize: '13px', color: '#888', textDecoration: 'line-through' }}>${retailTotal}</span>
+              </div>
+              <div className="flex justify-between items-center mb-1">
+                <span style={{ fontSize: '13px', color: '#c0392b', fontWeight: 600 }}>🎉 Bundle Savings</span>
+                <span style={{ fontSize: '13px', color: '#c0392b', fontWeight: 700 }}>−${savings}</span>
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t border-gray-100 mt-2">
+                <span style={{ fontSize: '16px', fontWeight: 800, color: '#1a1a1a' }}>Total Today</span>
+                <span style={{ fontSize: '20px', fontWeight: 900, color: '#1B5A4A' }}>${displayTotal}</span>
+              </div>
+            </div>
+
+            {/* Trust row */}
+            <div className="px-5 py-3 border-t border-gray-100">
+              <div className="flex justify-around">
+                {['🔒 Secure', '🔄 Free Returns', '🇺🇸 Made in USA', '🚚 Ships Fast'].map(t => (
+                  <span key={t} style={{ fontSize: '10px', color: '#666', fontWeight: 600, textAlign: 'center' }}>{t}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Confirm CTA */}
+            <div className="px-5 pb-8 pt-2">
+              <button
+                onClick={handleConfirmCheckout}
+                className="w-full rounded-xl py-4 font-bold flex items-center justify-center gap-2"
+                style={{ background: 'linear-gradient(135deg, #1B5A4A 0%, #2d7a65 100%)', color: 'white', fontSize: '16px', boxShadow: '0 4px 18px rgba(27,90,74,0.4)' }}
+              >
+                <span>🛒</span>
+                <span>Confirm &amp; Go to Checkout</span>
+              </button>
+              <button
+                onClick={() => setShowOrderSummary(false)}
+                className="w-full mt-2 py-2 text-center"
+                style={{ fontSize: '13px', color: '#888', fontWeight: 600 }}
+              >
+                ← Back to customizing
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <button
       onClick={hasPhotos ? handleAddToCart : () => { document.querySelector<HTMLElement>('[data-frame-upload]')?.click() }}
       className="w-full font-bold rounded-xl transition-all active:scale-[0.98] relative overflow-hidden cursor-pointer"
       style={{
@@ -1501,6 +1618,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice }: {
         </span>
       )}
     </button>
+    </>
   )
 }
 
