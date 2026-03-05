@@ -373,34 +373,32 @@ export default function FrameConfigurator() {
       </div>
 
       {/* Pricing Row */}
-      <div className="flex items-center justify-center gap-4 py-3 bg-white mx-4 rounded-xl shadow-sm mb-3">
-        <div className="text-center">
-          <p className="text-xs text-gray-400 mb-0.5">Full Price</p>
-          <p className="text-lg font-bold text-[#C0392B] line-through decoration-2">${fullTotal}</p>
+      <div className="mx-4 mb-3 rounded-xl overflow-hidden shadow-sm">
+        {/* Bundle Price Hero */}
+        <div className="bg-[#1B5A4A] px-4 py-3 flex items-center justify-between">
+          <div>
+            <p className="text-xs font-semibold text-[#7EC8A4] uppercase tracking-widest mb-0.5">Bundle Price</p>
+            <p className="text-4xl font-black text-white leading-none">
+              ${frames.length > 1 ? bundleTotal : Math.round(activeFrame.size.price * (1 - BUNDLE_DISCOUNT))}
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="inline-block bg-[#F5C842] text-[#1B5A4A] text-xs font-black px-2 py-1 rounded-full uppercase tracking-wide mb-1">Best Deal</span>
+            <p className="text-[#7EC8A4] text-sm font-semibold">Save ${fullTotal - (frames.length > 1 ? bundleTotal : Math.round(activeFrame.size.price * (1 - BUNDLE_DISCOUNT)))}</p>
+          </div>
         </div>
-        <div className="w-px h-10 bg-gray-200"/>
-        <div className="text-center">
-          <p className="text-xs text-gray-400 mb-0.5">Sale Price</p>
-          <p className="text-2xl font-black text-gray-900">${totalPrice}</p>
+        {/* Full & Sale prices as context */}
+        <div className="bg-white flex items-center justify-center gap-6 px-4 py-2">
+          <div className="text-center">
+            <p className="text-[10px] text-gray-400 uppercase tracking-wide">Full Price</p>
+            <p className="text-sm font-semibold text-gray-400 line-through">${fullTotal}</p>
+          </div>
+          <div className="w-px h-6 bg-gray-200"/>
+          <div className="text-center">
+            <p className="text-[10px] text-gray-400 uppercase tracking-wide">Sale Price</p>
+            <p className="text-sm font-semibold text-gray-600">${totalPrice}</p>
+          </div>
         </div>
-        {frames.length > 1 && (
-          <>
-            <div className="w-px h-10 bg-gray-200"/>
-            <div className="text-center">
-              <p className="text-xs text-gray-400 mb-0.5">Bundle (–20%)</p>
-              <p className="text-2xl font-black text-[#1B5A4A]">${bundleTotal}</p>
-            </div>
-          </>
-        )}
-        {frames.length === 1 && (
-          <>
-            <div className="w-px h-10 bg-gray-200"/>
-            <div className="text-center">
-              <p className="text-xs text-gray-400 mb-0.5">Bundle Price</p>
-              <p className="text-2xl font-black text-[#1B5A4A]">${Math.round(activeFrame.size.price * (1 - BUNDLE_DISCOUNT))}</p>
-            </div>
-          </>
-        )}
       </div>
 
       {/* Toolbar */}
