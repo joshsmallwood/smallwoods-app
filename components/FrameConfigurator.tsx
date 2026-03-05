@@ -817,6 +817,7 @@ export default function FrameConfigurator() {
   const [showInfo, setShowInfo] = useState(false)
   const [showPromo, setShowPromo] = useState(false)
   const [giftMessage, setGiftMessage] = useState('')
+  const [weeklyOrders, setWeeklyOrders] = useState<number | null>(null)
   const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>(savedDesign?.wall ?? 'classic')
   const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
   const [ctaVisible, setCtaVisible] = useState(true)
@@ -826,6 +827,14 @@ export default function FrameConfigurator() {
   const [quizDist, setQuizDist] = useState<string | null>(null)
   const counterRef = useRef(savedDesign ? savedDesign.frames.length + 1 : 2)
   const ctaRef = useRef<HTMLDivElement>(null)
+
+  // Fetch weekly order count from Neon DB via API route (30min cache)
+  useEffect(() => {
+    fetch('/api/stats')
+      .then(r => r.json())
+      .then(d => { if (d.ordersThisWeek > 0) setWeeklyOrders(d.ordersThisWeek) })
+      .catch(() => {}) // silent fail
+  }, [])
 
   // Sync design state to URL so shared links restore the configuration
   useEffect(() => {
@@ -1550,14 +1559,22 @@ export default function FrameConfigurator() {
         </div>
       </div>
 
-      {/* Social Proof Strip — data from JudgeMe API, verified Mar 5 2026 */}
+      {/* Social Proof Strip — data from JudgeMe API + Neon DB, verified Mar 5 2026 */}
       <div className="px-4 pb-2">
-        <div className="flex items-center justify-center gap-3 bg-amber-50 border border-amber-200 rounded-xl py-2.5 px-4">
-          <span className="text-amber-400 text-base leading-none tracking-tight">★★★★★</span>
-          <div className="flex flex-col items-start">
-            <span className="text-[12px] font-black text-gray-800">4.74 out of 5 stars</span>
-            <span className="text-[10px] text-gray-500">From 6,494 verified reviews on smallwoodhome.com</span>
+        <div className="flex items-center justify-between gap-2 bg-amber-50 border border-amber-200 rounded-xl py-2.5 px-4">
+          <div className="flex items-center gap-2">
+            <span className="text-amber-400 text-base leading-none tracking-tight">★★★★★</span>
+            <div className="flex flex-col items-start">
+              <span className="text-[12px] font-black text-gray-800">4.74 out of 5 stars</span>
+              <span className="text-[10px] text-gray-500">6,494 verified reviews on smallwoodhome.com</span>
+            </div>
           </div>
+          {weeklyOrders !== null && (
+            <div className="flex flex-col items-end">
+              <span className="text-[12px] font-black text-[#1B5A4A]">{weeklyOrders.toLocaleString()}</span>
+              <span className="text-[9px] text-gray-400">frames this week</span>
+            </div>
+          )}
         </div>
       </div>
 
