@@ -54,7 +54,7 @@ export default function PromoModal({ onClose }: { onClose: () => void }) {
             </div>
             <div className="flex items-center gap-2.5 text-sm text-gray-600">
               <span className="w-5 h-5 rounded-full bg-[#1B5A4A] text-white text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>
-              <span>Tap "Add to Cart" — your 35% discount is already applied</span>
+              <span>Tap &ldquo;Add to Cart&rdquo; — your 35% discount is already applied</span>
             </div>
             <div className="flex items-center gap-2.5 text-sm text-gray-600">
               <span className="w-5 h-5 rounded-full bg-[#1B5A4A] text-white text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>

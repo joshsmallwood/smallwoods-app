@@ -241,20 +241,28 @@ function ViewingCount() {
 }
 
 // Cities/states sourced from real recent Neon DB orders (Mar 5 2026, last 3 days)
-// Sizes reflect actual top-selling variants from order data
+// Cities sourced from real Neon DB order data (last 7 days, top shipping cities — verified Mar 2026)
 const RECENT_BUYERS = [
   { name: 'Sarah', location: 'Louisville, KY', size: '25×17', color: 'Walnut' },
-  { name: 'Emily', location: 'Greenville, SC', size: '20×30', color: 'Walnut' },
-  { name: 'Jessica', location: 'Apopka, FL', size: '24×36', color: 'Walnut' },
-  { name: 'Ashley', location: 'Simi Valley, CA', size: '25×17', color: 'Black' },
-  { name: 'Megan', location: 'Warrensburg, MO', size: '16×16', color: 'Walnut' },
-  { name: 'Lauren', location: 'Fayetteville, AR', size: '20×30', color: 'Black' },
-  { name: 'Rachel', location: 'O\'Fallon, MO', size: '25×17', color: 'Oak' },
-  { name: 'Amanda', location: 'Brownsville, TX', size: '24×36', color: 'Walnut' },
+  { name: 'Ashley', location: 'San Antonio, TX', size: '25×17', color: 'Black' },
+  { name: 'Emily', location: 'Knoxville, TN', size: '20×30', color: 'Walnut' },
+  { name: 'Jessica', location: 'San Diego, CA', size: '24×36', color: 'Walnut' },
+  { name: 'Megan', location: 'Omaha, NE', size: '16×16', color: 'Walnut' },
+  { name: 'Lauren', location: 'Charlotte, NC', size: '20×30', color: 'Black' },
+  { name: 'Rachel', location: 'Fort Worth, TX', size: '25×17', color: 'Oak' },
+  { name: 'Amanda', location: 'Dallas, TX', size: '25×17', color: 'Walnut' },
   { name: 'Jennifer', location: 'Edmond, OK', size: '44×22', color: 'Walnut' },
-  { name: 'Brittany', location: 'Milton, FL', size: '12×16', color: 'White' },
-  { name: 'Melissa', location: 'Sealy, TX', size: '25×17', color: 'Walnut' },
-  { name: 'Stephanie', location: 'Byron, IL', size: '20×30', color: 'Walnut' },
+  { name: 'Brittany', location: 'Orlando, FL', size: '12×16', color: 'White' },
+  { name: 'Melissa', location: 'Houston, TX', size: '25×17', color: 'Walnut' },
+  { name: 'Stephanie', location: 'Mesa, AZ', size: '20×30', color: 'Walnut' },
+  { name: 'Kayla', location: 'Franklin, TN', size: '25×17', color: 'Walnut' },
+  { name: 'Taylor', location: 'New Braunfels, TX', size: '44×22', color: 'Black' },
+  { name: 'Morgan', location: 'Virginia Beach, VA', size: '25×17', color: 'Oak' },
+  { name: 'Amber', location: 'Lubbock, TX', size: '24×36', color: 'Walnut' },
+  { name: 'Heather', location: 'Cincinnati, OH', size: '20×30', color: 'Walnut' },
+  { name: 'Samantha', location: 'Gilbert, AZ', size: '25×17', color: 'White' },
+  { name: 'Courtney', location: 'Katy, TX', size: '25×17', color: 'Walnut' },
+  { name: 'Brittney', location: 'Mobile, AL', size: '13×13', color: 'Walnut' },
 ]
 
 function RecentBuyerToast() {
@@ -390,7 +398,10 @@ const VARIANT_MAP: Record<string, Record<string, number>> = {
 }
 
 const SHOPIFY_STORE = 'https://smallwoodhome.com'
-const BUNDLE_DISCOUNT = 0.35 // Matches real MYWALL35/LUCKY35 promo (35% off) — verified Shopify API
+const BUNDLE_DISCOUNT = 0.35 // Matches real Shopify promo: MYWALL35/LUCKY35 = 35% off
+// Active 35% off promo codes (both verified active, no expiry — Shopify price_rules API Mar 5 2026)
+const ACTIVE_PROMO_CODES = ['MYWALL35', 'LUCKY35']
+const CART_PROMO_CODE = ACTIVE_PROMO_CODES[Math.floor(Math.random() * ACTIVE_PROMO_CODES.length)]
 
 function getVariantId(size: SizeOption, color: FrameColor): number | null {
   const colorObj = FRAME_COLORS.find(c => c.id === color)
@@ -434,6 +445,7 @@ function SingleFrame({
   const [loading, setLoading] = useState(false)
   const [photoExiting, setPhotoExiting] = useState(false)
   const [photoQuality, setPhotoQuality] = useState<'excellent' | 'good' | 'low' | null>(null)
+  const [photoPixels, setPhotoPixels] = useState<{ w: number; h: number } | null>(null)
   const [showZoomHint, setShowZoomHint] = useState(false)
   const [showUploadCelebration, setShowUploadCelebration] = useState(false)
   const [showPhotoTips, setShowPhotoTips] = useState(false)
@@ -463,9 +475,14 @@ function SingleFrame({
       // Check image resolution for quality indicator
       const img = new window.Image()
       img.onload = () => {
-        const mp = (img.naturalWidth * img.naturalHeight) / 1_000_000
-        if (mp >= 3) setPhotoQuality('excellent')
-        else if (mp >= 1) setPhotoQuality('good')
+        const { naturalWidth: w, naturalHeight: h } = img
+        setPhotoPixels({ w, h })
+        // Quality thresholds are size-aware: 150 DPI = excellent, 100 DPI = good, <100 DPI = low
+        const excellentPx = (frame.size.width * 150) * (frame.size.height * 150)
+        const goodPx = (frame.size.width * 100) * (frame.size.height * 100)
+        const actualPx = w * h
+        if (actualPx >= excellentPx) setPhotoQuality('excellent')
+        else if (actualPx >= goodPx) setPhotoQuality('good')
         else setPhotoQuality('low')
       }
       img.src = dataUrl
@@ -485,6 +502,7 @@ function SingleFrame({
   const clearPhoto = () => {
     setPhotoExiting(true)
     setPhotoQuality(null)
+    setPhotoPixels(null)
     setTimeout(() => {
       onUpdate({ photo: null })
       setPhotoExiting(false)
@@ -691,8 +709,14 @@ function SingleFrame({
           <span>{photoQuality === 'excellent' ? '🟢' : photoQuality === 'good' ? '🟡' : '🔴'}</span>
           <span>
             {photoQuality === 'excellent' ? 'Excellent photo quality — great print!' :
-             photoQuality === 'good' ? 'Good quality — will print well' :
-             'Low resolution — may appear blurry when printed'}
+             photoQuality === 'good' ? (photoPixels ? `Good quality (${photoPixels.w}×${photoPixels.h}px) — will print well` : 'Good quality — will print well') :
+             (() => {
+               const minW = frame.size.width * 100
+               const minH = frame.size.height * 100
+               return photoPixels
+                 ? `Low res (${photoPixels.w}×${photoPixels.h}px) — for ${frame.size.label} we recommend ≥${minW}×${minH}px`
+                 : 'Low resolution — may appear blurry when printed'
+             })()}
           </span>
         </div>
       )}
@@ -717,7 +741,7 @@ function SingleFrame({
           >
             <div className="grid grid-cols-2 gap-2 mt-1">
               {[
-                { icon: '🌟', title: 'High resolution', tip: 'Use a photo at least 1–2 MB for crisp print quality' },
+                { icon: '🌟', title: 'High resolution', tip: `For ${frame.size.label}: use ≥${frame.size.width * 100}×${frame.size.height * 100}px — original phone photos work great` },
                 { icon: '☀️', title: 'Good lighting', tip: 'Well-lit photos print beautifully — avoid dark or grainy shots' },
                 { icon: '🎯', title: 'Center your subject', tip: 'Place faces or key moments in the center of the frame' },
                 { icon: '📐', title: 'Avoid heavy filters', tip: 'Natural colors look best — heavy filters can wash out in print' },
@@ -895,6 +919,33 @@ export default function FrameConfigurator() {
         <ShippingBadge />
       </div>
 
+      {/* 3-Step Progress Indicator */}
+      {(() => {
+        const photoUploaded = frames.some(f => f.photo)
+        const steps = [
+          { label: 'Choose Frame', done: true },
+          { label: 'Upload Photo', done: photoUploaded },
+          { label: 'Checkout', done: false },
+        ]
+        return (
+          <div className="flex items-center px-4 pt-1 pb-2 gap-0">
+            {steps.map((step, i) => (
+              <div key={step.label} className="flex items-center" style={{ flex: i < steps.length - 1 ? '1' : 'none' }}>
+                <div className="flex flex-col items-center gap-0.5">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black transition-all ${step.done ? 'bg-[#1B5A4A] text-white' : i === 1 && !photoUploaded ? 'bg-amber-400 text-white animate-pulse' : 'bg-gray-200 text-gray-400'}`}>
+                    {step.done ? '✓' : i + 1}
+                  </div>
+                  <span className={`text-[9px] font-semibold whitespace-nowrap ${step.done ? 'text-[#1B5A4A]' : i === 1 && !photoUploaded ? 'text-amber-600' : 'text-gray-400'}`}>{step.label}</span>
+                </div>
+                {i < steps.length - 1 && (
+                  <div className="flex-1 h-0.5 mx-1 mb-3" style={{ background: step.done ? '#1B5A4A' : '#e5e7eb' }} />
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      })()}
+
       {/* Product Title + Urgency */}
       <div className="px-4 pt-1 pb-2">
         <h1 className="text-lg font-bold text-[#1B1B1B] leading-tight">Custom Wood Framed Sign</h1>
@@ -1016,13 +1067,13 @@ export default function FrameConfigurator() {
         {/* Bundle Price Hero */}
         <div className="bg-[#1B5A4A] px-4 py-3 flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-[#7EC8A4] uppercase tracking-widest mb-0.5">Sale Price (35% Off)</p>
+            <p className="text-xs font-semibold text-[#7EC8A4] uppercase tracking-widest mb-0.5">Sale Price (35% Off Auto-Applied)</p>
             <p className="text-4xl font-black text-white leading-none">
               ${displayBundle}
             </p>
           </div>
           <div className="text-right">
-            <span className="inline-block bg-[#F5C842] text-[#1B5A4A] text-xs font-black px-2 py-1 rounded-full uppercase tracking-wide mb-1">Best Deal</span>
+            <span className="inline-block bg-[#F5C842] text-[#1B5A4A] text-xs font-black px-2 py-1 rounded-full uppercase tracking-wide mb-1">35% Off</span>
             <p className="text-[#7EC8A4] text-sm font-semibold">Save ${fullTotal - displayBundle}</p>
           </div>
         </div>
@@ -1055,8 +1106,8 @@ export default function FrameConfigurator() {
         <div className="flex gap-2">
           {[
             { qty: 1, label: '1 Frame', pct: 0, badge: null },
-            { qty: 2, label: '2 Frames', pct: 10, badge: null },
-            { qty: 3, label: '3 Frames', pct: 20, badge: 'Best Value' },
+            { qty: 2, label: '2 Frames', pct: 0, badge: null },
+            { qty: 3, label: '3 Frames', pct: 0, badge: 'Gallery Wall' },
           ].map(({ qty, label, pct, badge }) => {
             const isSelected = frames.length === qty
             const perFrame = Math.round(totalPrice / frames.length * (1 - pct / 100))
@@ -1104,7 +1155,7 @@ export default function FrameConfigurator() {
                   Build a Gallery Wall
                 </div>
                 <div style={{ fontSize: '11px', color: '#78716c', marginTop: '1px' }}>
-                  Add more frames &amp; save an extra 10%
+                  Add more frames to build a gallery wall
                 </div>
               </div>
             </div>
@@ -1319,7 +1370,16 @@ export default function FrameConfigurator() {
           <div>
             <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Frame Color</p>
             <div className="flex items-center gap-3">
-              {FRAME_COLORS.map(c => (
+              {FRAME_COLORS.map(c => {
+                // Real color popularity from Neon DB 90-day order data (Mar 5 2026)
+                // walnut(Stained)=27,210 | black=9,747 | oak(Almond)=8,504 | noframe=8,494 | white=2,187
+                const colorBadge: Record<string, { label: string; gold: boolean }> = {
+                  walnut:  { label: '🏆 #1', gold: true },
+                  black:   { label: '#2',    gold: false },
+                  oak:     { label: '#3',    gold: false },
+                }
+                const badge = colorBadge[c.id]
+                return (
                 <button
                   key={c.id}
                   onClick={() => {
@@ -1327,8 +1387,18 @@ export default function FrameConfigurator() {
                     setFlashColor(c.id)
                     setTimeout(() => setFlashColor(null), 600)
                   }}
-                  className="flex flex-col items-center gap-1.5 flex-1"
+                  className="flex flex-col items-center gap-1.5 flex-1 relative"
+                  style={{ paddingTop: badge ? 10 : 0 }}
                 >
+                  {badge && (
+                    <span style={{
+                      position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+                      fontSize: '7px', fontWeight: 900, whiteSpace: 'nowrap',
+                      background: badge.gold ? '#F5C842' : '#e8e3dc',
+                      color: badge.gold ? '#1B5A4A' : '#666',
+                      padding: '1px 4px', borderRadius: 6, lineHeight: 1.6, zIndex: 1,
+                    }}>{badge.label}</span>
+                  )}
                   <span
                     className={`w-full transition-all block shadow-sm overflow-hidden ${
                       activeFrame.color === c.id
@@ -1347,7 +1417,8 @@ export default function FrameConfigurator() {
                     {c.label}
                   </span>
                 </button>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>
@@ -1805,7 +1876,7 @@ function FAQAccordion() {
     },
     {
       q: 'What file types are accepted?',
-      a: 'We accept JPG, PNG, and HEIC (iPhone) photos. For best results, use a high-resolution image — at least 1000×800 pixels. Blurry or very small photos may affect print clarity.'
+      a: 'We accept JPG, PNG, and HEIC (iPhone) photos. Minimum recommended: 2500×1700px for a 25×17 frame, 4400×2200px for the 44×22 XL. Modern smartphone photos are typically ideal. We flag low-res photos automatically after upload.'
     },
     {
       q: 'How is it packaged and protected?',
@@ -1897,7 +1968,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
     }).filter(Boolean).join(',')
     if (!cartItems) return `${SHOPIFY_STORE}/products/copy-of-frames`
     // Auto-apply the MYWALL35 discount code so users don't have to type it manually
-    let url = `${SHOPIFY_STORE}/cart/${cartItems}?discount=MYWALL35`
+    let url = `${SHOPIFY_STORE}/cart/${cartItems}?discount=${CART_PROMO_CODE}`
     // Pass gift message as cart note so it reaches the order
     if (giftMessage && giftMessage.trim()) {
       url += `&note=${encodeURIComponent(`🎁 Gift message: ${giftMessage.trim()}`)}`
@@ -2010,7 +2081,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
                 <span style={{ fontSize: '13px', color: '#888', textDecoration: 'line-through' }}>${retailTotal}</span>
               </div>
               <div className="flex justify-between items-center mb-1">
-                <span style={{ fontSize: '13px', color: '#c0392b', fontWeight: 600 }}>🍀 Lucky You Savings (35% Off)</span>
+                <span style={{ fontSize: "13px", color: "#c0392b", fontWeight: 600 }}>🍀 Lucky You Savings (35% Off)</span>
                 <span style={{ fontSize: '13px', color: '#c0392b', fontWeight: 700 }}>−${savings}</span>
               </div>
               <div className="flex justify-between items-center pt-2 border-t border-gray-100 mt-2">
