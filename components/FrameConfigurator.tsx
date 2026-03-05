@@ -725,6 +725,31 @@ export default function FrameConfigurator() {
         </div>
       </div>
 
+      {/* Trust Badges */}
+      <div className="px-4 pb-3">
+        <div className="flex items-center justify-around gap-1 py-2.5 px-2 rounded-xl bg-gray-50 border border-gray-100">
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-lg leading-none">🔒</span>
+            <span className="text-[9px] font-semibold text-gray-500 text-center leading-tight">Secure<br/>Checkout</span>
+          </div>
+          <div className="w-px h-8 bg-gray-200"/>
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-lg leading-none">🔄</span>
+            <span className="text-[9px] font-semibold text-gray-500 text-center leading-tight">Free<br/>Returns</span>
+          </div>
+          <div className="w-px h-8 bg-gray-200"/>
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-lg leading-none">🇺🇸</span>
+            <span className="text-[9px] font-semibold text-gray-500 text-center leading-tight">Made<br/>in USA</span>
+          </div>
+          <div className="w-px h-8 bg-gray-200"/>
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-lg leading-none">🚚</span>
+            <span className="text-[9px] font-semibold text-gray-500 text-center leading-tight">Ships in<br/>1–3 Days</span>
+          </div>
+        </div>
+      </div>
+
       {/* CTA Button */}
       <div className="px-4 pb-6" ref={ctaRef}>
         <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} />
