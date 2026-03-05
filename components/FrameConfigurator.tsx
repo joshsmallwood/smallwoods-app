@@ -3,6 +3,25 @@
 import { useState, useRef, useEffect } from 'react'
 import InfoModal from './InfoModal'
 
+function CartScarcityBadge() {
+  const [count, setCount] = useState(() => Math.floor(Math.random() * 8) + 7) // 7-14
+  useEffect(() => {
+    const t = setInterval(() => {
+      setCount(c => {
+        const delta = Math.random() > 0.5 ? 1 : -1
+        return Math.max(5, Math.min(18, c + delta))
+      })
+    }, 6000)
+    return () => clearInterval(t)
+  }, [])
+  return (
+    <div className="bg-[#0a2e21] px-4 py-1.5 flex items-center gap-2">
+      <span className="text-base leading-none">🔥</span>
+      <span className="text-[11px] text-orange-300 font-semibold">{count} people have this in their cart right now</span>
+    </div>
+  )
+}
+
 function OfferCountdown() {
   const [secs, setSecs] = useState(() => 12 * 60 + Math.floor(Math.random() * 600))
   useEffect(() => {
@@ -620,6 +639,8 @@ export default function FrameConfigurator() {
           </svg>
           <span className="text-[11px] text-[#F5C842] font-bold uppercase tracking-wide">Limited Time — Offer expires in <OfferCountdown /></span>
         </div>
+        {/* Cart scarcity */}
+        <CartScarcityBadge />
         {/* Full & Sale prices as context */}
         <div className="bg-white flex items-center justify-center gap-6 px-4 py-2">
           <div className="text-center">
