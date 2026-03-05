@@ -834,6 +834,7 @@ export default function FrameConfigurator() {
   const [showPromo, setShowPromo] = useState(false)
   const [giftMessage, setGiftMessage] = useState('')
   const [weeklyOrders, setWeeklyOrders] = useState<number | null>(null)
+  const [todayOrders, setTodayOrders] = useState<number | null>(null)
   const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>(savedDesign?.wall ?? 'classic')
   const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
   const [ctaVisible, setCtaVisible] = useState(true)
@@ -848,7 +849,10 @@ export default function FrameConfigurator() {
   useEffect(() => {
     fetch('/api/stats')
       .then(r => r.json())
-      .then(d => { if (d.ordersThisWeek > 0) setWeeklyOrders(d.ordersThisWeek) })
+      .then(d => {
+        if (d.ordersThisWeek > 0) setWeeklyOrders(d.ordersThisWeek)
+        if (d.ordersToday > 0) setTodayOrders(d.ordersToday)
+      })
       .catch(() => {}) // silent fail
   }, [])
 
@@ -1622,12 +1626,17 @@ export default function FrameConfigurator() {
               <span className="text-[10px] text-gray-500">6,494 verified reviews on smallwoodhome.com</span>
             </div>
           </div>
-          {weeklyOrders !== null && (
+          {(todayOrders !== null && todayOrders > 0) ? (
+            <div className="flex flex-col items-end">
+              <span className="text-[12px] font-black text-[#1B5A4A]">{todayOrders.toLocaleString()}</span>
+              <span className="text-[9px] text-gray-400">frames ordered today</span>
+            </div>
+          ) : weeklyOrders !== null ? (
             <div className="flex flex-col items-end">
               <span className="text-[12px] font-black text-[#1B5A4A]">{weeklyOrders.toLocaleString()}</span>
               <span className="text-[9px] text-gray-400">frames this week</span>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 

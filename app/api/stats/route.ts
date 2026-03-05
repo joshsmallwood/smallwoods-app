@@ -4,13 +4,13 @@ import { NextResponse } from 'next/server'
 const NEON_URL = 'https://ep-divine-bird-ai2sr3dd-pooler.c-4.us-east-1.aws.neon.tech/sql'
 const DB_CREDS = Buffer.from('neondb_owner:npg_50fAjkvCiztp').toString('base64')
 
-let cache: { ordersThisWeek: number; ts: number } | null = null
+let cache: { ordersThisWeek: number; ordersToday: number; ts: number } | null = null
 const CACHE_TTL = 30 * 60 * 1000 // 30 min
 
 export async function GET() {
   try {
     if (cache && Date.now() - cache.ts < CACHE_TTL) {
-      return NextResponse.json({ ordersThisWeek: cache.ordersThisWeek, cached: true })
+      return NextResponse.json({ ordersThisWeek: cache.ordersThisWeek, ordersToday: cache.ordersToday, cached: true })
     }
 
     const res = await fetch(NEON_URL, {
@@ -21,19 +21,23 @@ export async function GET() {
         'Neon-Connection-String': `postgresql://neondb_owner:npg_50fAjkvCiztp@ep-divine-bird-ai2sr3dd-pooler.c-4.us-east-1.aws.neon.tech/neondb`,
       },
       body: JSON.stringify({
-        query: "SELECT COUNT(*)::int AS count FROM shopify_orders WHERE created_at >= NOW() - INTERVAL '7 days'",
+        query: `SELECT
+          COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days')::int AS week_count,
+          COUNT(*) FILTER (WHERE created_at >= CURRENT_DATE)::int AS today_count
+        FROM shopify_orders`,
         params: []
       }),
     })
 
     if (!res.ok) throw new Error(`DB error: ${res.status}`)
     const data = await res.json()
-    const ordersThisWeek = data?.rows?.[0]?.count ?? 6177
+    const ordersThisWeek = data?.rows?.[0]?.week_count ?? 6177
+    const ordersToday = data?.rows?.[0]?.today_count ?? 0
 
-    cache = { ordersThisWeek, ts: Date.now() }
-    return NextResponse.json({ ordersThisWeek, cached: false })
+    cache = { ordersThisWeek, ordersToday, ts: Date.now() }
+    return NextResponse.json({ ordersThisWeek, ordersToday, cached: false })
   } catch (err: any) {
     // Fallback to static value if DB unavailable
-    return NextResponse.json({ ordersThisWeek: 6177, cached: false, fallback: true })
+    return NextResponse.json({ ordersThisWeek: 6177, ordersToday: 0, cached: false, fallback: true })
   }
 }
