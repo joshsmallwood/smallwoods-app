@@ -163,7 +163,7 @@ function CartScarcityBadge() {
 }
 
 // Real countdown to St. Patrick's Day Sale end — March 17, 2026 11:59 PM CT
-const SALE_END_CT = new Date('2026-03-17T23:59:59-06:00')
+const SALE_END_CT = new Date('2026-03-17T23:59:59-05:00')
 
 function OfferCountdown() {
   const [remaining, setRemaining] = useState(() => Math.max(0, SALE_END_CT.getTime() - Date.now()))
