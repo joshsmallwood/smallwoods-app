@@ -921,23 +921,32 @@ export default function FrameConfigurator() {
               </div>
             </div>
             <div className="grid grid-cols-4 gap-1.5">
-              {SIZES.map(size => (
-                <button
-                  key={size.id}
-                  onClick={() => updateFrame(activeId, { size })}
-                  className={`size-btn relative ${activeFrame.size.id === size.id ? 'active' : ''}`}
-                >
-                  {size.id === '16x16' && (
-                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-amber-400 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap z-10">
-                      POPULAR
+              {SIZES.map(size => {
+                const stockHints: Record<string, { label: string; color: string }> = {
+                  '16x16': { label: 'POPULAR', color: '#F59E0B' },
+                  '20x30': { label: '🔥 Hot', color: '#EF4444' },
+                  '16x20': { label: 'Low stock', color: '#EF4444' },
+                  '24x36': { label: 'Last few', color: '#EF4444' },
+                }
+                const hint = stockHints[size.id]
+                return (
+                  <button
+                    key={size.id}
+                    onClick={() => updateFrame(activeId, { size })}
+                    className={`size-btn relative ${activeFrame.size.id === size.id ? 'active' : ''}`}
+                  >
+                    {hint && (
+                      <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap z-10" style={{ background: hint.color }}>
+                        {hint.label}
+                      </span>
+                    )}
+                    <span className="size-label">{size.label}</span>
+                    <span className={`size-inches ${activeFrame.size.id === size.id ? 'text-white/80' : 'text-gray-400'}`}>
+                      ${size.price}
                     </span>
-                  )}
-                  <span className="size-label">{size.label}</span>
-                  <span className={`size-inches ${activeFrame.size.id === size.id ? 'text-white/80' : 'text-gray-400'}`}>
-                    ${size.price}
-                  </span>
-                </button>
-              ))}
+                  </button>
+                )
+              })}
             </div>
             {/* Size comparison visual */}
             <div className="mt-3 px-1 pb-1">
