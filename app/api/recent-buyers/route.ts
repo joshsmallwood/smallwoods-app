@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 
 const NEON_URL = 'https://ep-divine-bird-ai2sr3dd-pooler.c-4.us-east-1.aws.neon.tech/sql'
-const DB_CREDS = Buffer.from('neondb_owner:npg_50fAjkvCiztp').toString('base64')
 const NEON_CONN = 'postgresql://neondb_owner:npg_50fAjkvCiztp@ep-divine-bird-ai2sr3dd-pooler.c-4.us-east-1.aws.neon.tech/neondb'
 
 const NAMES = [
@@ -76,7 +75,6 @@ export async function GET() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${DB_CREDS}`,
         'Neon-Connection-String': NEON_CONN,
       },
       body: JSON.stringify({ query, params: [] }),
