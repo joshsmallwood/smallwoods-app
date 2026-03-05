@@ -66,6 +66,6 @@ export async function GET() {
     return NextResponse.json({ ordersThisWeek, ordersToday, reviewCount, starRating, cached: false })
   } catch (err: any) {
     // Fallback to static values if DB unavailable
-    return NextResponse.json({ ordersThisWeek: 4407, ordersToday: 0, reviewCount: 6494, starRating: 4.74, cached: false, fallback: true, error: String(err) })
+    return NextResponse.json({ ordersThisWeek: 4401, ordersToday: 0, reviewCount: 6494, starRating: 4.74, cached: false, fallback: true, error: String(err) })
   }
 }

@@ -1517,7 +1517,7 @@ export default function FrameConfigurator() {
                   <span className="bg-amber-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wide">🏆 #1 Best Seller</span>
                 </div>
                 <p className="text-white font-bold text-[12px] leading-tight">25×17 Walnut Frame</p>
-                <p className="text-white/70 text-[10px]">10,610 orders in 90 days · #1 combo</p>
+                <p className="text-white/70 text-[10px]">10,649 orders in 90 days · #1 combo</p>
               </div>
               <button
                 onClick={() => {
@@ -2052,6 +2052,7 @@ function DeliveryBanner() {
 
 function RoomSizePicker({ onSuggest, selectedSizeId }: { onSuggest: (sizeId: string) => void; selectedSizeId: string }) {
   const rooms = [
+    { label: '🎁 Gifting', sizeId: '25x17', hint: '25×17 · top gift size' },
     { label: '🛋️ Living Room', sizeId: '25x17', hint: '25×17 · #1 seller' },
     { label: '🖼 Gallery Wall', sizeId: '44x22', hint: '44×22 XL' },
     { label: '🛏️ Bedroom', sizeId: '20x30', hint: '20×30' },
@@ -2066,7 +2067,7 @@ function RoomSizePicker({ onSuggest, selectedSizeId }: { onSuggest: (sizeId: str
   }
   return (
     <div className="mb-3 px-0">
-      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Where will it hang?</p>
+      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Use case → size suggestion</p>
       <div className="flex gap-1.5 flex-wrap">
         {rooms.map(r => (
           <button
