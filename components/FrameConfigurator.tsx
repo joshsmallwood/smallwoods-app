@@ -549,6 +549,10 @@ function SingleFrame({
       >
         <div
           className="mat-inner overflow-hidden relative"
+          role={!frame.photo ? 'button' : undefined}
+          tabIndex={!frame.photo ? 0 : undefined}
+          aria-label={!frame.photo ? 'Upload your photo' : undefined}
+          onKeyDown={(e) => { if (!frame.photo && !loading && (e.key === 'Enter' || e.key === ' ')) fileRef.current?.click() }}
           style={{
             aspectRatio: `${aspectW} / ${aspectH}`,
             cursor: cropMode ? 'grab' : (frame.photo ? 'default' : 'pointer'),
