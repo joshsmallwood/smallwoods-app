@@ -168,9 +168,10 @@ const SALE_END_CT = new Date('2026-03-17T23:59:59-06:00')
 function OfferCountdown() {
   const [remaining, setRemaining] = useState(() => Math.max(0, SALE_END_CT.getTime() - Date.now()))
   useEffect(() => {
-    const t = setInterval(() => setRemaining(r => Math.max(0, SALE_END_CT.getTime() - Date.now())), 1000)
+    const t = setInterval(() => setRemaining(Math.max(0, SALE_END_CT.getTime() - Date.now())), 1000)
     return () => clearInterval(t)
   }, [])
+  if (remaining <= 0) return <>today only</>
   const totalSecs = Math.floor(remaining / 1000)
   const days = Math.floor(totalSecs / 86400)
   const hrs = Math.floor((totalSecs % 86400) / 3600)
@@ -178,6 +179,11 @@ function OfferCountdown() {
   const secs = totalSecs % 60
   if (days > 0) return <>{days}d {hrs.toString().padStart(2,'0')}h {mins.toString().padStart(2,'0')}m</>
   return <>{hrs.toString().padStart(2,'0')}:{mins.toString().padStart(2,'0')}:{secs.toString().padStart(2,'0')}</>
+}
+
+// Returns true if sale is currently active
+function isSaleActive(): boolean {
+  return Date.now() < SALE_END_CT.getTime()
 }
 
 function ShippingBadge() {
@@ -862,16 +868,18 @@ export default function FrameConfigurator() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f5f0eb] max-w-md mx-auto md:max-w-2xl">
-      {/* Top Banner */}
-      <div className="bg-[#1B5A4A] text-white text-center py-2 px-4 flex items-center justify-center gap-2 text-sm font-medium">
-        <span>🍀 35% Off Auto-Applied — Lucky You Sale!</span>
-        <button
-          onClick={() => setShowPromo(true)}
-          className="bg-white text-[#1B5A4A] text-xs font-bold px-3 py-1 rounded-full ml-2 hover:bg-gray-100 transition-colors active:scale-95"
-        >
-          DETAILS
-        </button>
-      </div>
+      {/* Top Banner — shown only during active sale */}
+      {isSaleActive() && (
+        <div className="bg-[#1B5A4A] text-white text-center py-2 px-4 flex items-center justify-center gap-2 text-sm font-medium">
+          <span>🍀 35% Off Auto-Applied — Lucky You Sale!</span>
+          <button
+            onClick={() => setShowPromo(true)}
+            className="bg-white text-[#1B5A4A] text-xs font-bold px-3 py-1 rounded-full ml-2 hover:bg-gray-100 transition-colors active:scale-95"
+          >
+            DETAILS
+          </button>
+        </div>
+      )}
 
       {/* Header */}
       <header className="bg-white shadow-sm px-4 py-3 flex items-center justify-between">
