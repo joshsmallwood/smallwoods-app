@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import InfoModal from './InfoModal'
+import PromoModal from './PromoModal'
 
 const WALL_STYLES: Record<string, React.CSSProperties> = {
   classic: { backgroundColor: '#ede8e0', backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 24px,rgba(0,0,0,0.018) 24px,rgba(0,0,0,0.018) 25px),repeating-linear-gradient(90deg,transparent,transparent 24px,rgba(0,0,0,0.012) 24px,rgba(0,0,0,0.012) 25px)' },
@@ -678,6 +679,7 @@ export default function FrameConfigurator() {
   const [showFrameBar, setShowFrameBar] = useState(true)
   const [flashColor, setFlashColor] = useState<string | null>(null)
   const [showInfo, setShowInfo] = useState(false)
+  const [showPromo, setShowPromo] = useState(false)
   const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>(savedDesign?.wall ?? 'classic')
   const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
   const [ctaVisible, setCtaVisible] = useState(true)
@@ -742,8 +744,11 @@ export default function FrameConfigurator() {
     <div className="flex flex-col min-h-screen bg-[#f5f0eb] max-w-md mx-auto md:max-w-2xl">
       {/* Top Banner */}
       <div className="bg-[#1B5A4A] text-white text-center py-2 px-4 flex items-center justify-center gap-2 text-sm font-medium">
-        <span>Unlock an EXTRA 30% Off!</span>
-        <button className="bg-white text-[#1B5A4A] text-xs font-bold px-3 py-1 rounded-full ml-2 hover:bg-gray-100 transition-colors">
+        <span>Unlock an EXTRA 35% Off!</span>
+        <button
+          onClick={() => setShowPromo(true)}
+          className="bg-white text-[#1B5A4A] text-xs font-bold px-3 py-1 rounded-full ml-2 hover:bg-gray-100 transition-colors active:scale-95"
+        >
           GET CODE
         </button>
       </div>
@@ -1414,6 +1419,7 @@ export default function FrameConfigurator() {
       </div>
 
       {showInfo && <InfoModal onClose={() => setShowInfo(false)} />}
+      {showPromo && <PromoModal onClose={() => setShowPromo(false)} />}
       <RecentBuyerToast />
 
       {/* Size Quiz Modal */}
