@@ -298,20 +298,36 @@ function SingleFrame({
               draggable={false}
             />
           ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 select-none"
-              style={{ background: 'linear-gradient(135deg, #faf8f5 0%, #f5f0e8 100%)' }}>
-              <div className="absolute inset-3 rounded-lg border-2 border-dashed pointer-events-none" style={{ borderColor: 'rgba(27,90,74,0.35)', animation: 'dashPulse 2s ease-in-out infinite' }}/>
-              <div className="w-14 h-14 rounded-full bg-[#1B5A4A]/10 flex items-center justify-center">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1B5A4A" strokeWidth="1.5">
-                  <rect x="3" y="3" width="18" height="18" rx="2"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <polyline points="21,15 16,10 5,21"/>
-                </svg>
+            <div className="absolute inset-0 select-none overflow-hidden">
+              {/* Sample inspirational photo — shows what the finished product looks like */}
+              <img
+                src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80"
+                alt="Example family photo in frame"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ filter: 'brightness(0.88) saturate(1.1)' }}
+                draggable={false}
+              />
+              {/* "SAMPLE" pill top-right */}
+              <div className="absolute top-2 right-2 bg-black/40 text-white text-[9px] font-bold px-2 py-0.5 rounded-full tracking-wide uppercase pointer-events-none">
+                Sample
               </div>
-              <div className="text-center px-4">
-                <p className="text-sm font-bold text-[#1B5A4A] leading-tight">Tap to Add Photo</p>
-                <p className="text-[10px] text-gray-400 mt-0.5">JPG, PNG or HEIC</p>
+              {/* Bottom overlay CTA */}
+              <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center py-3 gap-1 pointer-events-none"
+                style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.0) 100%)' }}>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1B5A4A" strokeWidth="2.2">
+                      <rect x="3" y="3" width="18" height="18" rx="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21,15 16,10 5,21"/>
+                    </svg>
+                  </div>
+                  <p className="text-xs font-bold text-white drop-shadow leading-tight">Tap to Add Your Photo</p>
+                </div>
+                <p className="text-[9px] text-white/70">JPG, PNG or HEIC</p>
               </div>
+              {/* Animated dashed border hint */}
+              <div className="absolute inset-2 rounded-lg border-2 border-dashed border-white/30 pointer-events-none" style={{ animation: 'dashPulse 2s ease-in-out infinite' }}/>
             </div>
           )}
           {cropMode && frame.photo && (
