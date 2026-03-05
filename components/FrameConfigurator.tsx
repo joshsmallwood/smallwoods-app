@@ -1710,7 +1710,7 @@ function FAQAccordion() {
     },
     {
       q: 'What is your return policy?',
-      a: 'We offer free returns within 30 days of delivery. If your print arrives damaged or doesn\'t look right, we\'ll reprint it for free — no questions asked.'
+      a: 'Because every frame is custom-made just for you, we don\'t accept returns. However, if your print arrives damaged or doesn\'t look exactly right, we\'ll reprint it for free — no questions asked. 100% satisfaction guaranteed.'
     },
   ]
   return (
