@@ -3,6 +3,39 @@
 import { useState, useRef, useEffect } from 'react'
 import InfoModal from './InfoModal'
 
+const WALL_STYLES: Record<string, React.CSSProperties> = {
+  classic: { backgroundColor: '#ede8e0', backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 24px,rgba(0,0,0,0.018) 24px,rgba(0,0,0,0.018) 25px),repeating-linear-gradient(90deg,transparent,transparent 24px,rgba(0,0,0,0.012) 24px,rgba(0,0,0,0.012) 25px)' },
+  modern:  { backgroundColor: '#f0f0f0', backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 32px,rgba(0,0,0,0.015) 32px,rgba(0,0,0,0.015) 33px)' },
+  dark:    { backgroundColor: '#2a2a2a', backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(255,255,255,0.03) 28px,rgba(255,255,255,0.03) 29px)' },
+  warm:    { backgroundColor: '#d4b896', backgroundImage: 'repeating-linear-gradient(160deg,rgba(120,70,20,0.06) 0px,rgba(120,70,20,0.06) 2px,transparent 2px,transparent 12px)' },
+}
+
+function RoomPresetSwitcher({ wallStyle, onChangeWall }: { wallStyle: string; onChangeWall: (s: 'classic' | 'modern' | 'dark' | 'warm') => void }) {
+  const presets = [
+    { id: 'classic' as const, label: '🏠 Classic' },
+    { id: 'modern'  as const, label: '🏢 Modern'  },
+    { id: 'dark'    as const, label: '🌙 Dark'    },
+    { id: 'warm'    as const, label: '🪵 Wood'    },
+  ]
+  return (
+    <div className="flex gap-1.5 px-4 pt-2 pb-0">
+      {presets.map(p => (
+        <button
+          key={p.id}
+          onClick={() => onChangeWall(p.id)}
+          className={`flex-1 text-[10px] font-bold py-1 rounded-lg border transition-all ${
+            wallStyle === p.id
+              ? 'bg-[#1B5A4A] text-white border-[#1B5A4A]'
+              : 'bg-white text-gray-500 border-gray-200'
+          }`}
+        >
+          {p.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function CartScarcityBadge() {
   const [count, setCount] = useState(() => Math.floor(Math.random() * 8) + 7) // 7-14
   useEffect(() => {
@@ -451,6 +484,7 @@ export default function FrameConfigurator() {
   const [activeId, setActiveId] = useState<string>('f1')
   const [showFrameBar, setShowFrameBar] = useState(true)
   const [showInfo, setShowInfo] = useState(false)
+  const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>('classic')
   const [ctaVisible, setCtaVisible] = useState(true)
   const counterRef = useRef(2)
   const ctaRef = useRef<HTMLDivElement>(null)
@@ -584,8 +618,11 @@ export default function FrameConfigurator() {
         </div>
       )}
 
+      {/* Room preset switcher */}
+      <RoomPresetSwitcher wallStyle={wallStyle} onChangeWall={setWallStyle} />
+
       {/* Frame Preview Area */}
-      <div className="flex-1 flex items-center justify-center px-4 py-6 wall-bg rounded-2xl mx-4 my-2" style={{ minHeight: '320px' }}>
+      <div className="flex-1 flex items-center justify-center px-4 py-6 rounded-2xl mx-4 my-2 transition-all duration-500" style={{ minHeight: '320px', ...WALL_STYLES[wallStyle] }}>
         {isGallery ? (
           /* Gallery: side-by-side layout */
           <div className="flex items-center justify-center gap-4 w-full flex-wrap">
