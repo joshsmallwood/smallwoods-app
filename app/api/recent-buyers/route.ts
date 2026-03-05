@@ -35,14 +35,18 @@ function cleanCity(city: string): string | null {
 }
 
 function parseColor(variant: string): string | null {
+  // Shopify variant_title format: "SizeName / ColorName"
+  // Shopify color names → app display names:
+  //   Stained/Stain → Walnut, Almond → Oak, Natural → Natural, Black → Black, White → White
   const parts = variant.split('/')
   if (parts.length >= 2) {
     const c = parts[1].trim()
     if (c === 'Black') return 'Black'
     if (c === 'White') return 'White'
-    if (c === 'Oak' || c === 'Natural') return 'Oak'
+    if (c === 'Natural') return 'Natural'
+    if (c === 'Almond' || c === 'Oak') return 'Oak'
     if (c === 'Walnut' || c === 'Stained' || c === 'Stain') return 'Walnut'
-    if (c === 'No Frame') return null // skip no-frame
+    if (c === 'No Frame') return null // skip no-frame — no color context to show
   }
   return null
 }
