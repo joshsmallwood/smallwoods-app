@@ -1102,15 +1102,17 @@ export default function FrameConfigurator() {
 
       {/* Quantity / Bulk Discount Selector */}
       <div className="px-4 mb-3">
-        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 text-center">Save More — Order Multiple</p>
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 text-center">Gallery Wall Builder</p>
         <div className="flex gap-2">
           {[
-            { qty: 1, label: '1 Frame', pct: 0, badge: null },
-            { qty: 2, label: '2 Frames', pct: 0, badge: null },
-            { qty: 3, label: '3 Frames', pct: 0, badge: 'Gallery Wall' },
-          ].map(({ qty, label, pct, badge }) => {
+            { qty: 1, label: '1 Frame', badge: null },
+            { qty: 2, label: '2 Frames', badge: null },
+            { qty: 3, label: '3 Frames', badge: '🖼 Gallery Wall' },
+          ].map(({ qty, label, badge }) => {
             const isSelected = frames.length === qty
-            const perFrame = Math.round(totalPrice / frames.length * (1 - pct / 100))
+            // Price per frame = same regardless of qty (35% discount applies to all via promo code)
+            const framePrice = Math.round(activeFramePrice * 0.65)
+            const bundleTotal35 = framePrice * qty
             return (
               <button
                 key={qty}
@@ -1133,8 +1135,8 @@ export default function FrameConfigurator() {
                   <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[8px] font-black px-2 py-0.5 rounded-full whitespace-nowrap" style={{ background: '#F5C842', color: '#1B5A4A' }}>{badge}</span>
                 )}
                 <span className="text-[11px] font-black" style={{ color: isSelected ? '#1B5A4A' : qty === 3 ? 'white' : '#4b5563' }}>{label}</span>
-                {pct > 0 && <span className="text-[9px] font-bold" style={{ color: isSelected ? '#16a34a' : qty === 3 ? '#7EC8A4' : '#16a34a' }}>Save {pct}%</span>}
-                <span className="text-[10px] font-semibold" style={{ color: isSelected ? '#1B5A4A' : qty === 3 ? 'rgba(255,255,255,0.75)' : '#9ca3af' }}>${perFrame}/ea</span>
+                <span className="text-[10px] font-semibold" style={{ color: isSelected ? '#1B5A4A' : qty === 3 ? 'rgba(255,255,255,0.75)' : '#9ca3af' }}>${framePrice}/ea</span>
+                {qty > 1 && <span className="text-[9px]" style={{ color: isSelected ? '#6b7280' : qty === 3 ? 'rgba(255,255,255,0.55)' : '#c4c4c4' }}>Total ${bundleTotal35}</span>}
               </button>
             )
           })}
