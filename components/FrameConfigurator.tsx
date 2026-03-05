@@ -391,6 +391,9 @@ const VARIANT_MAP: Record<string, Record<string, number>> = {
 
 const SHOPIFY_STORE = 'https://smallwoodhome.com'
 const BUNDLE_DISCOUNT = 0.20
+// Active 35% off promo codes (both verified active, no expiry — Shopify price_rules API Mar 5 2026)
+const ACTIVE_PROMO_CODES = ['MYWALL35', 'LUCKY35']
+const CART_PROMO_CODE = ACTIVE_PROMO_CODES[Math.floor(Math.random() * ACTIVE_PROMO_CODES.length)]
 
 function getVariantId(size: SizeOption, color: FrameColor): number | null {
   const colorObj = FRAME_COLORS.find(c => c.id === color)
@@ -434,6 +437,7 @@ function SingleFrame({
   const [loading, setLoading] = useState(false)
   const [photoExiting, setPhotoExiting] = useState(false)
   const [photoQuality, setPhotoQuality] = useState<'excellent' | 'good' | 'low' | null>(null)
+  const [photoPixels, setPhotoPixels] = useState<{ w: number; h: number } | null>(null)
   const [showZoomHint, setShowZoomHint] = useState(false)
   const [showUploadCelebration, setShowUploadCelebration] = useState(false)
   const [showPhotoTips, setShowPhotoTips] = useState(false)
@@ -463,7 +467,9 @@ function SingleFrame({
       // Check image resolution for quality indicator
       const img = new window.Image()
       img.onload = () => {
-        const mp = (img.naturalWidth * img.naturalHeight) / 1_000_000
+        const { naturalWidth: w, naturalHeight: h } = img
+        setPhotoPixels({ w, h })
+        const mp = (w * h) / 1_000_000
         if (mp >= 3) setPhotoQuality('excellent')
         else if (mp >= 1) setPhotoQuality('good')
         else setPhotoQuality('low')
@@ -485,6 +491,7 @@ function SingleFrame({
   const clearPhoto = () => {
     setPhotoExiting(true)
     setPhotoQuality(null)
+    setPhotoPixels(null)
     setTimeout(() => {
       onUpdate({ photo: null })
       setPhotoExiting(false)
@@ -1897,7 +1904,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
     }).filter(Boolean).join(',')
     if (!cartItems) return `${SHOPIFY_STORE}/products/copy-of-frames`
     // Auto-apply the MYWALL35 discount code so users don't have to type it manually
-    let url = `${SHOPIFY_STORE}/cart/${cartItems}?discount=MYWALL35`
+    let url = `${SHOPIFY_STORE}/cart/${cartItems}?discount=${CART_PROMO_CODE}`
     // Pass gift message as cart note so it reaches the order
     if (giftMessage && giftMessage.trim()) {
       url += `&note=${encodeURIComponent(`🎁 Gift message: ${giftMessage.trim()}`)}`
