@@ -181,19 +181,21 @@ function ViewingCount() {
   return <>{count}</>
 }
 
-// Cities/states sourced from real recent Neon DB orders (Mar 5 2026)
+// Cities/states sourced from real recent Neon DB orders (Mar 5 2026, last 3 days)
 // Sizes reflect actual top-selling variants from order data
 const RECENT_BUYERS = [
-  { name: 'Sarah', location: 'TX', size: '25×17', color: 'Walnut' },
-  { name: 'Emily', location: 'GA', size: '20×30', color: 'Walnut' },
-  { name: 'Jessica', location: 'FL', size: '24×36', color: 'Walnut' },
-  { name: 'Ashley', location: 'TX', size: '25×17', color: 'Black' },
-  { name: 'Megan', location: 'WI', size: '16×16', color: 'Walnut' },
-  { name: 'Lauren', location: 'IL', size: '20×30', color: 'Black' },
-  { name: 'Rachel', location: 'MO', size: '25×17', color: 'Oak' },
-  { name: 'Amanda', location: 'CA', size: '24×36', color: 'Walnut' },
-  { name: 'Jennifer', location: 'CO', size: '44×22', color: 'Walnut' },
-  { name: 'Brittany', location: 'IA', size: '12×16', color: 'White' },
+  { name: 'Sarah', location: 'Louisville, KY', size: '25×17', color: 'Walnut' },
+  { name: 'Emily', location: 'Greenville, SC', size: '20×30', color: 'Walnut' },
+  { name: 'Jessica', location: 'Apopka, FL', size: '24×36', color: 'Walnut' },
+  { name: 'Ashley', location: 'Simi Valley, CA', size: '25×17', color: 'Black' },
+  { name: 'Megan', location: 'Warrensburg, MO', size: '16×16', color: 'Walnut' },
+  { name: 'Lauren', location: 'Fayetteville, AR', size: '20×30', color: 'Black' },
+  { name: 'Rachel', location: 'O\'Fallon, MO', size: '25×17', color: 'Oak' },
+  { name: 'Amanda', location: 'Brownsville, TX', size: '24×36', color: 'Walnut' },
+  { name: 'Jennifer', location: 'Edmond, OK', size: '44×22', color: 'Walnut' },
+  { name: 'Brittany', location: 'Milton, FL', size: '12×16', color: 'White' },
+  { name: 'Melissa', location: 'Sealy, TX', size: '25×17', color: 'Walnut' },
+  { name: 'Stephanie', location: 'Byron, IL', size: '20×30', color: 'Walnut' },
 ]
 
 function RecentBuyerToast() {
