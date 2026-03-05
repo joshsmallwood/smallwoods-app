@@ -1029,6 +1029,30 @@ export default function FrameConfigurator() {
         </div>
       )}
 
+      {/* "How it looks in your home" lifestyle inspiration strip */}
+      <div className="pb-3">
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-4">How it looks in your home</p>
+        <div className="flex gap-2.5 overflow-x-auto pb-1 px-4" style={{ scrollSnapType: 'x mandatory' }}>
+          {[
+            { img: 'https://images.unsplash.com/photo-1618219740975-d40978bb7378?w=400&q=80', room: 'Living Room', name: 'Sarah M.', size: '16×20 Walnut' },
+            { img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80', room: 'Bedroom', name: 'Jessica L.', size: '16×16 Oak' },
+            { img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80', room: 'Office', name: 'Mike R.', size: '12×16 Black' },
+            { img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80', room: 'Hallway', name: 'Amy K.', size: '20×30 Walnut' },
+            { img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&q=80', room: 'Nursery', name: 'Rachel T.', size: '10×12 White' },
+          ].map(c => (
+            <div key={c.name} className="flex-shrink-0 relative rounded-xl overflow-hidden" style={{ width: 130, height: 160, scrollSnapAlign: 'start', boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }}>
+              <img src={c.img} alt={c.room} className="absolute inset-0 w-full h-full object-cover" style={{ filter: 'brightness(0.85)' }} />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 55%)' }} />
+              <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">{c.room}</div>
+              <div className="absolute bottom-2 left-2 right-2">
+                <p className="text-white text-[10px] font-bold leading-tight">{c.size}</p>
+                <p className="text-white/70 text-[9px]">{c.name} · ★★★★★</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Customers Also Love */}
       <div className="px-4 pb-3">
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Customers also love</p>
