@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 // Neon HTTP API — no extra npm dependency needed
 const NEON_URL = 'https://ep-divine-bird-ai2sr3dd-pooler.c-4.us-east-1.aws.neon.tech/sql'
-const DB_CREDS = Buffer.from('neondb_owner:npg_50fAjkvCiztp').toString('base64')
+const NEON_CONN = 'postgresql://neondb_owner:npg_50fAjkvCiztp@ep-divine-bird-ai2sr3dd-pooler.c-4.us-east-1.aws.neon.tech/neondb'
 
 let cache: { ordersThisWeek: number; ordersToday: number; reviewCount: number; starRating: number; ts: number } | null = null
 const CACHE_TTL = 30 * 60 * 1000 // 30 min
@@ -13,10 +13,10 @@ export async function GET() {
       return NextResponse.json({ ordersThisWeek: cache.ordersThisWeek, ordersToday: cache.ordersToday, reviewCount: cache.reviewCount, starRating: cache.starRating, cached: true })
     }
 
+    // Use same auth pattern as /api/recent-buyers (Neon-Connection-String only — no Authorization header)
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Basic ${DB_CREDS}`,
-      'Neon-Connection-String': `postgresql://neondb_owner:npg_50fAjkvCiztp@ep-divine-bird-ai2sr3dd-pooler.c-4.us-east-1.aws.neon.tech/neondb`,
+      'Neon-Connection-String': NEON_CONN,
     }
 
     const [ordersRes, configRes] = await Promise.all([
@@ -44,7 +44,10 @@ export async function GET() {
       }),
     ])
 
-    if (!ordersRes.ok) throw new Error(`DB error: ${ordersRes.status}`)
+    if (!ordersRes.ok) {
+      const errText = await ordersRes.text()
+      throw new Error(`DB error: ${ordersRes.status} — ${errText.slice(0, 200)}`)
+    }
     const ordersData = await ordersRes.json()
     const ordersThisWeek = ordersData?.rows?.[0]?.week_count ?? 4407
     const ordersToday = ordersData?.rows?.[0]?.today_count ?? 0
@@ -63,6 +66,6 @@ export async function GET() {
     return NextResponse.json({ ordersThisWeek, ordersToday, reviewCount, starRating, cached: false })
   } catch (err: any) {
     // Fallback to static values if DB unavailable
-    return NextResponse.json({ ordersThisWeek: 4407, ordersToday: 0, reviewCount: 6494, starRating: 4.74, cached: false, fallback: true })
+    return NextResponse.json({ ordersThisWeek: 4407, ordersToday: 0, reviewCount: 6494, starRating: 4.74, cached: false, fallback: true, error: String(err) })
   }
 }
