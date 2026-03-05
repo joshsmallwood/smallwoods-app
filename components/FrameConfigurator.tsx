@@ -769,6 +769,9 @@ export default function FrameConfigurator() {
             </div>
           </div>
 
+          {/* Room picker — size recommendation */}
+          <RoomSizePicker onSuggest={(sizeId) => { const s = SIZES.find(x => x.id === sizeId); if (s) updateFrame(activeId, { size: s }) }} selectedSizeId={activeFrame.size.id} />
+
           {/* Size picker */}
           <div className="mb-3">
             <div className="flex items-center justify-between mb-2">
@@ -1046,6 +1049,44 @@ function DeliveryBanner() {
           <p className="text-[9px] text-[#1B5A4A]/60 mt-0.5">Express available: as soon as {soonDate}</p>
         </div>
       </div>
+    </div>
+  )
+}
+
+function RoomSizePicker({ onSuggest, selectedSizeId }: { onSuggest: (sizeId: string) => void; selectedSizeId: string }) {
+  const rooms = [
+    { label: '🛋️ Living Room', sizeId: '24x36', hint: '24×36' },
+    { label: '🛏️ Bedroom', sizeId: '16x16', hint: '16×16' },
+    { label: '🚶 Hallway', sizeId: '12x16', hint: '12×16' },
+    { label: '💼 Office', sizeId: '10x12', hint: '10×12' },
+  ]
+  const [selected, setSelected] = useState<string | null>(null)
+  const handlePick = (r: typeof rooms[0]) => {
+    setSelected(r.label)
+    onSuggest(r.sizeId)
+  }
+  return (
+    <div className="mb-3 px-0">
+      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Where will it hang?</p>
+      <div className="flex gap-1.5 flex-wrap">
+        {rooms.map(r => (
+          <button
+            key={r.label}
+            onClick={() => handlePick(r)}
+            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold border transition-all ${
+              selected === r.label
+                ? 'bg-[#1B5A4A] text-white border-[#1B5A4A]'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-[#1B5A4A]'
+            }`}
+          >
+            {r.label}
+            {selected === r.label && <span className="text-white/80 text-[10px]">→ {r.hint}</span>}
+          </button>
+        ))}
+      </div>
+      {selected && (
+        <p className="text-[10px] text-[#1B5A4A] mt-1.5 font-medium">✓ Size updated — you can still adjust below</p>
+      )}
     </div>
   )
 }
