@@ -815,10 +815,15 @@ function parseDesignFromUrl(): { frames: FrameItem[]; wall: 'classic' | 'modern'
     if (!d) return null
     const parts = d.split(',')
     const frames: FrameItem[] = parts.map((part, i) => {
-      const [sizeId, color] = part.split('-')
+      const segs = part.split('-')
+      // format: sizeId-color-orientation (orientation = 'l' or 'p', optional for backwards compat)
+      const sizeId = segs[0]
+      const color = segs[1] ?? 'walnut'
+      const orientSeg = segs[2] ?? 'p'
       const size = SIZES.find(s => s.id === sizeId) || SIZES[3]
       const c = (['walnut','oak','natural','black','white','noframe'].includes(color) ? color : 'walnut') as FrameColor
-      return { id: `f${i+1}`, color: c, size, photo: null, orientation: 'portrait' }
+      const orientation: 'portrait' | 'landscape' = orientSeg === 'l' ? 'landscape' : 'portrait'
+      return { id: `f${i+1}`, color: c, size, photo: null, orientation }
     })
     return frames.length > 0 ? { frames, wall } : null
   } catch { return null }
@@ -858,7 +863,7 @@ export default function FrameConfigurator() {
 
   // Sync design state to URL so shared links restore the configuration
   useEffect(() => {
-    const d = frames.map(f => `${f.size.id}-${f.color}`).join(',')
+    const d = frames.map(f => `${f.size.id}-${f.color}-${f.orientation === 'landscape' ? 'l' : 'p'}`).join(',')
     const url = new URL(window.location.href)
     url.searchParams.set('d', d)
     url.searchParams.set('w', wallStyle)
