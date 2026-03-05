@@ -859,6 +859,8 @@ export default function FrameConfigurator() {
   const [giftMessage, setGiftMessage] = useState('')
   const [weeklyOrders, setWeeklyOrders] = useState<number | null>(null)
   const [todayOrders, setTodayOrders] = useState<number | null>(null)
+  const [reviewCount, setReviewCount] = useState<number>(6494)
+  const [starRating, setStarRating] = useState<number>(4.74)
   const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>(savedDesign?.wall ?? 'classic')
   const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
   const [ctaVisible, setCtaVisible] = useState(true)
@@ -876,6 +878,8 @@ export default function FrameConfigurator() {
       .then(d => {
         if (d.ordersThisWeek > 0) setWeeklyOrders(d.ordersThisWeek)
         if (d.ordersToday > 0) setTodayOrders(d.ordersToday)
+        if (d.reviewCount > 0) setReviewCount(d.reviewCount)
+        if (d.starRating > 0) setStarRating(d.starRating)
       })
       .catch(() => {}) // silent fail
   }, [])
@@ -1057,8 +1061,8 @@ export default function FrameConfigurator() {
               </svg>
             ))}
           </div>
-          <span className="text-xs font-semibold text-[#1B1B1B]">4.74</span>
-          <span className="text-xs text-[#1B5A4A] font-medium underline cursor-pointer">6,494 reviews</span>
+          <span className="text-xs font-semibold text-[#1B1B1B]">{starRating.toFixed(2)}</span>
+          <span className="text-xs text-[#1B5A4A] font-medium underline cursor-pointer">{reviewCount.toLocaleString()} reviews</span>
         </div>
         <div className="flex items-center gap-1.5 mt-1">
           <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
@@ -1659,8 +1663,8 @@ export default function FrameConfigurator() {
           <div className="flex items-center gap-2">
             <span className="text-amber-400 text-base leading-none tracking-tight">★★★★★</span>
             <div className="flex flex-col items-start">
-              <span className="text-[12px] font-black text-gray-800">4.74 out of 5 stars</span>
-              <span className="text-[10px] text-gray-500">6,494 verified reviews on smallwoodhome.com</span>
+              <span className="text-[12px] font-black text-gray-800">{starRating.toFixed(2)} out of 5 stars</span>
+              <span className="text-[10px] text-gray-500">{reviewCount.toLocaleString()} verified reviews on smallwoodhome.com</span>
             </div>
           </div>
           {(todayOrders !== null && todayOrders > 0) ? (
