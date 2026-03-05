@@ -1182,12 +1182,16 @@ export default function FrameConfigurator() {
             </div>
             <div className="grid grid-cols-4 gap-1.5">
               {SIZES.map(size => {
+                // Size rank badges — based on real Neon DB order data (by size, all colors combined)
+                // 25x17: 21,023 | 44x22: 6,342 | 20x30: 6,197 | 24x36: 6,018 | 12x16: 4,024 | 16x16: 3,193 | 13x13: 3,051
                 const stockHints: Record<string, { label: string; color: string }> = {
-                  '16x16': { label: 'TOP 3', color: '#F59E0B' },
                   '25x17': { label: '🏆 #1', color: '#1B5A4A' },
-                  '20x30': { label: '🔥 Hot', color: '#EF4444' },
-                  '44x22': { label: 'NEW', color: '#1B5A4A' },
-                  '13x13': { label: 'NEW', color: '#1B5A4A' },
+                  '44x22': { label: '🥈 #2', color: '#c8830a' },
+                  '20x30': { label: '🔥 #3', color: '#EF4444' },
+                  '24x36': { label: '🎯 #4', color: '#6366f1' },
+                  '12x16': { label: '#5', color: '#6b7280' },
+                  '16x16': { label: '#6', color: '#9ca3af' },
+                  '13x13': { label: 'Square', color: '#9ca3af' },
                 }
                 const hint = stockHints[size.id]
                 return (
