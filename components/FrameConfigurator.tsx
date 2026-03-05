@@ -879,8 +879,8 @@ export default function FrameConfigurator() {
 }
 
 function GiftMessageBox() {
-  const [isGift, setIsGift] = React.useState(false)
-  const [message, setMessage] = React.useState('')
+  const [isGift, setIsGift] = useState(false)
+  const [message, setMessage] = useState('')
   return (
     <div className="px-4 pb-3">
       <div className={`rounded-xl border transition-all duration-300 overflow-hidden ${isGift ? 'border-[#1B5A4A]/30 bg-[#f0faf5]' : 'border-gray-100 bg-white'}`}>
