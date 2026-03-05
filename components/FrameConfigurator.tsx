@@ -1200,16 +1200,21 @@ export default function FrameConfigurator() {
         )}
         {/* Cart scarcity */}
         <CartScarcityBadge />
-        {/* Full & Sale prices as context */}
+        {/* Retail vs you pay context */}
         <div className="bg-white flex items-center justify-center gap-6 px-4 py-2">
           <div className="text-center">
-            <p className="text-[10px] text-gray-400 uppercase tracking-wide">Full Price</p>
+            <p className="text-[10px] text-gray-400 uppercase tracking-wide">Retail</p>
             <p className="text-sm font-semibold text-gray-400 line-through">${fullTotal}</p>
           </div>
           <div className="w-px h-6 bg-gray-200"/>
           <div className="text-center">
-            <p className="text-[10px] text-gray-400 uppercase tracking-wide">Sale Price</p>
-            <p className="text-sm font-semibold text-gray-600">${totalPrice}</p>
+            <p className="text-[10px] text-gray-400 uppercase tracking-wide">You Pay</p>
+            <p className="text-sm font-semibold text-[#1B5A4A] font-black">${displayBundle}</p>
+          </div>
+          <div className="w-px h-6 bg-gray-200"/>
+          <div className="text-center">
+            <p className="text-[10px] text-gray-400 uppercase tracking-wide">You Save</p>
+            <p className="text-sm font-semibold text-green-600 font-black">${fullTotal - displayBundle}</p>
           </div>
         </div>
       </div>
