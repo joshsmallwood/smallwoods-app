@@ -1832,7 +1832,8 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame }: {
 
   const hasPhotos = frames.some(f => f.photo)
   const displayTotal = bundleTotal ?? totalPrice
-  const retailTotal = Math.round(displayTotal * 1.4)
+  // Use real Shopify compareAt prices (not a fake multiplier)
+  const retailTotal = frames.reduce((s, f) => s + (f.color === 'noframe' ? Math.round(f.size.noFramePrice * 1.3) : f.size.compareAt), 0)
   const savings = retailTotal - displayTotal
   const label = frames.length > 1
     ? `Add ${frames.length} Frames to Cart — $${displayTotal}`
