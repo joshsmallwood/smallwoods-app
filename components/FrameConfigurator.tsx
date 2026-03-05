@@ -276,6 +276,8 @@ const SIZES: SizeOption[] = [
   { id: '20x30', label: '20×30', width: 20, height: 30, price: 119, shopifySize: '20x30'             },
   { id: '25x25', label: '25×25', width: 25, height: 25, price: 129, shopifySize: 'Square 25" x 25"' },
   { id: '24x36', label: '24×36', width: 24, height: 36, price: 129, shopifySize: '24x36'             },
+  { id: '44x22', label: '44×22', width: 44, height: 22, price: 139, shopifySize: 'Extra Large 44" x 22"' },
+  { id: '13x13', label: '13×13', width: 13, height: 13, price: 79,  shopifySize: 'Small Square 13" x 13"' },
 ]
 
 // Hardcoded variant ID lookup: variantMap[shopifySize][shopifyColor] = variantId
@@ -289,6 +291,8 @@ const VARIANT_MAP: Record<string, Record<string, number>> = {
   '20x30':             { Stained: 41843744768137, Almond: 41843744800905, Black: 41843744833673, White: 41843744866441 },
   'Square 25" x 25"': { Stained: 41365291991177, Almond: 41365292023945, Black: 41365292056713, White: 41365292089481 },
   '24x36':             { Stained: 43361951154313, Almond: 43361954857097, Black: 43361957707913, White: 43361959936137 },
+  'Extra Large 44" x 22"': { Stained: 41365291827337, Almond: 41365291860105, Black: 41365291892873, White: 41365291925641 },
+  'Small Square 13" x 13"': { Stained: 41365292482697, Almond: 41365292515465, Black: 41365292548233, White: 41365292581001 },
 }
 
 const SHOPIFY_STORE = 'https://smallwoodhome.com'
