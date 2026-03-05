@@ -1134,7 +1134,8 @@ export default function FrameConfigurator() {
             <div className="grid grid-cols-4 gap-1.5">
               {SIZES.map(size => {
                 const stockHints: Record<string, { label: string; color: string }> = {
-                  '16x16': { label: 'POPULAR', color: '#F59E0B' },
+                  '16x16': { label: 'TOP 3', color: '#F59E0B' },
+                  '25x17': { label: '🏆 #1', color: '#1B5A4A' },
                   '20x30': { label: '🔥 Hot', color: '#EF4444' },
                   '44x22': { label: 'NEW', color: '#1B5A4A' },
                   '13x13': { label: 'NEW', color: '#1B5A4A' },
