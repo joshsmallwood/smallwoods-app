@@ -780,16 +780,21 @@ export default function FrameConfigurator() {
                     for (let i = 0; i < diff; i++) addFrame()
                   }
                 }}
-                className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 rounded-xl border-2 transition-all relative ${
-                  isSelected ? 'border-[#1B5A4A] bg-[#f0faf5]' : 'border-gray-200 bg-white'
-                }`}
+                className="flex-1 flex flex-col items-center gap-0.5 py-2.5 rounded-xl border-2 transition-all relative"
+                style={
+                  isSelected
+                    ? { borderColor: '#1B5A4A', background: '#f0faf5' }
+                    : qty === 3
+                    ? { borderColor: '#1B5A4A', background: 'linear-gradient(135deg, #1B5A4A 0%, #2d7a65 100%)' }
+                    : { borderColor: '#e5e7eb', background: 'white' }
+                }
               >
                 {badge && (
-                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-[#F5C842] text-[#1B5A4A] text-[8px] font-black px-2 py-0.5 rounded-full whitespace-nowrap">{badge}</span>
+                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[8px] font-black px-2 py-0.5 rounded-full whitespace-nowrap" style={{ background: '#F5C842', color: '#1B5A4A' }}>{badge}</span>
                 )}
-                <span className={`text-[11px] font-black ${isSelected ? 'text-[#1B5A4A]' : 'text-gray-600'}`}>{label}</span>
-                {pct > 0 && <span className="text-[9px] font-bold text-green-600">Save {pct}%</span>}
-                <span className={`text-[10px] font-semibold ${isSelected ? 'text-[#1B5A4A]/70' : 'text-gray-400'}`}>${perFrame}/ea</span>
+                <span className="text-[11px] font-black" style={{ color: isSelected ? '#1B5A4A' : qty === 3 ? 'white' : '#4b5563' }}>{label}</span>
+                {pct > 0 && <span className="text-[9px] font-bold" style={{ color: isSelected ? '#16a34a' : qty === 3 ? '#7EC8A4' : '#16a34a' }}>Save {pct}%</span>}
+                <span className="text-[10px] font-semibold" style={{ color: isSelected ? '#1B5A4A' : qty === 3 ? 'rgba(255,255,255,0.75)' : '#9ca3af' }}>${perFrame}/ea</span>
               </button>
             )
           })}
