@@ -327,6 +327,7 @@ function SingleFrame({
   const [photoExiting, setPhotoExiting] = useState(false)
   const [photoQuality, setPhotoQuality] = useState<'excellent' | 'good' | 'low' | null>(null)
   const [showZoomHint, setShowZoomHint] = useState(false)
+  const [showUploadCelebration, setShowUploadCelebration] = useState(false)
   const [sampleIdx, setSampleIdx] = useState(0)
   const SAMPLE_PHOTOS = [
     'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
@@ -363,6 +364,8 @@ function SingleFrame({
         setZoom(1); setOffset({ x: 0, y: 0 }); setCropMode(false)
         onUpdate({ photo: dataUrl })
         setLoading(false)
+        setShowUploadCelebration(true)
+        setTimeout(() => setShowUploadCelebration(false), 2200)
         setShowZoomHint(true)
         setTimeout(() => setShowZoomHint(false), 3200)
       }, 350)
@@ -491,6 +494,26 @@ function SingleFrame({
             </div>
           )}
           {/* Zoom hint — shows briefly after photo upload */}
+          {/* Upload celebration burst */}
+          {showUploadCelebration && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 25 }}>
+              {/* Expanding ring 1 */}
+              <span className="absolute rounded-full" style={{ width: 60, height: 60, border: '3px solid #22c55e', animation: 'celebRing1 0.7s ease-out forwards', opacity: 0 }} />
+              {/* Expanding ring 2 */}
+              <span className="absolute rounded-full" style={{ width: 60, height: 60, border: '3px solid rgba(34,197,94,0.5)', animation: 'celebRing1 0.7s ease-out 0.15s forwards', opacity: 0 }} />
+              {/* Check badge */}
+              <span className="absolute flex items-center justify-center w-14 h-14 rounded-full" style={{ background: 'rgba(27,90,74,0.92)', animation: 'celebCheck 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards', transform: 'scale(0)', backdropFilter: 'blur(4px)' }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </span>
+              {/* "Photo added!" label */}
+              <span className="absolute flex items-center gap-1 px-3 py-1 rounded-full text-white text-[11px] font-bold"
+                style={{ background: '#1B5A4A', top: '12%', animation: 'celebLabel 2.2s ease-in-out forwards', opacity: 0 }}>
+                ✓ Photo added!
+              </span>
+            </div>
+          )}
           {showZoomHint && frame.photo && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 20 }}>
               <div className="flex flex-col items-center gap-1.5 px-4 py-3 rounded-2xl" style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(4px)', animation: 'zoomHintFade 3.2s ease-in-out forwards' }}>
