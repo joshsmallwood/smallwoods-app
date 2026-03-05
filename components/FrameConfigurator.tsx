@@ -658,6 +658,32 @@ export default function FrameConfigurator() {
             </p>
           )}
 
+          {/* Step Indicator */}
+          <div className="flex items-center justify-between mb-4 px-1">
+            {/* Step 1 — Choose Size */}
+            <div className="flex flex-col items-center gap-1 flex-1">
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black" style={{ background: '#1B5A4A', color: '#fff' }}>✓</div>
+              <span className="text-[9px] font-semibold text-[#1B5A4A] text-center leading-tight">Choose<br/>Size</span>
+            </div>
+            <div className="flex-1 h-0.5 mb-3" style={{ background: '#1B5A4A' }}/>
+            {/* Step 2 — Pick Frame */}
+            <div className="flex flex-col items-center gap-1 flex-1">
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black" style={{ background: '#1B5A4A', color: '#fff' }}>✓</div>
+              <span className="text-[9px] font-semibold text-[#1B5A4A] text-center leading-tight">Pick<br/>Frame</span>
+            </div>
+            <div className="flex-1 h-0.5 mb-3" style={{ background: activeFrame.photo ? '#1B5A4A' : '#e5e7eb' }}/>
+            {/* Step 3 — Upload Photo */}
+            <div className="flex flex-col items-center gap-1 flex-1">
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black border-2"
+                style={activeFrame.photo
+                  ? { background: '#1B5A4A', color: '#fff', borderColor: '#1B5A4A' }
+                  : { background: '#fff', color: '#9ca3af', borderColor: '#e5e7eb' }}>
+                {activeFrame.photo ? '✓' : '3'}
+              </div>
+              <span className="text-[9px] font-semibold text-center leading-tight" style={{ color: activeFrame.photo ? '#1B5A4A' : '#9ca3af' }}>Upload<br/>Photo</span>
+            </div>
+          </div>
+
           {/* Size picker */}
           <div className="mb-3">
             <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Size (inches)</p>
