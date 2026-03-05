@@ -1544,11 +1544,14 @@ export default function FrameConfigurator() {
         </div>
       </div>
 
-      {/* Social Proof Strip */}
+      {/* Social Proof Strip — data from JudgeMe API, verified Mar 5 2026 */}
       <div className="px-4 pb-2">
-        <div className="flex items-center justify-center gap-2 bg-amber-50 border border-amber-200 rounded-xl py-2.5 px-4">
+        <div className="flex items-center justify-center gap-3 bg-amber-50 border border-amber-200 rounded-xl py-2.5 px-4">
           <span className="text-amber-400 text-base leading-none tracking-tight">★★★★★</span>
-          <span className="text-sm font-semibold text-gray-700">3,000,000+ happy families</span>
+          <div className="flex flex-col items-start">
+            <span className="text-[12px] font-black text-gray-800">4.74 out of 5 stars</span>
+            <span className="text-[10px] text-gray-500">From 6,494 verified reviews on smallwoodhome.com</span>
+          </div>
         </div>
       </div>
 
