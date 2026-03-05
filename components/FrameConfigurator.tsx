@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useId } from 'react'
 import InfoModal from './InfoModal'
 
 type FrameColor = 'walnut' | 'oak' | 'black' | 'white'
@@ -13,111 +13,241 @@ const FRAME_COLORS: { id: FrameColor; label: string; swatch: string }[] = [
 ]
 
 interface SizeOption {
-  id: string
-  label: string
-  width: number   // inches
-  height: number  // inches
-  price: number
-  displayW: string
-  displayH: string
+  id: string; label: string; width: number; height: number; price: number
 }
 
 const SIZES: SizeOption[] = [
-  { id: '5x7',   label: '5×7',   width: 5,  height: 7,  price: 49,  displayW: '5',  displayH: '7'  },
-  { id: '8x10',  label: '8×10',  width: 8,  height: 10, price: 69,  displayW: '8',  displayH: '10' },
-  { id: '11x14', label: '11×14', width: 11, height: 14, price: 89,  displayW: '11', displayH: '14' },
-  { id: '16x20', label: '16×20', width: 16, height: 20, price: 109, displayW: '16', displayH: '20' },
-  { id: '25x17', label: '25×17', width: 25, height: 17, price: 109, displayW: '25', displayH: '17' },
-  { id: '20x24', label: '20×24', width: 20, height: 24, price: 129, displayW: '20', displayH: '24' },
-  { id: '24x30', label: '24×30', width: 24, height: 30, price: 149, displayW: '24', displayH: '30' },
-  { id: '30x40', label: '30×40', width: 30, height: 40, price: 189, displayW: '30', displayH: '40' },
+  { id: '5x7',   label: '5×7',   width: 5,  height: 7,  price: 49  },
+  { id: '8x10',  label: '8×10',  width: 8,  height: 10, price: 69  },
+  { id: '11x14', label: '11×14', width: 11, height: 14, price: 89  },
+  { id: '16x20', label: '16×20', width: 16, height: 20, price: 109 },
+  { id: '25x17', label: '25×17', width: 25, height: 17, price: 109 },
+  { id: '20x24', label: '20×24', width: 20, height: 24, price: 129 },
+  { id: '24x30', label: '24×30', width: 24, height: 30, price: 149 },
+  { id: '30x40', label: '30×40', width: 30, height: 40, price: 189 },
 ]
 
 const BUNDLE_DISCOUNT = 0.20
 
-export default function FrameConfigurator() {
-  const [frameColor, setFrameColor] = useState<FrameColor>('walnut')
-  const [activeSize, setActiveSize] = useState<SizeOption>(SIZES[3]) // 16x20 default
-  const [photo, setPhoto] = useState<string | null>(null)
-  const [photoExiting, setPhotoExiting] = useState(false)
-  const [showFrameBar, setShowFrameBar] = useState(true)
-  const [showInfo, setShowInfo] = useState(false)
-  const [loading, setLoading] = useState(false)
-  // Pan/zoom state
+interface FrameItem {
+  id: string
+  color: FrameColor
+  size: SizeOption
+  photo: string | null
+}
+
+function makeFrame(id: string): FrameItem {
+  return { id, color: 'walnut', size: SIZES[3], photo: null }
+}
+
+// ─── Single Frame ────────────────────────────────────────────────
+function SingleFrame({
+  frame,
+  isActive,
+  onActivate,
+  onUpdate,
+  onRemove,
+  canRemove,
+}: {
+  frame: FrameItem
+  isActive: boolean
+  onActivate: () => void
+  onUpdate: (patch: Partial<FrameItem>) => void
+  onRemove: () => void
+  canRemove: boolean
+}) {
+  const [cropMode, setCropMode] = useState(false)
   const [zoom, setZoom] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
-  const [cropMode, setCropMode] = useState(false)
-  const [dragging, setDragging] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [photoExiting, setPhotoExiting] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
   const dragStart = useRef<{ mx: number; my: number; ox: number; oy: number } | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const touchRef = useRef<{ tx: number; ty: number; ox: number; oy: number } | null>(null)
 
-  const salePrice = activeSize.price
-  const fullPrice = Math.round(salePrice * 1.375) // ~37.5% markup for "full price"
-  const bundlePrice = Math.round(salePrice * (1 - BUNDLE_DISCOUNT))
-
-  // Aspect ratio for the mat
-  const aspectW = activeSize.width
-  const aspectH = activeSize.height
-
-  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     setLoading(true)
     const reader = new FileReader()
     reader.onload = (ev) => {
       setTimeout(() => {
-        setZoom(1)
-        setOffset({ x: 0, y: 0 })
-        setCropMode(false)
-        setPhoto(ev.target?.result as string)
+        setZoom(1); setOffset({ x: 0, y: 0 }); setCropMode(false)
+        onUpdate({ photo: ev.target?.result as string })
         setLoading(false)
-      }, 400)
+      }, 350)
     }
     reader.readAsDataURL(file)
-  }, [])
-
-  const triggerUpload = () => fileInputRef.current?.click()
+  }
 
   const clearPhoto = () => {
     setPhotoExiting(true)
     setTimeout(() => {
-      setPhoto(null)
+      onUpdate({ photo: null })
       setPhotoExiting(false)
-      setZoom(1)
-      setOffset({ x: 0, y: 0 })
-      setCropMode(false)
+      setZoom(1); setOffset({ x: 0, y: 0 }); setCropMode(false)
     }, 260)
   }
 
-  // Drag to pan
-  const onMouseDown = (e: React.MouseEvent) => {
-    if (!cropMode || !photo) return
-    setDragging(true)
-    dragStart.current = { mx: e.clientX, my: e.clientY, ox: offset.x, oy: offset.y }
-  }
-  const onMouseMove = (e: React.MouseEvent) => {
-    if (!dragging || !dragStart.current) return
-    const dx = e.clientX - dragStart.current.mx
-    const dy = e.clientY - dragStart.current.my
-    setOffset({ x: dragStart.current.ox + dx, y: dragStart.current.oy + dy })
-  }
-  const onMouseUp = () => { setDragging(false); dragStart.current = null }
+  const aspectW = frame.size.width
+  const aspectH = frame.size.height
 
-  // Touch drag
-  const touchStart = useRef<{ tx: number; ty: number; ox: number; oy: number } | null>(null)
-  const onTouchStart = (e: React.TouchEvent) => {
-    if (!cropMode || !photo) return
-    const t = e.touches[0]
-    touchStart.current = { tx: t.clientX, ty: t.clientY, ox: offset.x, oy: offset.y }
+  return (
+    <div
+      className={`relative rounded-2xl overflow-visible transition-all ${isActive ? 'ring-2 ring-[#1B5A4A]' : 'ring-1 ring-gray-200'}`}
+      onClick={onActivate}
+    >
+      {/* Remove button */}
+      {canRemove && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onRemove() }}
+          className="absolute -top-2.5 -right-2.5 z-20 w-6 h-6 bg-red-500 text-white rounded-full text-xs font-bold shadow-md flex items-center justify-center hover:bg-red-600"
+        >×</button>
+      )}
+
+      {/* Frame */}
+      <div
+        className={`frame-wrap frame-${frame.color}`}
+        style={{ padding: '16px', borderRadius: '3px' }}
+      >
+        <div
+          className="mat-inner overflow-hidden relative"
+          style={{
+            aspectRatio: `${aspectW} / ${aspectH}`,
+            cursor: cropMode ? 'grab' : (frame.photo ? 'default' : 'pointer'),
+          }}
+          onClick={(e) => { e.stopPropagation(); if (!frame.photo && !loading) fileRef.current?.click() }}
+          onMouseDown={(e) => {
+            if (!cropMode || !frame.photo) return
+            dragStart.current = { mx: e.clientX, my: e.clientY, ox: offset.x, oy: offset.y }
+          }}
+          onMouseMove={(e) => {
+            if (!dragStart.current) return
+            setOffset({ x: dragStart.current.ox + e.clientX - dragStart.current.mx, y: dragStart.current.oy + e.clientY - dragStart.current.my })
+          }}
+          onMouseUp={() => { dragStart.current = null }}
+          onMouseLeave={() => { dragStart.current = null }}
+          onTouchStart={(e) => {
+            if (!cropMode || !frame.photo) return
+            const t = e.touches[0]
+            touchRef.current = { tx: t.clientX, ty: t.clientY, ox: offset.x, oy: offset.y }
+          }}
+          onTouchMove={(e) => {
+            if (!touchRef.current) return
+            const t = e.touches[0]
+            setOffset({ x: touchRef.current.ox + t.clientX - touchRef.current.tx, y: touchRef.current.oy + t.clientY - touchRef.current.ty })
+          }}
+          onTouchEnd={() => { touchRef.current = null }}
+        >
+          {loading ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gray-50">
+              <div className="w-8 h-8 rounded-full animate-spin" style={{ borderWidth: '3px', borderStyle: 'solid', borderColor: '#1B5A4A', borderTopColor: 'transparent' }}/>
+              <span className="text-xs text-gray-500">Processing…</span>
+            </div>
+          ) : frame.photo ? (
+            <img
+              src={frame.photo}
+              alt="Photo"
+              className={`absolute inset-0 w-full h-full object-cover select-none ${photoExiting ? 'photo-exit' : 'photo-enter'}`}
+              style={{ transform: `translate(${offset.x}px,${offset.y}px) scale(${zoom})`, transformOrigin: 'center', userSelect: 'none', pointerEvents: 'none' }}
+              draggable={false}
+            />
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-400 select-none">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21,15 16,10 5,21"/>
+              </svg>
+              <span className="text-xs font-medium text-gray-500">Add Photo</span>
+            </div>
+          )}
+          {cropMode && frame.photo && (
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute inset-0 border-2 border-dashed border-white/60"/>
+              <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 bg-black/60 text-white text-[9px] px-2 py-0.5 rounded-full whitespace-nowrap">Drag to pan</div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mini controls (only when active) */}
+      {isActive && (
+        <div className="flex items-center justify-center gap-2 mt-2" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => fileRef.current?.click()}
+            className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#1B5A4A] text-white"
+          >
+            {frame.photo ? '↺ Photo' : '+ Photo'}
+          </button>
+          {frame.photo && (
+            <>
+              <button
+                onClick={() => setCropMode(v => !v)}
+                className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${cropMode ? 'bg-[#1B5A4A] text-white border-[#1B5A4A]' : 'bg-white text-gray-600 border-gray-300'}`}
+              >✂️ Crop</button>
+              {cropMode && (
+                <>
+                  <button onClick={() => setZoom(z => Math.min(z + 0.15, 3))} className="w-6 h-6 rounded-full bg-white border border-gray-300 text-gray-700 font-bold text-sm flex items-center justify-center">+</button>
+                  <button onClick={() => setZoom(z => Math.max(z - 0.15, 0.5))} className="w-6 h-6 rounded-full bg-white border border-gray-300 text-gray-700 font-bold text-sm flex items-center justify-center">−</button>
+                </>
+              )}
+              <button onClick={clearPhoto} className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white text-red-500 border border-red-200">✕</button>
+            </>
+          )}
+        </div>
+      )}
+
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+
+      {/* Price tag */}
+      <div className="text-center mt-2">
+        <span className="text-xs font-bold text-gray-700">{frame.size.label}</span>
+        <span className="text-xs text-gray-400 ml-1.5">${frame.size.price}</span>
+      </div>
+    </div>
+  )
+}
+
+// ─── Main Configurator ────────────────────────────────────────────
+export default function FrameConfigurator() {
+  const [frames, setFrames] = useState<FrameItem[]>([makeFrame('f1')])
+  const [activeId, setActiveId] = useState<string>('f1')
+  const [showFrameBar, setShowFrameBar] = useState(true)
+  const [showInfo, setShowInfo] = useState(false)
+  const counterRef = useRef(2)
+
+  const activeFrame = frames.find(f => f.id === activeId) ?? frames[0]
+
+  const updateFrame = (id: string, patch: Partial<FrameItem>) =>
+    setFrames(prev => prev.map(f => f.id === id ? { ...f, ...patch } : f))
+
+  const addFrame = () => {
+    const id = `f${counterRef.current++}`
+    setFrames(prev => [...prev, makeFrame(id)])
+    setActiveId(id)
   }
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (!touchStart.current) return
-    const t = e.touches[0]
-    setOffset({
-      x: touchStart.current.ox + (t.clientX - touchStart.current.tx),
-      y: touchStart.current.oy + (t.clientY - touchStart.current.ty),
+
+  const removeFrame = (id: string) => {
+    setFrames(prev => {
+      const next = prev.filter(f => f.id !== id)
+      if (activeId === id) setActiveId(next[next.length - 1]?.id ?? '')
+      return next
     })
   }
+
+  const clearAll = () => {
+    setFrames([makeFrame('f1')])
+    setActiveId('f1')
+    counterRef.current = 2
+  }
+
+  const totalPrice = frames.reduce((s, f) => s + f.size.price, 0)
+  const bundleTotal = frames.length > 1 ? Math.round(totalPrice * (1 - BUNDLE_DISCOUNT)) : null
+  const fullTotal = Math.round(totalPrice * 1.375)
+
+  // Gallery layout: side by side for 2+
+  const isGallery = frames.length > 1
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f5f0eb] max-w-md mx-auto md:max-w-2xl">
@@ -138,17 +268,15 @@ export default function FrameConfigurator() {
             <line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
         </button>
-        <div className="flex flex-col items-center">
-          <div className="flex items-center gap-0.5">
-            <span className="font-black text-lg tracking-widest text-gray-900">SMALLW</span>
-            <div className="relative inline-flex items-center justify-center w-5 h-5">
-              <span className="font-black text-lg text-gray-900">O</span>
-              <svg className="absolute" width="11" height="11" viewBox="0 0 12 12" fill="#1B5A4A">
-                <path d="M6 1L7.5 4H11L8.5 6.5L9.5 10L6 8L2.5 10L3.5 6.5L1 4H4.5L6 1Z"/>
-              </svg>
-            </div>
-            <span className="font-black text-lg tracking-widest text-gray-900">ODHOME</span>
+        <div className="flex items-center gap-0.5">
+          <span className="font-black text-lg tracking-widest text-gray-900">SMALLW</span>
+          <div className="relative inline-flex items-center justify-center w-5 h-5">
+            <span className="font-black text-lg text-gray-900">O</span>
+            <svg className="absolute" width="11" height="11" viewBox="0 0 12 12" fill="#1B5A4A">
+              <path d="M6 1L7.5 4H11L8.5 6.5L9.5 10L6 8L2.5 10L3.5 6.5L1 4H4.5L6 1Z"/>
+            </svg>
           </div>
+          <span className="font-black text-lg tracking-widest text-gray-900">ODHOME</span>
         </div>
         <div className="flex items-center gap-3">
           <button aria-label="Search" className="p-1">
@@ -179,140 +307,86 @@ export default function FrameConfigurator() {
         </span>
       </div>
 
-      {/* Frame Preview */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-4">
-        <div
-          className={`frame-wrap frame-${frameColor}`}
-          style={{ padding: '22px', width: '100%', maxWidth: '340px' }}
-        >
-          {/* Mat */}
-          <div
-            className="mat-inner overflow-hidden relative"
-            style={{
-              aspectRatio: `${aspectW} / ${aspectH}`,
-              cursor: cropMode ? 'grab' : (photo ? 'default' : 'pointer'),
-            }}
-            onClick={!photo && !loading ? triggerUpload : undefined}
-            onMouseDown={onMouseDown}
-            onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseUp}
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={() => { touchStart.current = null }}
-          >
-            {loading ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gray-50">
-                <div className="w-10 h-10 border-3 border-[#1B5A4A] border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }}/>
-                <span className="text-sm text-gray-500 font-medium">Processing photo…</span>
-              </div>
-            ) : photo ? (
-              <img
-                src={photo}
-                alt="Uploaded photo"
-                className={`absolute inset-0 w-full h-full object-cover select-none ${photoExiting ? 'photo-exit' : 'photo-enter'}`}
-                style={{
-                  transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
-                  transformOrigin: 'center',
-                  userSelect: 'none',
-                  pointerEvents: cropMode ? 'none' : 'auto',
-                }}
-                draggable={false}
-              />
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-gray-400 select-none">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="3" y="3" width="18" height="18" rx="2"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <polyline points="21,15 16,10 5,21"/>
-                </svg>
-                <span className="text-base font-medium text-gray-500">Add Photo</span>
-                <span className="text-xs text-gray-400">Tap to upload your image</span>
-              </div>
-            )}
-
-            {/* Crop mode overlay */}
-            {cropMode && photo && (
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute inset-0 border-2 border-dashed border-white/60 rounded-sm"/>
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">
-                  Drag to reposition
-                </div>
-              </div>
-            )}
-          </div>
+      {/* Gallery Wall Label */}
+      {isGallery && (
+        <div className="flex items-center justify-between px-4 mb-1">
+          <span className="text-xs font-bold text-[#1B5A4A] uppercase tracking-wide">🖼 Gallery Wall</span>
+          <button onClick={clearAll} className="text-xs text-red-400 hover:text-red-600 font-semibold">
+            Clear All
+          </button>
         </div>
+      )}
 
-        {/* Zoom controls when photo loaded */}
-        {photo && !loading && (
-          <div className="flex items-center gap-3 mt-3">
-            <button
-              onClick={() => setCropMode(v => !v)}
-              className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-colors border ${
-                cropMode
-                  ? 'bg-[#1B5A4A] text-white border-[#1B5A4A]'
-                  : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
-              }`}
-            >
-              ✂️ Crop Mode
-            </button>
-            {cropMode && (
-              <>
-                <button
-                  onClick={() => setZoom(z => Math.min(z + 0.15, 3))}
-                  className="w-8 h-8 rounded-full bg-white border border-gray-300 text-gray-700 font-bold text-lg flex items-center justify-center hover:bg-gray-50"
-                >+</button>
-                <button
-                  onClick={() => setZoom(z => Math.max(z - 0.15, 0.5))}
-                  className="w-8 h-8 rounded-full bg-white border border-gray-300 text-gray-700 font-bold text-lg flex items-center justify-center hover:bg-gray-50"
-                >−</button>
-                <button
-                  onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }) }}
-                  className="text-xs text-gray-500 underline hover:text-gray-700"
-                >Reset</button>
-              </>
-            )}
+      {/* Frame Preview Area */}
+      <div className="flex-1 flex items-center justify-center px-4 py-4">
+        {isGallery ? (
+          /* Gallery: side-by-side layout */
+          <div className="flex items-center justify-center gap-4 w-full flex-wrap">
+            {frames.map(frame => (
+              <div key={frame.id} className="flex-1" style={{ minWidth: '120px', maxWidth: `${Math.floor(320 / frames.length)}px` }}>
+                <SingleFrame
+                  frame={frame}
+                  isActive={frame.id === activeId}
+                  onActivate={() => setActiveId(frame.id)}
+                  onUpdate={(patch) => updateFrame(frame.id, patch)}
+                  onRemove={() => removeFrame(frame.id)}
+                  canRemove={frames.length > 1}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* Single frame — large */
+          <div className="w-full" style={{ maxWidth: '340px' }}>
+            <SingleFrame
+              frame={frames[0]}
+              isActive={true}
+              onActivate={() => {}}
+              onUpdate={(patch) => updateFrame(frames[0].id, patch)}
+              onRemove={() => {}}
+              canRemove={false}
+            />
           </div>
         )}
-
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleFileChange}
-        />
       </div>
 
       {/* Pricing Row */}
-      <div className="flex items-center justify-center gap-6 py-3 bg-white mx-4 rounded-xl shadow-sm mb-3">
+      <div className="flex items-center justify-center gap-4 py-3 bg-white mx-4 rounded-xl shadow-sm mb-3">
         <div className="text-center">
           <p className="text-xs text-gray-400 mb-0.5">Full Price</p>
-          <p className="text-lg font-bold text-[#C0392B] line-through decoration-2">${fullPrice}</p>
+          <p className="text-lg font-bold text-[#C0392B] line-through decoration-2">${fullTotal}</p>
         </div>
         <div className="w-px h-10 bg-gray-200"/>
         <div className="text-center">
           <p className="text-xs text-gray-400 mb-0.5">Sale Price</p>
-          <p className="text-2xl font-black text-gray-900">${salePrice}</p>
+          <p className="text-2xl font-black text-gray-900">${totalPrice}</p>
         </div>
-        <div className="w-px h-10 bg-gray-200"/>
-        <div className="text-center">
-          <p className="text-xs text-gray-400 mb-0.5">Bundle Price</p>
-          <p className="text-2xl font-black text-[#1B5A4A]">${bundlePrice}</p>
-        </div>
+        {frames.length > 1 && (
+          <>
+            <div className="w-px h-10 bg-gray-200"/>
+            <div className="text-center">
+              <p className="text-xs text-gray-400 mb-0.5">Bundle (–20%)</p>
+              <p className="text-2xl font-black text-[#1B5A4A]">${bundleTotal}</p>
+            </div>
+          </>
+        )}
+        {frames.length === 1 && (
+          <>
+            <div className="w-px h-10 bg-gray-200"/>
+            <div className="text-center">
+              <p className="text-xs text-gray-400 mb-0.5">Bundle Price</p>
+              <p className="text-2xl font-black text-[#1B5A4A]">${Math.round(activeFrame.size.price * (1 - BUNDLE_DISCOUNT))}</p>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Toolbar */}
       <div className="flex items-center justify-around py-3 bg-white mx-4 rounded-xl shadow-sm mb-3">
         <ToolbarBtn
           icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>}
-          label="Add"
-          onClick={() => {}}
-        />
-        <ToolbarBtn
-          icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M21 12v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h8"/><path d="m3 16 5-5 4 4 2-2 4 4"/></svg>}
-          label="Art"
-          onClick={triggerUpload}
+          label="Add Frame"
+          onClick={addFrame}
         />
         <ToolbarBtn
           icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="18" rx="1"/><rect x="6" y="7" width="12" height="10"/></svg>}
@@ -323,7 +397,7 @@ export default function FrameConfigurator() {
         <ToolbarBtn
           icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>}
           label="Clear"
-          onClick={clearPhoto}
+          onClick={() => updateFrame(activeId, { photo: null })}
         />
         <ToolbarBtn
           icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>}
@@ -335,6 +409,13 @@ export default function FrameConfigurator() {
       {/* Frame Selector Bar */}
       {showFrameBar && (
         <div className="bg-white mx-4 rounded-xl shadow-sm mb-3 p-3">
+          {/* Active frame label */}
+          {isGallery && (
+            <p className="text-[11px] font-semibold text-[#1B5A4A] uppercase tracking-wide mb-2">
+              Editing Frame {frames.findIndex(f => f.id === activeId) + 1} of {frames.length}
+            </p>
+          )}
+
           {/* Size picker */}
           <div className="mb-3">
             <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Size (inches)</p>
@@ -342,11 +423,11 @@ export default function FrameConfigurator() {
               {SIZES.map(size => (
                 <button
                   key={size.id}
-                  onClick={() => setActiveSize(size)}
-                  className={`size-btn ${activeSize.id === size.id ? 'active' : ''}`}
+                  onClick={() => updateFrame(activeId, { size })}
+                  className={`size-btn ${activeFrame.size.id === size.id ? 'active' : ''}`}
                 >
                   <span className="size-label">{size.label}</span>
-                  <span className={`size-inches ${activeSize.id === size.id ? 'text-white/80' : 'text-gray-400'}`}>
+                  <span className={`size-inches ${activeFrame.size.id === size.id ? 'text-white/80' : 'text-gray-400'}`}>
                     ${size.price}
                   </span>
                 </button>
@@ -363,19 +444,18 @@ export default function FrameConfigurator() {
               {FRAME_COLORS.map(c => (
                 <button
                   key={c.id}
-                  onClick={() => setFrameColor(c.id)}
-                  title={c.label}
-                  className="relative flex flex-col items-center gap-1"
+                  onClick={() => updateFrame(activeId, { color: c.id })}
+                  className="flex flex-col items-center gap-1"
                 >
                   <span
-                    className={`w-10 h-10 rounded-full border-[3px] transition-all block shadow-sm ${
-                      frameColor === c.id
-                        ? 'border-[#1B5A4A] scale-110 shadow-md'
-                        : 'border-gray-200 hover:border-gray-400'
+                    className={`w-10 h-10 rounded-full transition-all block shadow-sm ${
+                      activeFrame.color === c.id
+                        ? 'border-[3px] border-[#1B5A4A] scale-110 shadow-md'
+                        : 'border-[2px] border-gray-200 hover:border-gray-400'
                     }`}
                     style={{ backgroundColor: c.swatch }}
                   />
-                  <span className={`text-[10px] font-semibold ${frameColor === c.id ? 'text-[#1B5A4A]' : 'text-gray-500'}`}>
+                  <span className={`text-[10px] font-semibold ${activeFrame.color === c.id ? 'text-[#1B5A4A]' : 'text-gray-500'}`}>
                     {c.label}
                   </span>
                 </button>
@@ -385,13 +465,12 @@ export default function FrameConfigurator() {
         </div>
       )}
 
-      {/* Upload CTA */}
+      {/* CTA Button */}
       <div className="px-4 pb-6">
-        <button
-          onClick={triggerUpload}
-          className="w-full bg-[#1B5A4A] hover:bg-[#154739] text-white font-bold text-base py-4 rounded-xl transition-colors shadow-md active:scale-[0.98]"
-        >
-          {photo ? 'Change Photo' : 'Upload Photos'}
+        <button className="w-full bg-[#1B5A4A] hover:bg-[#154739] text-white font-bold text-base py-4 rounded-xl transition-colors shadow-md active:scale-[0.98]">
+          {frames.length > 1
+            ? `Add ${frames.length} Frames to Cart — $${bundleTotal ?? totalPrice}`
+            : (activeFrame.photo ? 'Add to Cart' : 'Upload Photos')}
         </button>
       </div>
 
