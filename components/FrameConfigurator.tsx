@@ -742,6 +742,7 @@ export default function FrameConfigurator() {
   const [flashColor, setFlashColor] = useState<string | null>(null)
   const [showInfo, setShowInfo] = useState(false)
   const [showPromo, setShowPromo] = useState(false)
+  const [giftMessage, setGiftMessage] = useState('')
   const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>(savedDesign?.wall ?? 'classic')
   const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
   const [ctaVisible, setCtaVisible] = useState(true)
@@ -1474,7 +1475,7 @@ export default function FrameConfigurator() {
       </div>
 
       {/* Gift Message */}
-      <GiftMessageBox />
+      <GiftMessageBox onMessageChange={setGiftMessage} />
 
       {/* FAQ Accordion */}
       <FAQAccordion />
@@ -1490,7 +1491,7 @@ export default function FrameConfigurator() {
       </div>
 
       <div className="px-4 pb-6" ref={ctaRef}>
-        <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} activeFrame={activeFrame} />
+        <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} activeFrame={activeFrame} giftMessage={giftMessage} />
       </div>
 
       {showInfo && <InfoModal onClose={() => setShowInfo(false)} />}
@@ -1731,6 +1732,7 @@ function RoomSizePicker({ onSuggest, selectedSizeId }: { onSuggest: (sizeId: str
     { label: '🛏️ Bedroom', sizeId: '20x30', hint: '20×30' },
     { label: '🚶 Hallway', sizeId: '12x16', hint: '12×16' },
     { label: '💼 Office', sizeId: '16x16', hint: '16×16' },
+    { label: '🍼 Nursery', sizeId: '13x13', hint: '13×13 square' },
   ]
   const [selected, setSelected] = useState<string | null>(null)
   const handlePick = (r: typeof rooms[0]) => {
@@ -1836,7 +1838,7 @@ function GiftMessageBox({ onMessageChange }: { onMessageChange?: (msg: string) =
           <div className="px-3 pb-3">
             <textarea
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={handleChange}
               maxLength={200}
               rows={3}
               placeholder="Write your personal message here... e.g. &quot;Happy Anniversary, love always 💛&quot;"
