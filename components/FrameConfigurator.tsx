@@ -1087,8 +1087,8 @@ export default function FrameConfigurator() {
                 const stockHints: Record<string, { label: string; color: string }> = {
                   '16x16': { label: 'POPULAR', color: '#F59E0B' },
                   '20x30': { label: '🔥 Hot', color: '#EF4444' },
-                  '16x20': { label: 'Low stock', color: '#EF4444' },
-                  '24x36': { label: 'Last few', color: '#EF4444' },
+                  '44x22': { label: 'NEW', color: '#1B5A4A' },
+                  '13x13': { label: 'NEW', color: '#1B5A4A' },
                 }
                 const hint = stockHints[size.id]
                 return (
@@ -1115,11 +1115,12 @@ export default function FrameConfigurator() {
               <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-2">Size comparison</p>
               <div className="flex items-end gap-2 justify-start">
                 {[
-                  { label: '8×10', w: 16, h: 20 },
-                  { label: '12×16', w: 20, h: 27 },
-                  { label: '16×16', w: 27, h: 27 },
-                  { label: '20×30', w: 28, h: 42 },
-                  { label: '24×36', w: 34, h: 51 },
+                  { label: '8×10', w: 14, h: 18 },
+                  { label: '12×16', w: 18, h: 24 },
+                  { label: '16×16', w: 24, h: 24 },
+                  { label: '20×30', w: 25, h: 37 },
+                  { label: '24×36', w: 30, h: 45 },
+                  { label: '44×22', w: 44, h: 22 },
                 ].map(s => (
                   <div key={s.label} className="flex flex-col items-center gap-1">
                     <div
