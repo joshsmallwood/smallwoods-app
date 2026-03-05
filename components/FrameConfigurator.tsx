@@ -2029,6 +2029,10 @@ function FAQAccordion() {
   const [open, setOpen] = useState<number | null>(null)
   const faqs = [
     {
+      q: 'How long until it arrives?',
+      a: 'Most orders are produced in 1–2 business days, then shipped via UPS. Standard shipping takes 2–5 business days. Expedited options are available at checkout. Order before 3 PM CT today and production starts today.'
+    },
+    {
       q: 'How do I upload my photo?',
       a: 'Tap "Upload Your Photo to Continue" and select any photo from your device. JPG, PNG, and HEIC files are all supported. We recommend at least 1MB for best print quality.'
     },
