@@ -11,7 +11,7 @@ const NAMES = [
   'Danielle','Nicole','Hannah','Madison','Kimberly','Tiffany','Alexis',
 ]
 
-const PROVINCE_ABBR: Record<string,string> = {
+const PROVINCE_ABBR: Record<string, string> = {
   Alabama:'AL',Alaska:'AK',Arizona:'AZ',Arkansas:'AR',California:'CA',
   Colorado:'CO',Connecticut:'CT',Delaware:'DE',Florida:'FL',Georgia:'GA',
   Hawaii:'HI',Idaho:'ID',Illinois:'IL',Indiana:'IN',Iowa:'IA',
@@ -26,7 +26,7 @@ const PROVINCE_ABBR: Record<string,string> = {
 }
 
 function parseSize(variant: string): string | null {
-  const m = variant.match(/(\d+)["\u201c\u201d]?\s*x\s*(\d+)/i)
+  const m = variant.match(/(\d+)["\u201c\u201d]?\s*[xX]\s*(\d+)/)
   return m ? `${m[1]}\u00d7${m[2]}` : null
 }
 
@@ -34,9 +34,11 @@ function parseColor(variant: string): string | null {
   const parts = variant.split('/')
   if (parts.length >= 2) {
     const c = parts[1].trim()
-    if (['Black','White','Oak','Walnut','Stained'].includes(c)) {
-      return c === 'Stained' ? 'Walnut' : c
-    }
+    if (c === 'Black') return 'Black'
+    if (c === 'White') return 'White'
+    if (c === 'Oak' || c === 'Natural') return 'Oak'
+    if (c === 'Walnut' || c === 'Stained' || c === 'Stain') return 'Walnut'
+    if (c === 'No Frame') return null // skip no-frame
   }
   return null
 }
@@ -50,6 +52,26 @@ export async function GET() {
       return NextResponse.json({ buyers: cache.buyers, cached: true, source: 'neon' })
     }
 
+    // Simple query — no LATERAL, use jsonb_array_elements in FROM
+    const query = `
+      SELECT DISTINCT ON (city, state)
+        city, state, variant
+      FROM (
+        SELECT
+          shipping_address_city AS city,
+          shipping_address_province AS state,
+          jsonb_array_elements(line_items)->>'variant_title' AS variant
+        FROM shopify_orders
+        WHERE created_at >= NOW() - INTERVAL '7 days'
+          AND shipping_address_country = 'United States'
+          AND shipping_address_city IS NOT NULL
+          AND shipping_address_province IS NOT NULL
+          AND line_items IS NOT NULL
+      ) sub
+      WHERE variant ~ '[0-9]+.*[xX].*[0-9]+'
+      LIMIT 30
+    `
+
     const res = await fetch(NEON_URL, {
       method: 'POST',
       headers: {
@@ -57,30 +79,18 @@ export async function GET() {
         'Authorization': `Basic ${DB_CREDS}`,
         'Neon-Connection-String': NEON_CONN,
       },
-      body: JSON.stringify({
-        query: `SELECT DISTINCT ON (o.shipping_address_city, o.shipping_address_province)
-          o.shipping_address_city AS city,
-          o.shipping_address_province AS state,
-          li.elem->>'variant_title' AS variant
-        FROM shopify_orders o,
-          LATERAL jsonb_array_elements(o.line_items) AS li(elem)
-        WHERE o.created_at >= NOW() - INTERVAL '7 days'
-          AND o.shipping_address_city IS NOT NULL
-          AND o.shipping_address_province IS NOT NULL
-          AND o.shipping_address_country = 'United States'
-          AND li.elem->>'variant_title' ~ '\\d+.*x.*\\d+'
-        ORDER BY o.shipping_address_city, o.shipping_address_province, o.created_at DESC
-        LIMIT 30`,
-        params: [],
-      }),
+      body: JSON.stringify({ query, params: [] }),
     })
 
-    if (!res.ok) throw new Error(`DB error: ${res.status}`)
+    if (!res.ok) {
+      const errText = await res.text()
+      throw new Error(`DB error: ${res.status} — ${errText.slice(0,200)}`)
+    }
     const data = await res.json()
     const rows: Array<{ city: string; state: string; variant: string }> = data.rows ?? []
 
     if (rows.length < 5) {
-      return NextResponse.json({ buyers: [], cached: false, source: 'fallback' })
+      return NextResponse.json({ buyers: [], cached: false, source: 'fallback', rowCount: rows.length })
     }
 
     let nameIdx = 0
@@ -98,7 +108,7 @@ export async function GET() {
       .slice(0, 20)
 
     cache = { buyers, ts: Date.now() }
-    return NextResponse.json({ buyers, cached: false, source: 'neon' })
+    return NextResponse.json({ buyers, cached: false, source: 'neon', rowCount: rows.length })
   } catch (e) {
     return NextResponse.json({ buyers: [], error: String(e), source: 'error' }, { status: 500 })
   }
