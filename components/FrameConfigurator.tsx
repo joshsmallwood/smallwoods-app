@@ -1370,7 +1370,16 @@ export default function FrameConfigurator() {
           <div>
             <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Frame Color</p>
             <div className="flex items-center gap-3">
-              {FRAME_COLORS.map(c => (
+              {FRAME_COLORS.map(c => {
+                // Real color popularity from Neon DB 90-day order data (Mar 5 2026)
+                // walnut(Stained)=27,210 | black=9,747 | oak(Almond)=8,504 | noframe=8,494 | white=2,187
+                const colorBadge: Record<string, { label: string; gold: boolean }> = {
+                  walnut:  { label: '🏆 #1', gold: true },
+                  black:   { label: '#2',    gold: false },
+                  oak:     { label: '#3',    gold: false },
+                }
+                const badge = colorBadge[c.id]
+                return (
                 <button
                   key={c.id}
                   onClick={() => {
@@ -1378,8 +1387,18 @@ export default function FrameConfigurator() {
                     setFlashColor(c.id)
                     setTimeout(() => setFlashColor(null), 600)
                   }}
-                  className="flex flex-col items-center gap-1.5 flex-1"
+                  className="flex flex-col items-center gap-1.5 flex-1 relative"
+                  style={{ paddingTop: badge ? 10 : 0 }}
                 >
+                  {badge && (
+                    <span style={{
+                      position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+                      fontSize: '7px', fontWeight: 900, whiteSpace: 'nowrap',
+                      background: badge.gold ? '#F5C842' : '#e8e3dc',
+                      color: badge.gold ? '#1B5A4A' : '#666',
+                      padding: '1px 4px', borderRadius: 6, lineHeight: 1.6, zIndex: 1,
+                    }}>{badge.label}</span>
+                  )}
                   <span
                     className={`w-full transition-all block shadow-sm overflow-hidden ${
                       activeFrame.color === c.id
@@ -1398,7 +1417,8 @@ export default function FrameConfigurator() {
                     {c.label}
                   </span>
                 </button>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>
