@@ -248,7 +248,8 @@ function ViewingCount() {
 
 // Cities/states sourced from real recent Neon DB orders (Mar 5 2026, last 3 days)
 // Cities sourced from real Neon DB order data (last 7 days, top shipping cities — verified Mar 2026)
-const RECENT_BUYERS = [
+// Fallback buyers (real cities/sizes from Neon DB, verified Mar 5 2026)
+const FALLBACK_BUYERS = [
   { name: 'Sarah', location: 'Louisville, KY', size: '25×17', color: 'Walnut' },
   { name: 'Ashley', location: 'San Antonio, TX', size: '25×17', color: 'Black' },
   { name: 'Emily', location: 'Knoxville, TN', size: '20×30', color: 'Walnut' },
@@ -273,14 +274,29 @@ const RECENT_BUYERS = [
 
 function RecentBuyerToast() {
   const [visible, setVisible] = useState(false)
-  const [buyer, setBuyer] = useState(RECENT_BUYERS[0])
+  const [buyers, setBuyers] = useState(FALLBACK_BUYERS)
+  const [buyer, setBuyer] = useState(FALLBACK_BUYERS[0])
   const [minsAgo, setMinsAgo] = useState(3)
   const idxRef = useRef(0)
+
+  // Fetch real buyer data from Neon DB API on mount
+  useEffect(() => {
+    fetch('/api/recent-buyers')
+      .then(r => r.json())
+      .then(data => {
+        if (data.buyers && data.buyers.length >= 5) {
+          setBuyers(data.buyers)
+          setBuyer(data.buyers[0])
+          idxRef.current = 0
+        }
+      })
+      .catch(() => { /* keep fallback */ })
+  }, [])
 
   useEffect(() => {
     // Show first toast after 4 seconds
     const initial = setTimeout(() => {
-      setBuyer(RECENT_BUYERS[0])
+      setBuyer(buyers[0])
       setMinsAgo(2 + Math.floor(Math.random() * 8))
       setVisible(true)
       const hide = setTimeout(() => setVisible(false), 4500)
@@ -289,15 +305,15 @@ function RecentBuyerToast() {
 
     // Then cycle every 18 seconds
     const interval = setInterval(() => {
-      idxRef.current = (idxRef.current + 1) % RECENT_BUYERS.length
-      setBuyer(RECENT_BUYERS[idxRef.current])
+      idxRef.current = (idxRef.current + 1) % buyers.length
+      setBuyer(buyers[idxRef.current])
       setMinsAgo(1 + Math.floor(Math.random() * 12))
       setVisible(true)
       setTimeout(() => setVisible(false), 4500)
     }, 18000)
 
     return () => { clearTimeout(initial); clearInterval(interval) }
-  }, [])
+  }, [buyers])
 
   return (
     <div
