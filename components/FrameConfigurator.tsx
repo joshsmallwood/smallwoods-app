@@ -1350,12 +1350,14 @@ export default function FrameConfigurator() {
               <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-2">Size comparison</p>
               <div className="flex items-end gap-2 justify-start">
                 {[
-                  { label: '8×10', w: 14, h: 18 },
-                  { label: '13×13', w: 20, h: 20 },
-                  { label: '12×16', w: 18, h: 24 },
-                  { label: '16×16', w: 24, h: 24 },
-                  { label: '25×17', w: 37, h: 25, popular: true },
-                  { label: '20×30', w: 25, h: 37 },
+                  { label: '8×10', w: 12, h: 15 },
+                  { label: '12×16', w: 16, h: 21 },
+                  { label: '13×13', w: 18, h: 18 },
+                  { label: '16×16', w: 21, h: 21 },
+                  { label: '25×17', w: 34, h: 23, popular: true },
+                  { label: '20×30', w: 22, h: 33 },
+                  { label: '24×36', w: 26, h: 39 },
+                  { label: '25×25', w: 34, h: 34 },
                   { label: '44×22', w: 44, h: 22 },
                 ].map(s => (
                   <div key={s.label} className="flex flex-col items-center gap-1">
