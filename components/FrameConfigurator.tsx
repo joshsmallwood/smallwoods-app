@@ -518,10 +518,28 @@ function SingleFrame({
                 className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${cropMode ? 'bg-[#1B5A4A] text-white border-[#1B5A4A]' : 'bg-white text-gray-600 border-gray-300'}`}
               >✂️ Crop</button>
               {cropMode && (
-                <>
+                <div className="flex items-center gap-1">
+                  {/* Crop presets */}
+                  <button
+                    onClick={() => { setZoom(1.65); setOffset({ x: 0, y: 0 }) }}
+                    className="text-[10px] font-bold px-2 py-1 rounded-full border transition-colors"
+                    style={{ background: '#1B5A4A', color: 'white', borderColor: '#1B5A4A' }}
+                    title="Fill — zoom to fill frame"
+                  >📐 Fill</button>
+                  <button
+                    onClick={() => { setZoom(0.72); setOffset({ x: 0, y: 0 }) }}
+                    className="text-[10px] font-bold px-2 py-1 rounded-full border transition-colors"
+                    style={{ background: 'white', color: '#1B5A4A', borderColor: '#1B5A4A' }}
+                    title="Fit — see full photo"
+                  >🔲 Fit</button>
+                  <button
+                    onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }) }}
+                    className="text-[10px] font-bold px-2 py-1 rounded-full border border-gray-300 bg-white text-gray-600"
+                    title="Reset to default"
+                  >↩</button>
                   <button onClick={() => setZoom(z => Math.min(z + 0.15, 3))} className="w-6 h-6 rounded-full bg-white border border-gray-300 text-gray-700 font-bold text-sm flex items-center justify-center">+</button>
                   <button onClick={() => setZoom(z => Math.max(z - 0.15, 0.5))} className="w-6 h-6 rounded-full bg-white border border-gray-300 text-gray-700 font-bold text-sm flex items-center justify-center">−</button>
-                </>
+                </div>
               )}
               <button onClick={clearPhoto} className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white text-red-500 border border-red-200">✕</button>
             </>
