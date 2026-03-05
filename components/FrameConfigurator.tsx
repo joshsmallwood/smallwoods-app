@@ -1263,11 +1263,12 @@ export default function FrameConfigurator() {
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-4">How it looks in your home</p>
         <div className="flex gap-2.5 overflow-x-auto pb-1 px-4" style={{ scrollSnapType: 'x mandatory' }}>
           {[
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397', room: 'Living Room', name: 'Sarah M.', size: '16×16 Walnut' },
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/220224Practicals_20.jpg?v=1764101397', room: 'Bedroom', name: 'Jessica L.', size: '16×16 Oak' },
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS_E_1x1_a97b2134-fd1d-4aeb-8cb8-6c4fc0f31d6e.jpg?v=1764101397', room: 'Office', name: 'Mike R.', size: '12×16 Black' },
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS-BlackXL_ba652b45-37a3-4f18-8af8-d341b150f44a.jpg?v=1764101397', room: 'Hallway', name: 'Amy K.', size: '44×22 Black' },
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/sweethomememories1-Copy_da4bc885-36fb-4cba-94a2-39b8bae83b7f.jpg?v=1764101397', room: 'Nursery', name: 'Rachel T.', size: '12×16 White' },
+            // Sizes sourced from real top-selling Neon DB data; names from real JudgeMe reviewers
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397', room: 'Living Room', name: 'Rene K.', size: '25×17 Walnut' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/220224Practicals_20.jpg?v=1764101397', room: 'Bedroom', name: 'Teri L.', size: '20×30 Walnut' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS_E_1x1_a97b2134-fd1d-4aeb-8cb8-6c4fc0f31d6e.jpg?v=1764101397', room: 'Office', name: 'Kalley M.', size: '16×16 Black' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS-BlackXL_ba652b45-37a3-4f18-8af8-d341b150f44a.jpg?v=1764101397', room: 'Gallery Wall', name: 'Amity R.', size: '44×22 Black' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/sweethomememories1-Copy_da4bc885-36fb-4cba-94a2-39b8bae83b7f.jpg?v=1764101397', room: 'Nursery', name: 'J.M.', size: '13×13 White' },
           ].map(c => (
             <div key={c.name} className="flex-shrink-0 relative rounded-xl overflow-hidden" style={{ width: 130, height: 160, scrollSnapAlign: 'start', boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }}>
               <img src={c.img} alt={c.room} className="absolute inset-0 w-full h-full object-cover" style={{ filter: 'brightness(0.85)' }} />
