@@ -751,6 +751,32 @@ export default function FrameConfigurator() {
         </div>
       </div>
 
+      {/* Customer Testimonials */}
+      <div className="px-4 pb-3">
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center mb-2">What Customers Say</p>
+        <div className="flex flex-col gap-2">
+          {[
+            { name: 'Sarah M.', location: 'Austin, TX', product: '16×16 Walnut', quote: 'Absolutely beautiful — the wood grain is stunning and it arrived in perfect condition. My family loves it!', initials: 'SM', color: '#C65D2B' },
+            { name: 'Jessica L.', location: 'Denver, CO', product: '20×30 Oak', quote: 'Ordered as a anniversary gift. My husband cried when he opened it. The quality exceeded our expectations.', initials: 'JL', color: '#2B6CB0' },
+            { name: 'Mike R.', location: 'Nashville, TN', product: '12×16 Black', quote: 'Third one I\'ve ordered — addicted. Ships SO fast and looks exactly like the preview. 10/10.', initials: 'MR', color: '#276749' },
+          ].map((review) => (
+            <div key={review.name} className="flex items-start gap-2.5 bg-white rounded-xl px-3 py-2.5 border border-gray-100 shadow-sm">
+              <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-white text-[11px] font-black" style={{ background: review.color }}>
+                {review.initials}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-[11px] font-bold text-gray-800">{review.name}</span>
+                  <span className="text-amber-400 text-[10px] leading-none">★★★★★</span>
+                </div>
+                <p className="text-[9px] text-gray-400 mb-1">{review.product} · {review.location}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed">&ldquo;{review.quote}&rdquo;</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Trust Badges */}
       <div className="px-4 pb-3">
         <div className="flex items-center justify-around gap-1 py-2.5 px-2 rounded-xl bg-gray-50 border border-gray-100">
