@@ -1565,6 +1565,13 @@ export default function FrameConfigurator() {
                 )
               })}
             </div>
+            {/* Active color description strip — visible text helps differentiate similar shades */}
+            {(() => {
+              const sel = FRAME_COLORS.find(c => c.id === activeFrame.color)
+              return sel ? (
+                <p className="text-[10px] text-gray-400 leading-snug mt-1.5 text-center px-1" style={{ minHeight: '2.2em', transition: 'opacity 0.2s' }}>{sel.tooltip}</p>
+              ) : null
+            })()}
           </div>
         </div>
       )}
