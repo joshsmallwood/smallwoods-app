@@ -875,6 +875,31 @@ export default function FrameConfigurator() {
         </div>
       )}
 
+      {/* Customers Also Love */}
+      <div className="px-4 pb-3">
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Customers also love</p>
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {[
+            { emoji: '🎨', title: 'Canvas Print', subtitle: '16×20 · Rolled', price: '$49', href: 'https://smallwoodhome.com/collections/canvas-prints' },
+            { emoji: '🖼️', title: 'Gallery Wall Set', subtitle: '3-pack · Mixed sizes', price: '$179', href: 'https://smallwoodhome.com/collections/gallery-wall' },
+            { emoji: '📸', title: 'Photo Book', subtitle: 'Hardcover · 20 pgs', price: '$39', href: 'https://smallwoodhome.com/collections/photo-books' },
+          ].map(p => (
+            <a
+              key={p.title}
+              href={p.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 w-28 bg-white border border-gray-200 rounded-xl p-2.5 flex flex-col gap-1 hover:border-[#1B5A4A] transition-colors"
+            >
+              <span className="text-2xl leading-none">{p.emoji}</span>
+              <span className="text-[11px] font-bold text-gray-800 leading-tight">{p.title}</span>
+              <span className="text-[10px] text-gray-400 leading-tight">{p.subtitle}</span>
+              <span className="text-[12px] font-black text-[#1B5A4A]">{p.price}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
       {/* Social Proof Strip */}
       <div className="px-4 pb-2">
         <div className="flex items-center justify-center gap-2 bg-amber-50 border border-amber-200 rounded-xl py-2.5 px-4">
