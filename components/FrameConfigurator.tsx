@@ -1392,12 +1392,18 @@ function AddToCartButton({ frames, bundleTotal, totalPrice }: {
   return (
     <button
       onClick={hasPhotos ? handleAddToCart : () => { document.querySelector<HTMLElement>('[data-frame-upload]')?.click() }}
-      className={`w-full font-bold text-base py-4 rounded-xl transition-all shadow-md active:scale-[0.98] relative overflow-hidden ${
-        hasPhotos
-          ? 'bg-[#1B5A4A] hover:bg-[#154739] text-white cursor-pointer'
-          : 'bg-[#1B5A4A] text-white cursor-pointer'
-      }`}
+      className="w-full font-bold rounded-xl transition-all active:scale-[0.98] relative overflow-hidden cursor-pointer"
+      style={{
+        background: hasPhotos ? '#1B5A4A' : 'linear-gradient(135deg, #1B5A4A 0%, #2d7a65 100%)',
+        color: 'white',
+        padding: '0',
+        boxShadow: hasPhotos ? '0 4px 16px rgba(27,90,74,0.35)' : '0 4px 20px rgba(27,90,74,0.5), 0 0 0 3px rgba(27,90,74,0.15)',
+      }}
     >
+      {/* Pulsing glow ring — only when no photo yet */}
+      {!hasPhotos && !adding && !added && (
+        <span className="absolute -inset-[3px] rounded-[15px] pointer-events-none" style={{ border: '3px solid rgba(126,200,164,0.45)', animation: 'ctaGlow 2s ease-in-out infinite' }} />
+      )}
       {/* Shimmer glint overlay */}
       {!adding && !added && (
         <span className="absolute inset-0 pointer-events-none" style={{ animation: 'ctaShimmer 2.8s ease-in-out infinite' }}>
@@ -1405,13 +1411,29 @@ function AddToCartButton({ frames, bundleTotal, totalPrice }: {
         </span>
       )}
       {adding ? (
-        <span className="flex items-center justify-center gap-2">
+        <span className="flex items-center justify-center gap-2 py-4">
           <span className="w-4 h-4 rounded-full animate-spin inline-block" style={{ borderWidth: '2px', borderStyle: 'solid', borderColor: 'white', borderTopColor: 'transparent' }}/>
           Adding to Cart…
         </span>
       ) : added ? (
-        <span className="flex items-center justify-center gap-2">✓ Added! Redirecting to cart…</span>
-      ) : label}
+        <span className="flex items-center justify-center gap-2 py-4">✓ Added! Redirecting to cart…</span>
+      ) : hasPhotos ? (
+        <span className="flex items-center justify-center gap-2 py-4">{label}</span>
+      ) : (
+        <span className="flex items-center justify-center gap-3 py-3.5 px-4">
+          {/* Camera icon */}
+          <span className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.18)' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+          </span>
+          <span className="flex flex-col items-start">
+            <span style={{ fontSize: '15px', fontWeight: 800, lineHeight: 1.2 }}>Upload Your Photo to Continue</span>
+            <span style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(255,255,255,0.72)', lineHeight: 1.2 }}>Your memory · Our frame · Ships in 3 days</span>
+          </span>
+        </span>
+      )}
     </button>
   )
 }
