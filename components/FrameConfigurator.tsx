@@ -825,8 +825,8 @@ export default function FrameConfigurator() {
               </svg>
             ))}
           </div>
-          <span className="text-xs font-semibold text-[#1B1B1B]">4.96</span>
-          <span className="text-xs text-[#1B5A4A] font-medium underline cursor-pointer">77,130 reviews</span>
+          <span className="text-xs font-semibold text-[#1B1B1B]">4.74</span>
+          <span className="text-xs text-[#1B5A4A] font-medium underline cursor-pointer">6,494 reviews</span>
         </div>
         <div className="flex items-center gap-1.5 mt-1">
           <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
