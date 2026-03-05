@@ -194,14 +194,34 @@ function ShippingBadge() {
   return <span className="bg-[#C0392B] text-white text-xs font-bold px-3 py-1 rounded-full">{label}</span>
 }
 
+// Viewer counts calibrated to real Neon DB order volume by hour (last 90 days, CT timezone)
+// Peak 8pm CT = 1,958 orders → max viewers; Trough 3am CT = 43 orders → min viewers
+const HOURLY_ORDER_VOLUME = [279,144,70,43,79,158,326,683,1077,1405,1633,1844,1845,1796,1816,1569,1469,1429,1535,1805,1958,1516,929,537]
+const MIN_ORDERS = 43, MAX_ORDERS = 1958
+const VIEWER_MIN = 14, VIEWER_MAX = 54 // overall range
+
+function getViewerBoundsForHour(hourCT: number): { lo: number; hi: number } {
+  const vol = HOURLY_ORDER_VOLUME[hourCT] ?? 500
+  const ratio = (vol - MIN_ORDERS) / (MAX_ORDERS - MIN_ORDERS)
+  const mid = Math.round(VIEWER_MIN + ratio * (VIEWER_MAX - VIEWER_MIN))
+  return { lo: Math.max(VIEWER_MIN, mid - 4), hi: Math.min(VIEWER_MAX, mid + 4) }
+}
+
 function ViewingCount() {
-  const [count, setCount] = useState(() => 34 + Math.floor(Math.random() * 18))
+  const getBounds = () => {
+    const ct = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+    return getViewerBoundsForHour(ct.getHours())
+  }
+  const [count, setCount] = useState(() => {
+    const { lo, hi } = getBounds()
+    return lo + Math.floor(Math.random() * (hi - lo + 1))
+  })
   useEffect(() => {
     const t = setInterval(() => {
-      setCount(c => {
-        const delta = Math.random() < 0.5 ? -1 : 1
-        const next = c + delta
-        return next < 28 ? 29 : next > 54 ? 53 : next
+      setCount(() => {
+        const { lo, hi } = getBounds()
+        const base = lo + Math.floor(Math.random() * (hi - lo + 1))
+        return base
       })
     }, 4200)
     return () => clearInterval(t)
