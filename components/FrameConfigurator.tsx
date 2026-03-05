@@ -177,7 +177,7 @@ function SingleFrame({
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 select-none"
               style={{ background: 'linear-gradient(135deg, #faf8f5 0%, #f5f0e8 100%)' }}>
-              <div className="absolute inset-3 rounded-lg border-2 border-dashed border-[#1B5A4A]/30 pointer-events-none"/>
+              <div className="absolute inset-3 rounded-lg border-2 border-dashed pointer-events-none" style={{ borderColor: 'rgba(27,90,74,0.35)', animation: 'dashPulse 2s ease-in-out infinite' }}/>
               <div className="w-14 h-14 rounded-full bg-[#1B5A4A]/10 flex items-center justify-center">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1B5A4A" strokeWidth="1.5">
                   <rect x="3" y="3" width="18" height="18" rx="2"/>

@@ -260,3 +260,9 @@ body {
 .frame-pop {
   animation: framePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
+
+/* Add Photo dashed border pulse */
+@keyframes dashPulse {
+  0%, 100% { opacity: 0.35; border-color: rgba(27,90,74,0.35); }
+  50% { opacity: 0.75; border-color: rgba(27,90,74,0.7); }
+}
