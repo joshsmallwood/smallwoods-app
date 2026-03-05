@@ -1501,11 +1501,13 @@ export default function FrameConfigurator() {
                     onClick={() => {
                       setQuizDist(opt.val)
                       // Size recommendation logic
+                      // Sizes calibrated to real order data from Neon DB
+                      // #1 seller: 25x17 (10,488), #5: 20x30 (3,113), #4: 24x36 (3,225), #6: 44x22 (2,594)
                       const map: Record<string, Record<string, string>> = {
                         small:  { close: '8x10',  medium: '10x12', far: '12x16' },
-                        medium: { close: '12x16', medium: '16x16', far: '20x30' },
-                        large:  { close: '16x16', medium: '20x30', far: '24x36' },
-                        xlarge: { close: '20x30', medium: '24x36', far: '44x22' },
+                        medium: { close: '12x16', medium: '25x17', far: '20x30' },
+                        large:  { close: '25x17', medium: '24x36', far: '24x36' },
+                        xlarge: { close: '24x36', medium: '24x36', far: '44x22' },
                       }
                       const sizeId = map[quizWall || 'medium']?.[opt.val] || '16x16'
                       const found = SIZES.find(s => s.id === sizeId) || SIZES.find(s => s.id === '16x16')!
