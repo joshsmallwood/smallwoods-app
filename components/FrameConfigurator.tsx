@@ -893,7 +893,7 @@ export default function FrameConfigurator() {
       {/* Top Banner — shown only during active sale */}
       {isSaleActive() && (
         <div className="bg-[#1B5A4A] text-white text-center py-2 px-4 flex items-center justify-center gap-2 text-sm font-medium">
-          <span>🍀 35% Off Auto-Applied — Lucky You Sale!</span>
+          <span>🍀 35% Off Auto-Applied — Ends in <OfferCountdown /></span>
           <button
             onClick={() => setShowPromo(true)}
             className="bg-white text-[#1B5A4A] text-xs font-bold px-3 py-1 rounded-full ml-2 hover:bg-gray-100 transition-colors active:scale-95"
