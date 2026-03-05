@@ -1120,6 +1120,13 @@ export default function FrameConfigurator() {
                   const diff = qty - frames.length
                   if (diff > 0) {
                     for (let i = 0; i < diff; i++) addFrame()
+                  } else if (diff < 0) {
+                    // Remove frames from the end to reach target qty
+                    setFrames(prev => {
+                      const next = prev.slice(0, qty)
+                      setActiveId(next[next.length - 1]?.id ?? '')
+                      return next
+                    })
                   }
                 }}
                 className="flex-1 flex flex-col items-center gap-0.5 py-2.5 rounded-xl border-2 transition-all relative"
