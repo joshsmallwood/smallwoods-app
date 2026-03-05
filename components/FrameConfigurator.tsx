@@ -1769,7 +1769,9 @@ function AddToCartButton({ frames, bundleTotal, totalPrice }: {
           </span>
           <span className="flex flex-col items-start">
             <span style={{ fontSize: '15px', fontWeight: 800, lineHeight: 1.2 }}>Upload Your Photo to Continue</span>
-            <span style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(255,255,255,0.72)', lineHeight: 1.2 }}>Your memory · Our frame · Ships in 3 days</span>
+            <span style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(255,255,255,0.82)', lineHeight: 1.2 }}>
+              {`✓ ${activeFrame.size.label} · ${activeFrame.color.charAt(0).toUpperCase()}${activeFrame.color.slice(1)} selected — one step left!`}
+            </span>
           </span>
         </span>
       )}
