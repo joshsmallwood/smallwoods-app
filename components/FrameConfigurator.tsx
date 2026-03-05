@@ -823,6 +823,9 @@ export default function FrameConfigurator() {
         </div>
       </div>
 
+      {/* Gift Message */}
+      <GiftMessageBox />
+
       {/* CTA Button */}
       <div className="px-4 pb-6" ref={ctaRef}>
         <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} />
@@ -870,6 +873,39 @@ export default function FrameConfigurator() {
         >
           📸 Upload Photo &amp; Order
         </button>
+      </div>
+    </div>
+  )
+}
+
+function GiftMessageBox() {
+  const [isGift, setIsGift] = React.useState(false)
+  const [message, setMessage] = React.useState('')
+  return (
+    <div className="px-4 pb-3">
+      <div className={`rounded-xl border transition-all duration-300 overflow-hidden ${isGift ? 'border-[#1B5A4A]/30 bg-[#f0faf5]' : 'border-gray-100 bg-white'}`}>
+        <button
+          onClick={() => setIsGift(v => !v)}
+          className="w-full flex items-center gap-2.5 px-3 py-2.5"
+        >
+          <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 border-2 transition-colors ${isGift ? 'bg-[#1B5A4A] border-[#1B5A4A]' : 'bg-white border-gray-300'}`}>
+            {isGift && <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5"><polyline points="20,6 9,17 4,12"/></svg>}
+          </div>
+          <span className="text-sm font-semibold text-gray-700">🎁 This is a gift — add a free message</span>
+        </button>
+        {isGift && (
+          <div className="px-3 pb-3">
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              maxLength={200}
+              rows={3}
+              placeholder="Write your personal message here... e.g. &quot;Happy Anniversary, love always 💛&quot;"
+              className="w-full text-[12px] text-gray-700 placeholder-gray-400 border border-[#1B5A4A]/20 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-[#1B5A4A]/40 bg-white"
+            />
+            <p className="text-[9px] text-gray-400 text-right mt-0.5">{message.length}/200</p>
+          </div>
+        )}
       </div>
     </div>
   )
