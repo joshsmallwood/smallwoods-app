@@ -227,7 +227,7 @@ function SingleFrame({
         </div>
       )}
 
-      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} data-frame-upload="true" />
 
       {/* Price tag */}
       <div className="text-center mt-2">
@@ -540,15 +540,15 @@ function AddToCartButton({ frames, bundleTotal, totalPrice }: {
   const hasPhotos = frames.some(f => f.photo)
   const label = frames.length > 1
     ? `Add ${frames.length} Frames to Cart — $${bundleTotal ?? totalPrice}`
-    : (hasPhotos ? `Add to Cart — $${totalPrice}` : 'Upload Photos to Continue')
+    : (hasPhotos ? `Add to Cart — $${totalPrice}` : '📷  Upload Your Photo to Continue')
 
   return (
     <button
-      onClick={hasPhotos ? handleAddToCart : undefined}
+      onClick={hasPhotos ? handleAddToCart : () => { document.querySelector<HTMLElement>('[data-frame-upload]')?.click() }}
       className={`w-full font-bold text-base py-4 rounded-xl transition-all shadow-md active:scale-[0.98] relative overflow-hidden ${
         hasPhotos
           ? 'bg-[#1B5A4A] hover:bg-[#154739] text-white cursor-pointer'
-          : 'bg-gray-200 text-gray-400 cursor-default'
+          : 'bg-[#1B5A4A] text-white cursor-pointer animate-pulse'
       }`}
     >
       {adding ? (
