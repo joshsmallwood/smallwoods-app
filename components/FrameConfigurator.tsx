@@ -919,6 +919,33 @@ export default function FrameConfigurator() {
         <ShippingBadge />
       </div>
 
+      {/* 3-Step Progress Indicator */}
+      {(() => {
+        const photoUploaded = frames.some(f => f.photo)
+        const steps = [
+          { label: 'Choose Frame', done: true },
+          { label: 'Upload Photo', done: photoUploaded },
+          { label: 'Checkout', done: false },
+        ]
+        return (
+          <div className="flex items-center px-4 pt-1 pb-2 gap-0">
+            {steps.map((step, i) => (
+              <div key={step.label} className="flex items-center" style={{ flex: i < steps.length - 1 ? '1' : 'none' }}>
+                <div className="flex flex-col items-center gap-0.5">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black transition-all ${step.done ? 'bg-[#1B5A4A] text-white' : i === 1 && !photoUploaded ? 'bg-amber-400 text-white animate-pulse' : 'bg-gray-200 text-gray-400'}`}>
+                    {step.done ? '✓' : i + 1}
+                  </div>
+                  <span className={`text-[9px] font-semibold whitespace-nowrap ${step.done ? 'text-[#1B5A4A]' : i === 1 && !photoUploaded ? 'text-amber-600' : 'text-gray-400'}`}>{step.label}</span>
+                </div>
+                {i < steps.length - 1 && (
+                  <div className="flex-1 h-0.5 mx-1 mb-3" style={{ background: step.done ? '#1B5A4A' : '#e5e7eb' }} />
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      })()}
+
       {/* Product Title + Urgency */}
       <div className="px-4 pt-1 pb-2">
         <h1 className="text-lg font-bold text-[#1B1B1B] leading-tight">Custom Wood Framed Sign</h1>
