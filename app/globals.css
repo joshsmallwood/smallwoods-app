@@ -266,3 +266,9 @@ body {
   0%, 100% { opacity: 0.35; border-color: rgba(27,90,74,0.35); }
   50% { opacity: 0.75; border-color: rgba(27,90,74,0.7); }
 }
+
+/* CTA button shimmer/glint */
+@keyframes ctaShimmerSlide {
+  0% { left: -4rem; }
+  40%, 100% { left: calc(100% + 4rem); }
+}

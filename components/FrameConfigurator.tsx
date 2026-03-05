@@ -561,9 +561,15 @@ function AddToCartButton({ frames, bundleTotal, totalPrice }: {
       className={`w-full font-bold text-base py-4 rounded-xl transition-all shadow-md active:scale-[0.98] relative overflow-hidden ${
         hasPhotos
           ? 'bg-[#1B5A4A] hover:bg-[#154739] text-white cursor-pointer'
-          : 'bg-[#1B5A4A] text-white cursor-pointer animate-pulse'
+          : 'bg-[#1B5A4A] text-white cursor-pointer'
       }`}
     >
+      {/* Shimmer glint overlay */}
+      {!adding && !added && (
+        <span className="absolute inset-0 pointer-events-none" style={{ animation: 'ctaShimmer 2.8s ease-in-out infinite' }}>
+          <span className="absolute top-0 bottom-0 w-16 -skew-x-12" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)', left: '-4rem', animation: 'ctaShimmerSlide 2.8s ease-in-out infinite' }}/>
+        </span>
+      )}
       {adding ? (
         <span className="flex items-center justify-center gap-2">
           <span className="w-4 h-4 rounded-full animate-spin inline-block" style={{ borderWidth: '2px', borderStyle: 'solid', borderColor: 'white', borderTopColor: 'transparent' }}/>
