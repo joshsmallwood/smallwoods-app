@@ -487,6 +487,7 @@ function SingleFrame({
   const fileRef = useRef<HTMLInputElement>(null)
   const dragStart = useRef<{ mx: number; my: number; ox: number; oy: number } | null>(null)
   const touchRef = useRef<{ tx: number; ty: number; ox: number; oy: number } | null>(null)
+  const pinchRef = useRef<{ dist: number; zoom: number } | null>(null)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -586,15 +587,33 @@ function SingleFrame({
           onMouseLeave={() => { dragStart.current = null }}
           onTouchStart={(e) => {
             if (!cropMode || !frame.photo) return
-            const t = e.touches[0]
-            touchRef.current = { tx: t.clientX, ty: t.clientY, ox: offset.x, oy: offset.y }
+            if (e.touches.length === 2) {
+              // Two-finger pinch — store initial distance and zoom
+              const dx = e.touches[0].clientX - e.touches[1].clientX
+              const dy = e.touches[0].clientY - e.touches[1].clientY
+              pinchRef.current = { dist: Math.hypot(dx, dy), zoom }
+              touchRef.current = null
+            } else {
+              const t = e.touches[0]
+              touchRef.current = { tx: t.clientX, ty: t.clientY, ox: offset.x, oy: offset.y }
+              pinchRef.current = null
+            }
           }}
           onTouchMove={(e) => {
-            if (!touchRef.current) return
-            const t = e.touches[0]
-            setOffset({ x: touchRef.current.ox + t.clientX - touchRef.current.tx, y: touchRef.current.oy + t.clientY - touchRef.current.ty })
+            if (e.touches.length === 2 && pinchRef.current) {
+              // Pinch-to-zoom
+              e.preventDefault()
+              const dx = e.touches[0].clientX - e.touches[1].clientX
+              const dy = e.touches[0].clientY - e.touches[1].clientY
+              const newDist = Math.hypot(dx, dy)
+              const scale = newDist / pinchRef.current.dist
+              setZoom(Math.min(3, Math.max(0.5, pinchRef.current.zoom * scale)))
+            } else if (touchRef.current) {
+              const t = e.touches[0]
+              setOffset({ x: touchRef.current.ox + t.clientX - touchRef.current.tx, y: touchRef.current.oy + t.clientY - touchRef.current.ty })
+            }
           }}
-          onTouchEnd={() => { touchRef.current = null }}
+          onTouchEnd={() => { touchRef.current = null; pinchRef.current = null }}
         >
           {loading ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gray-50">
