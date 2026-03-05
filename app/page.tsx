@@ -91,6 +91,32 @@ const faqSchema = {
   ],
 }
 
+// BreadcrumbList schema — helps Google show breadcrumb rich results
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Smallwoods Home',
+      item: 'https://www.smallwoodhome.com',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Custom Wood Frames',
+      item: 'https://www.smallwoodhome.com/collections/all',
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: 'Design Your Custom Frame',
+      item: 'https://app.smallwoods.io',
+    },
+  ],
+}
+
 // WebSite schema — enables Google Sitelinks Searchbox potential
 const websiteSchema = {
   '@context': 'https://schema.org',
@@ -145,6 +171,10 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <script
         type="application/ld+json"
