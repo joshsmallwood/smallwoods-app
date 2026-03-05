@@ -808,12 +808,12 @@ export default function FrameConfigurator() {
     <div className="flex flex-col min-h-screen bg-[#f5f0eb] max-w-md mx-auto md:max-w-2xl">
       {/* Top Banner */}
       <div className="bg-[#1B5A4A] text-white text-center py-2 px-4 flex items-center justify-center gap-2 text-sm font-medium">
-        <span>🍀 Lucky You Sale — Unlock 35% Off!</span>
+        <span>🍀 35% Off Auto-Applied — Lucky You Sale!</span>
         <button
           onClick={() => setShowPromo(true)}
           className="bg-white text-[#1B5A4A] text-xs font-bold px-3 py-1 rounded-full ml-2 hover:bg-gray-100 transition-colors active:scale-95"
         >
-          GET CODE
+          DETAILS
         </button>
       </div>
 
@@ -1808,14 +1808,23 @@ function FAQAccordion() {
   )
 }
 
-function GiftMessageBox() {
+function GiftMessageBox({ onMessageChange }: { onMessageChange?: (msg: string) => void }) {
   const [isGift, setIsGift] = useState(false)
   const [message, setMessage] = useState('')
+  const handleToggle = () => {
+    const next = !isGift
+    setIsGift(next)
+    if (!next) onMessageChange?.('')
+  }
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value)
+    onMessageChange?.(e.target.value)
+  }
   return (
     <div className="px-4 pb-3">
       <div className={`rounded-xl border transition-all duration-300 overflow-hidden ${isGift ? 'border-[#1B5A4A]/30 bg-[#f0faf5]' : 'border-gray-100 bg-white'}`}>
         <button
-          onClick={() => setIsGift(v => !v)}
+          onClick={handleToggle}
           className="w-full flex items-center gap-2.5 px-3 py-2.5"
         >
           <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 border-2 transition-colors ${isGift ? 'bg-[#1B5A4A] border-[#1B5A4A]' : 'bg-white border-gray-300'}`}>
@@ -1841,8 +1850,8 @@ function GiftMessageBox() {
   )
 }
 
-function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame }: {
-  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem
+function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMessage }: {
+  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem; giftMessage?: string
 }) {
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
@@ -1855,7 +1864,12 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame }: {
     }).filter(Boolean).join(',')
     if (!cartItems) return `${SHOPIFY_STORE}/products/copy-of-frames`
     // Auto-apply the MYWALL35 discount code so users don't have to type it manually
-    return `${SHOPIFY_STORE}/cart/${cartItems}?discount=MYWALL35`
+    let url = `${SHOPIFY_STORE}/cart/${cartItems}?discount=MYWALL35`
+    // Pass gift message as cart note so it reaches the order
+    if (giftMessage && giftMessage.trim()) {
+      url += `&note=${encodeURIComponent(`🎁 Gift message: ${giftMessage.trim()}`)}`
+    }
+    return url
   }
 
   const handleAddToCart = () => {
