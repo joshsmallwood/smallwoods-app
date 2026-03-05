@@ -1122,13 +1122,15 @@ export default function FrameConfigurator() {
             <p className="text-[#7EC8A4] text-sm font-semibold">Save ${fullTotal - displayBundle}</p>
           </div>
         </div>
-        {/* Countdown bar */}
-        <div className="bg-[#0f3d2e] px-4 py-1.5 flex items-center gap-2">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F5C842" strokeWidth="2.5">
-            <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
-          </svg>
-          <span className="text-[11px] text-[#F5C842] font-bold uppercase tracking-wide">🍀 Lucky You Sale ends in <OfferCountdown /></span>
-        </div>
+        {/* Countdown bar — only shown during active sale */}
+        {isSaleActive() && (
+          <div className="bg-[#0f3d2e] px-4 py-1.5 flex items-center gap-2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F5C842" strokeWidth="2.5">
+              <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
+            </svg>
+            <span className="text-[11px] text-[#F5C842] font-bold uppercase tracking-wide">🍀 Lucky You Sale ends in <OfferCountdown /></span>
+          </div>
+        )}
         {/* Cart scarcity */}
         <CartScarcityBadge />
         {/* Full & Sale prices as context */}
