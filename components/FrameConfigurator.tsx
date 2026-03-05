@@ -390,7 +390,7 @@ const VARIANT_MAP: Record<string, Record<string, number>> = {
 }
 
 const SHOPIFY_STORE = 'https://smallwoodhome.com'
-const BUNDLE_DISCOUNT = 0.20
+const BUNDLE_DISCOUNT = 0.35 // Matches real MYWALL35/LUCKY35 promo (35% off) — verified Shopify API
 
 function getVariantId(size: SizeOption, color: FrameColor): number | null {
   const colorObj = FRAME_COLORS.find(c => c.id === color)
@@ -1016,7 +1016,7 @@ export default function FrameConfigurator() {
         {/* Bundle Price Hero */}
         <div className="bg-[#1B5A4A] px-4 py-3 flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-[#7EC8A4] uppercase tracking-widest mb-0.5">Bundle Price</p>
+            <p className="text-xs font-semibold text-[#7EC8A4] uppercase tracking-widest mb-0.5">Sale Price (35% Off)</p>
             <p className="text-4xl font-black text-white leading-none">
               ${displayBundle}
             </p>
@@ -1926,13 +1926,14 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
   }
 
   const hasPhotos = frames.some(f => f.photo)
-  const displayTotal = bundleTotal ?? totalPrice
+  // 35% off applied at checkout via MYWALL35/LUCKY35 — show consistent sale price
+  const displayTotal = bundleTotal ?? Math.round(totalPrice * 0.65)
   // Use real Shopify compareAt prices (not a fake multiplier)
   const retailTotal = frames.reduce((s, f) => s + (f.color === 'noframe' ? f.size.noFrameCompareAt : f.size.compareAt), 0)
   const savings = retailTotal - displayTotal
   const label = frames.length > 1
     ? `Add ${frames.length} Frames to Cart — $${displayTotal}`
-    : (hasPhotos ? `Add to Cart — $${totalPrice}` : '📷  Upload Your Photo to Continue')
+    : (hasPhotos ? `Add to Cart — $${displayTotal}` : '📷  Upload Your Photo to Continue')
 
   const FRAME_COLORS_MAP: Record<string, string> = {
     walnut:  'repeating-linear-gradient(170deg, #5a3010 0px, #7a4520 4px, #4a2508 8px, #6b3c18 12px, #5a3010 16px)',
@@ -2009,7 +2010,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
                 <span style={{ fontSize: '13px', color: '#888', textDecoration: 'line-through' }}>${retailTotal}</span>
               </div>
               <div className="flex justify-between items-center mb-1">
-                <span style={{ fontSize: '13px', color: '#c0392b', fontWeight: 600 }}>🎉 Bundle Savings</span>
+                <span style={{ fontSize: '13px', color: '#c0392b', fontWeight: 600 }}>🍀 Lucky You Savings (35% Off)</span>
                 <span style={{ fontSize: '13px', color: '#c0392b', fontWeight: 700 }}>−${savings}</span>
               </div>
               <div className="flex justify-between items-center pt-2 border-t border-gray-100 mt-2">
