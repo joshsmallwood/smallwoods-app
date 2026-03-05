@@ -493,12 +493,33 @@ function SingleFrame({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+
+    // Validate file type before processing — prevents infinite spinner on PDFs, corrupt files, etc.
+    if (!file.type.startsWith('image/') && !file.name.toLowerCase().endsWith('.heic') && !file.name.toLowerCase().endsWith('.heif')) {
+      alert('Please upload an image file (JPG, PNG, or HEIC). PDFs and other file types are not supported.')
+      e.target.value = ''
+      return
+    }
+
     setLoading(true)
     const reader = new FileReader()
+
+    reader.onerror = () => {
+      setLoading(false)
+      e.target.value = ''
+      alert('Could not read this file. Please try a different photo.')
+    }
+
     reader.onload = (ev) => {
       const dataUrl = ev.target?.result as string
       // Check image resolution for quality indicator
       const img = new window.Image()
+      img.onerror = () => {
+        // Image failed to decode (corrupt JPEG, unsupported format, etc.)
+        setLoading(false)
+        e.target.value = ''
+        alert('This file could not be displayed as an image. Please try a different photo (JPG, PNG, or HEIC work best).')
+      }
       img.onload = () => {
         const { naturalWidth: w, naturalHeight: h } = img
         setPhotoPixels({ w, h })
