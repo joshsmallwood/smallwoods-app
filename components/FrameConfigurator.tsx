@@ -315,7 +315,7 @@ const FRAME_COLORS: { id: FrameColor; label: string; swatch: string; gradient: s
 ]
 
 interface SizeOption {
-  id: string; label: string; width: number; height: number; price: number; noFramePrice: number
+  id: string; label: string; width: number; height: number; price: number; noFramePrice: number; noFrameCompareAt: number
   compareAt: number // real Shopify compare_at_price (sourced from API Mar 5 2026)
   shopifySize: string // matches Shopify variant option1
 }
@@ -323,16 +323,17 @@ interface SizeOption {
 // Real Smallwoods sizes mapped to Shopify product 7241370435721 (Frames / copy-of-frames)
 // Prices + compareAt sourced from live Shopify variants API (Mar 5 2026)
 const SIZES: SizeOption[] = [
-  { id: '8x10',  label: '8×10',  width: 8,  height: 10, price: 69,  noFramePrice: 39,  compareAt: 100, shopifySize: '8x10'              },
-  { id: '10x12', label: '10×12', width: 10, height: 12, price: 75,  noFramePrice: 42,  compareAt: 100, shopifySize: '10x12'             },
-  { id: '12x16', label: '12×16', width: 12, height: 16, price: 89,  noFramePrice: 49,  compareAt: 120, shopifySize: '12x16'             },
-  { id: '16x16', label: '16×16', width: 16, height: 16, price: 99,  noFramePrice: 55,  compareAt: 130, shopifySize: '16x16'             },
-  { id: '25x17', label: '25×17', width: 25, height: 17, price: 109, noFramePrice: 59,  compareAt: 150, shopifySize: 'Medium 25" x 17"' },
-  { id: '20x30', label: '20×30', width: 20, height: 30, price: 119, noFramePrice: 69,  compareAt: 170, shopifySize: '20x30'             },
-  { id: '25x25', label: '25×25', width: 25, height: 25, price: 129, noFramePrice: 79,  compareAt: 190, shopifySize: 'Square 25" x 25"' },
-  { id: '24x36', label: '24×36', width: 24, height: 36, price: 129, noFramePrice: 79,  compareAt: 190, shopifySize: '24x36'             },
-  { id: '44x22', label: '44×22', width: 44, height: 22, price: 139, noFramePrice: 89,  compareAt: 200, shopifySize: 'Extra Large 44" x 22"' },
-  { id: '13x13', label: '13×13', width: 13, height: 13, price: 79,  noFramePrice: 45,  compareAt: 100, shopifySize: 'Small Square 13" x 13"' },
+  // Prices + compareAt from Shopify variants API (Mar 5 2026). noFrameCompareAt also API-verified.
+  { id: '8x10',  label: '8×10',  width: 8,  height: 10, price: 69,  noFramePrice: 39,  compareAt: 100, noFrameCompareAt: 100, shopifySize: '8x10'              },
+  { id: '10x12', label: '10×12', width: 10, height: 12, price: 75,  noFramePrice: 42,  compareAt: 100, noFrameCompareAt: 100, shopifySize: '10x12'             },
+  { id: '12x16', label: '12×16', width: 12, height: 16, price: 89,  noFramePrice: 49,  compareAt: 120, noFrameCompareAt: 120, shopifySize: '12x16'             },
+  { id: '16x16', label: '16×16', width: 16, height: 16, price: 99,  noFramePrice: 55,  compareAt: 130, noFrameCompareAt: 120, shopifySize: '16x16'             },
+  { id: '25x17', label: '25×17', width: 25, height: 17, price: 109, noFramePrice: 59,  compareAt: 150, noFrameCompareAt: 90,  shopifySize: 'Medium 25" x 17"' },
+  { id: '20x30', label: '20×30', width: 20, height: 30, price: 119, noFramePrice: 69,  compareAt: 170, noFrameCompareAt: 125, shopifySize: '20x30'             },
+  { id: '25x25', label: '25×25', width: 25, height: 25, price: 129, noFramePrice: 79,  compareAt: 190, noFrameCompareAt: 100, shopifySize: 'Square 25" x 25"' },
+  { id: '24x36', label: '24×36', width: 24, height: 36, price: 129, noFramePrice: 79,  compareAt: 190, noFrameCompareAt: 100, shopifySize: '24x36'             },
+  { id: '44x22', label: '44×22', width: 44, height: 22, price: 139, noFramePrice: 89,  compareAt: 200, noFrameCompareAt: 150, shopifySize: 'Extra Large 44" x 22"' },
+  { id: '13x13', label: '13×13', width: 13, height: 13, price: 79,  noFramePrice: 45,  compareAt: 100, noFrameCompareAt: 100, shopifySize: 'Small Square 13" x 13"' },
 ]
 
 // Hardcoded variant ID lookup: variantMap[shopifySize][shopifyColor] = variantId
@@ -1833,7 +1834,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame }: {
   const hasPhotos = frames.some(f => f.photo)
   const displayTotal = bundleTotal ?? totalPrice
   // Use real Shopify compareAt prices (not a fake multiplier)
-  const retailTotal = frames.reduce((s, f) => s + (f.color === 'noframe' ? Math.round(f.size.noFramePrice * 1.3) : f.size.compareAt), 0)
+  const retailTotal = frames.reduce((s, f) => s + (f.color === 'noframe' ? f.size.noFrameCompareAt : f.size.compareAt), 0)
   const savings = retailTotal - displayTotal
   const label = frames.length > 1
     ? `Add ${frames.length} Frames to Cart — $${displayTotal}`
