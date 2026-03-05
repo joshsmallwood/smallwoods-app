@@ -1682,17 +1682,33 @@ export default function FrameConfigurator() {
       </div>
 
       {/* Customer Testimonials */}
+      {(() => {
+        // Larger pool — shuffle on mount so each visitor sees different reviews
+        const ALL_REVIEWS = [
+          { name: 'J.M.', location: 'Texas', size: '25×17 Walnut', quote: 'Love all three of my prints. By far the best company to order prints/frames from. Shipping is phenomenal. As a repeat customer I\'ve never encountered a problem.', initials: 'JM', color: '#C65D2B' },
+          { name: 'Eithan R.', location: 'California', size: '20×30 Walnut', quote: 'I ordered our maternity pictures in large frames for our living room, and couldn\'t have asked for better! They are so beautiful. Couldn\'t be more thrilled.', initials: 'ER', color: '#2B6CB0' },
+          { name: 'Sarah M.', location: 'Tennessee', size: '25×17 Walnut', quote: 'Absolutely love. This is our second time ordering. I ordered a little bigger and used pictures from the same photo shoot and I absolutely am in love.', initials: 'S', color: '#276749' },
+          { name: 'Kalley T.', location: 'Georgia', size: '16×16 Black', quote: 'Amazing quality and fast shipping! Exactly what I was hoping for — the frame looks incredible on our wall.', initials: 'K', color: '#7B5EA7' },
+          { name: 'Rene K.', location: 'Oklahoma', size: '44×22 Walnut', quote: 'Our family\'s photo looks beautiful! Service was prompt. I highly recommend! It\'s the perfect gift and quality is top notch.', initials: 'RK', color: '#B45309' },
+          { name: 'Teri L.', location: 'Ohio', size: '20×30 Walnut', quote: 'Perfect as always! This is my third order from Smallwoods — the quality never disappoints and they always arrive so well packaged.', initials: 'T', color: '#0F766E' },
+          { name: 'Amanda D.', location: 'North Carolina', size: '24×36 Oak', quote: 'Absolutely stunning. The colors are so vivid and the frame quality is exceptional. My living room wall is now the focal point of the whole house.', initials: 'AD', color: '#9C4221' },
+          { name: 'Lauren P.', location: 'Florida', size: '25×17 Black', quote: 'I bought one as a gift for my mom and she cried when she opened it. Ordered two more for myself right after. The quality is unmatched.', initials: 'LP', color: '#1D4ED8' },
+          { name: 'Jessica W.', location: 'Colorado', size: '13×13 Natural', quote: 'My wedding photo has never looked better. The frame arrived so carefully packaged and the print quality is like a professional photo studio.', initials: 'JW', color: '#7C3AED' },
+          { name: 'Brittney H.', location: 'Alabama', size: '13×13 Walnut', quote: 'Ordered three different sizes for a gallery wall. Every single one is perfect. Customer service was incredible when I had a question too.', initials: 'BH', color: '#DC2626' },
+        ]
+        // Seeded shuffle — consistent within a page load but different between visits
+        const seed = Math.floor(Date.now() / 1000 / 3600) // changes hourly
+        const shuffled = [...ALL_REVIEWS].sort((a, b) => {
+          const ha = (a.name.charCodeAt(0) * 31 + seed) % 17
+          const hb = (b.name.charCodeAt(0) * 31 + seed) % 17
+          return ha - hb
+        })
+        const displayed = shuffled.slice(0, 4)
+        return (
       <div className="px-4 pb-3">
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center mb-2">What Customers Say</p>
         <div className="flex flex-col gap-2">
-          {[
-            { name: 'J.M.', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'Love all three of my prints. By far the best company to order prints/frames from. Shipping is phenomenal. As a repeat customer I\'ve never encountered a problem.', initials: 'JM', color: '#C65D2B' },
-            { name: 'Eithan R.', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'I ordered our maternity pictures in large frames for our living room, and couldn\'t have asked for better! They are so beautiful. Couldn\'t be more thrilled.', initials: 'ER', color: '#2B6CB0' },
-            { name: 'Sarah', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'Absolutely love. This is our second time ordering. I ordered a little bigger and used pictures from the same photo shoot and I absolutely am in love.', initials: 'S', color: '#276749' },
-            { name: 'Kalley', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'Amazing quality and fast shipping! Exactly what I was hoping for — the frame looks incredible on our wall.', initials: 'K', color: '#7B5EA7' },
-            { name: 'Rene K.', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'Our family\'s photo looks beautiful! Service was prompt. I highly recommend! It\'s the perfect gift and quality is top notch.', initials: 'RK', color: '#B45309' },
-            { name: 'Teri', location: 'Verified Buyer', product: 'Smallwood Frames', quote: 'Perfect as always! This is my third order from Smallwoods — the quality never disappoints and they always arrive so well packaged.', initials: 'T', color: '#0F766E' },
-          ].map((review) => (
+          {displayed.map((review) => (
             <div key={review.name} className="flex items-start gap-2.5 bg-white rounded-xl px-3 py-2.5 border border-gray-100 shadow-sm">
               <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-white text-[11px] font-black" style={{ background: review.color }}>
                 {review.initials}
@@ -1702,13 +1718,15 @@ export default function FrameConfigurator() {
                   <span className="text-[11px] font-bold text-gray-800">{review.name}</span>
                   <span className="text-amber-400 text-[10px] leading-none">★★★★★</span>
                 </div>
-                <p className="text-[9px] text-gray-400 mb-1">{review.product} · {review.location}</p>
+                <p className="text-[9px] text-gray-400 mb-1">{review.size} · {review.location}</p>
                 <p className="text-[10px] text-gray-600 leading-relaxed">&ldquo;{review.quote}&rdquo;</p>
               </div>
             </div>
           ))}
         </div>
       </div>
+        )
+      })()}
 
       {/* Trust Badges */}
       <div className="px-4 pb-3">
