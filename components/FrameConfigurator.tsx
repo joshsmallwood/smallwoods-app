@@ -2090,7 +2090,10 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
                       {f.photo ? ' · Photo uploaded ✓' : ' · No photo'}
                     </div>
                   </div>
-                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#1B5A4A' }}>${f.color === 'noframe' ? f.size.noFramePrice : f.size.price}</div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#1B5A4A' }}>${Math.round((f.color === 'noframe' ? f.size.noFramePrice : f.size.price) * 0.65)}</div>
+                    <div style={{ fontSize: '10px', color: '#aaa', textDecoration: 'line-through', lineHeight: 1 }}>${f.color === 'noframe' ? f.size.noFramePrice : f.size.price}</div>
+                  </div>
                 </div>
               ))}
             </div>
