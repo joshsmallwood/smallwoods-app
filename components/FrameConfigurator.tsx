@@ -448,6 +448,7 @@ function SingleFrame({
   const [photoPixels, setPhotoPixels] = useState<{ w: number; h: number } | null>(null)
   const [showZoomHint, setShowZoomHint] = useState(false)
   const [showUploadCelebration, setShowUploadCelebration] = useState(false)
+  const [orientMismatch, setOrientMismatch] = useState<'suggest-landscape' | 'suggest-portrait' | null>(null)
   const [showPhotoTips, setShowPhotoTips] = useState(false)
   const [sampleIdx, setSampleIdx] = useState(0)
   const SAMPLE_PHOTOS = [
@@ -484,6 +485,14 @@ function SingleFrame({
         if (actualPx >= excellentPx) setPhotoQuality('excellent')
         else if (actualPx >= goodPx) setPhotoQuality('good')
         else setPhotoQuality('low')
+        // Orientation mismatch: photo portrait (h>w) in landscape frame, or photo landscape (w>h) in portrait frame
+        const isLandFrame = frame.orientation === 'landscape'
+        const isLandPhoto = w > h
+        if (!isLandFrame && isLandPhoto) setOrientMismatch('suggest-landscape')
+        else if (isLandFrame && !isLandPhoto) setOrientMismatch('suggest-portrait')
+        else setOrientMismatch(null)
+        // Auto-dismiss mismatch hint after 6s
+        setTimeout(() => setOrientMismatch(null), 6000)
       }
       img.src = dataUrl
       setTimeout(() => {
@@ -1294,6 +1303,12 @@ export default function FrameConfigurator() {
                   🎯 Not sure?
                 </button>
               </div>
+              {/* Orientation mismatch hint */}
+              {orientMismatch && (
+                <span className="text-[9px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1 animate-pulse">
+                  💡 Flip to {orientMismatch === 'suggest-landscape' ? 'Landscape' : 'Portrait'}?
+                </span>
+              )}
               {/* Orientation toggle */}
               <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
                 <button
