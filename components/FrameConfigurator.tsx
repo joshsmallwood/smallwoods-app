@@ -207,6 +207,7 @@ function SingleFrame({
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [loading, setLoading] = useState(false)
   const [photoExiting, setPhotoExiting] = useState(false)
+  const [photoQuality, setPhotoQuality] = useState<'excellent' | 'good' | 'low' | null>(null)
   const [sampleIdx, setSampleIdx] = useState(0)
   const SAMPLE_PHOTOS = [
     'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
@@ -229,9 +230,19 @@ function SingleFrame({
     setLoading(true)
     const reader = new FileReader()
     reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string
+      // Check image resolution for quality indicator
+      const img = new window.Image()
+      img.onload = () => {
+        const mp = (img.naturalWidth * img.naturalHeight) / 1_000_000
+        if (mp >= 3) setPhotoQuality('excellent')
+        else if (mp >= 1) setPhotoQuality('good')
+        else setPhotoQuality('low')
+      }
+      img.src = dataUrl
       setTimeout(() => {
         setZoom(1); setOffset({ x: 0, y: 0 }); setCropMode(false)
-        onUpdate({ photo: ev.target?.result as string })
+        onUpdate({ photo: dataUrl })
         setLoading(false)
       }, 350)
     }
@@ -240,6 +251,7 @@ function SingleFrame({
 
   const clearPhoto = () => {
     setPhotoExiting(true)
+    setPhotoQuality(null)
     setTimeout(() => {
       onUpdate({ photo: null })
       setPhotoExiting(false)
@@ -388,6 +400,22 @@ function SingleFrame({
       )}
 
       <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} data-frame-upload="true" />
+
+      {/* Photo quality indicator */}
+      {photoQuality && (
+        <div className={`mx-3 mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold ${
+          photoQuality === 'excellent' ? 'bg-green-50 text-green-700 border border-green-200' :
+          photoQuality === 'good' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+          'bg-red-50 text-red-700 border border-red-200'
+        }`}>
+          <span>{photoQuality === 'excellent' ? '🟢' : photoQuality === 'good' ? '🟡' : '🔴'}</span>
+          <span>
+            {photoQuality === 'excellent' ? 'Excellent photo quality — great print!' :
+             photoQuality === 'good' ? 'Good quality — will print well' :
+             'Low resolution — may appear blurry when printed'}
+          </span>
+        </div>
+      )}
 
       {/* Price tag */}
       <div className="text-center mt-2">
