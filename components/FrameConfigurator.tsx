@@ -1517,7 +1517,7 @@ export default function FrameConfigurator() {
                   <span className="bg-amber-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wide">🏆 #1 Best Seller</span>
                 </div>
                 <p className="text-white font-bold text-[12px] leading-tight">25×17 Walnut Frame</p>
-                <p className="text-white/70 text-[10px]">4,611 orders in 90 days · #1 combo</p>
+                <p className="text-white/70 text-[10px]">10,610 orders in 90 days · #1 combo</p>
               </div>
               <button
                 onClick={() => {
@@ -1538,7 +1538,7 @@ export default function FrameConfigurator() {
             <div className="flex items-center gap-3">
               {FRAME_COLORS.map(c => {
                 // Real color popularity from Neon DB 90-day order data (Mar 5 2026)
-                // walnut(Stained)=27,210 | black=9,747 | oak(Almond)=8,504 | noframe=8,494 | white=2,187
+                // walnut(Stained)=27,378 | black=9,847 | oak(Almond)=8,525 | noframe=8,510 | white=2,206 (90-day, Mar 5 2026)
                 const colorBadge: Record<string, { label: string; gold: boolean }> = {
                   walnut:  { label: '🏆 #1', gold: true },
                   black:   { label: '#2',    gold: false },
