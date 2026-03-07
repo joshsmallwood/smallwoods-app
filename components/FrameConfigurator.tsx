@@ -670,6 +670,7 @@ function SingleFrame({
                     transition: 'opacity 1s ease-in-out',
                   }}
                   draggable={false}
+                  {...(i === 0 ? { fetchPriority: 'high' as const } : { loading: 'lazy' as const })}
                 />
               ))}
               {/* "SAMPLE" pill top-right */}

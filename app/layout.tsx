@@ -98,6 +98,13 @@ export default function RootLayout({
         {/* Preconnect to critical third-party origins — eliminates DNS+TCP+TLS latency for images & scripts */}
         <link rel="preconnect" href="https://cdn.shopify.com" />
         <link rel="dns-prefetch" href="https://cdn.shopify.com" />
+        {/* Preload LCP hero sample photo — eliminates render-blocking discovery delay */}
+        <link
+          rel="preload"
+          as="image"
+          href="https://cdn.shopify.com/s/files/1/1091/1314/files/63A4970-2_b44b42d1-4e90-45f9-8479-046771313de6.jpg?v=1764101397&width=600"
+          type="image/jpeg"
+        />
         <link rel="preconnect" href="https://connect.facebook.net" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://analytics.tiktok.com" crossOrigin="anonymous" />
