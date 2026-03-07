@@ -1,4 +1,5 @@
 import FrameConfigurator from '@/components/FrameConfigurator'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 // Product structured data for Google Shopping / rich product results
 const productSchema = {
@@ -184,7 +185,9 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
-      <FrameConfigurator />
+      <ErrorBoundary>
+        <FrameConfigurator />
+      </ErrorBoundary>
     </>
   )
 }
