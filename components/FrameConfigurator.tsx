@@ -2,8 +2,10 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import Image from 'next/image'
-import InfoModal from './InfoModal'
-import PromoModal from './PromoModal'
+import dynamic from 'next/dynamic'
+
+const InfoModal = dynamic(() => import('./InfoModal'), { ssr: false })
+const PromoModal = dynamic(() => import('./PromoModal'), { ssr: false })
 import CartDrawer from '../src/components/CartDrawer'
 import { trackEvent } from '../src/lib/analytics'
 
