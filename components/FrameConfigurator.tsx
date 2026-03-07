@@ -492,6 +492,35 @@ function SingleFrame({
   const dragStart = useRef<{ mx: number; my: number; ox: number; oy: number } | null>(null)
   const touchRef = useRef<{ tx: number; ty: number; ox: number; oy: number } | null>(null)
   const pinchRef = useRef<{ dist: number; zoom: number } | null>(null)
+  const photoImgRef = useRef<HTMLImageElement>(null)
+  const rafId = useRef<number>(0)
+  // Pending transform values during drag — applied via RAF to avoid per-frame re-renders
+  const pendingTransform = useRef<{ x: number; y: number; z: number } | null>(null)
+
+  // Apply pending transform via RAF — avoids re-rendering entire component during drag
+  const applyTransformRAF = (x: number, y: number, z: number) => {
+    pendingTransform.current = { x, y, z }
+    if (!rafId.current) {
+      rafId.current = requestAnimationFrame(() => {
+        rafId.current = 0
+        if (pendingTransform.current && photoImgRef.current) {
+          const { x: px, y: py, z: pz } = pendingTransform.current
+          photoImgRef.current.style.transform = `translate(${px}px,${py}px) scale(${pz})`
+        }
+      })
+    }
+  }
+
+  // Commit pending transform to React state (on drag end)
+  const commitTransform = () => {
+    if (rafId.current) { cancelAnimationFrame(rafId.current); rafId.current = 0 }
+    if (pendingTransform.current) {
+      const { x, y, z } = pendingTransform.current
+      setOffset({ x, y })
+      setZoom(z)
+      pendingTransform.current = null
+    }
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -609,10 +638,12 @@ function SingleFrame({
           }}
           onMouseMove={(e) => {
             if (!dragStart.current) return
-            setOffset({ x: dragStart.current.ox + e.clientX - dragStart.current.mx, y: dragStart.current.oy + e.clientY - dragStart.current.my })
+            const nx = dragStart.current.ox + e.clientX - dragStart.current.mx
+            const ny = dragStart.current.oy + e.clientY - dragStart.current.my
+            applyTransformRAF(nx, ny, zoom)
           }}
-          onMouseUp={() => { dragStart.current = null }}
-          onMouseLeave={() => { dragStart.current = null }}
+          onMouseUp={() => { dragStart.current = null; commitTransform() }}
+          onMouseLeave={() => { dragStart.current = null; commitTransform() }}
           onTouchStart={(e) => {
             if (!cropMode || !frame.photo) return
             if (e.touches.length === 2) {
@@ -629,20 +660,23 @@ function SingleFrame({
           }}
           onTouchMove={(e) => {
             if (e.touches.length === 2 && pinchRef.current) {
-              // Pinch-to-zoom
+              // Pinch-to-zoom — RAF-throttled
               e.preventDefault()
               const dx = e.touches[0].clientX - e.touches[1].clientX
               const dy = e.touches[0].clientY - e.touches[1].clientY
               const newDist = Math.hypot(dx, dy)
               const scale = newDist / pinchRef.current.dist
-              setZoom(Math.min(3, Math.max(0.5, pinchRef.current.zoom * scale)))
+              const nz = Math.min(3, Math.max(0.5, pinchRef.current.zoom * scale))
+              applyTransformRAF(offset.x, offset.y, nz)
             } else if (touchRef.current) {
               e.preventDefault()
               const t = e.touches[0]
-              setOffset({ x: touchRef.current.ox + t.clientX - touchRef.current.tx, y: touchRef.current.oy + t.clientY - touchRef.current.ty })
+              const nx = touchRef.current.ox + t.clientX - touchRef.current.tx
+              const ny = touchRef.current.oy + t.clientY - touchRef.current.ty
+              applyTransformRAF(nx, ny, zoom)
             }
           }}
-          onTouchEnd={() => { touchRef.current = null; pinchRef.current = null }}
+          onTouchEnd={() => { touchRef.current = null; pinchRef.current = null; commitTransform() }}
         >
           {loading ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gray-50">
@@ -651,10 +685,11 @@ function SingleFrame({
             </div>
           ) : frame.photo ? (
             <img
+              ref={photoImgRef}
               src={frame.photo}
               alt="Your uploaded photo in custom wood frame"
               className={`absolute inset-0 w-full h-full object-cover select-none ${photoExiting ? 'photo-exit' : 'photo-enter'}`}
-              style={{ transform: `translate(${offset.x}px,${offset.y}px) scale(${zoom})`, transformOrigin: 'center', userSelect: 'none', pointerEvents: 'none' }}
+              style={{ transform: `translate(${offset.x}px,${offset.y}px) scale(${zoom})`, transformOrigin: 'center', userSelect: 'none', pointerEvents: 'none', willChange: cropMode ? 'transform' : undefined }}
               draggable={false}
             />
           ) : (
