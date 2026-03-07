@@ -11,6 +11,7 @@ interface CartItem {
   compareAt: number
   quantity: number
   photoThumb?: string // data URL of user's uploaded photo
+  frameId?: string // links back to FrameItem.id for removal
 }
 
 interface CartDrawerProps {
@@ -20,6 +21,7 @@ interface CartDrawerProps {
   promoCode: string
   giftMessage?: string
   onAddAnother?: (sizeId?: string) => void
+  onRemoveItem?: (frameId: string) => void
 }
 
 const UPSELL_SIZES = [
@@ -28,7 +30,7 @@ const UPSELL_SIZES = [
   { label: '12×16', id: '12x16', price: 89, discounted: 58 },
 ]
 
-export default function CartDrawer({ isOpen, onClose, items, promoCode, giftMessage, onAddAnother }: CartDrawerProps) {
+export default function CartDrawer({ isOpen, onClose, items, promoCode, giftMessage, onAddAnother, onRemoveItem }: CartDrawerProps) {
   // Lock body scroll when open
   useEffect(() => {
     if (isOpen) {
@@ -130,9 +132,16 @@ export default function CartDrawer({ isOpen, onClose, items, promoCode, giftMess
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a' }}>Custom Wood Framed Sign</div>
                 <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>{item.size} · {item.color}</div>
               </div>
-              <div style={{ textAlign: 'right' }}>
+              <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
                 <div style={{ fontSize: 15, fontWeight: 800, color: '#1B5A4A' }}>${item.discountedPrice}</div>
                 <div style={{ fontSize: 10, color: '#aaa', textDecoration: 'line-through' }}>${item.compareAt}</div>
+                {items.length > 1 && item.frameId && onRemoveItem && (
+                  <button
+                    onClick={() => onRemoveItem(item.frameId!)}
+                    aria-label={`Remove ${item.size} ${item.color} frame`}
+                    style={{ fontSize: 10, color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0', fontWeight: 600 }}
+                  >Remove</button>
+                )}
               </div>
             </div>
           ))}

@@ -945,7 +945,7 @@ export default function FrameConfigurator() {
   const [starRating, setStarRating] = useState<number>(4.74)
   const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>(savedDesign?.wall ?? 'classic')
   const [cartOpen, setCartOpen] = useState(false)
-  const [cartItems, setCartItems] = useState<{ variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number; photoThumb?: string }[]>([])
+  const [cartItems, setCartItems] = useState<{ variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number; photoThumb?: string; frameId?: string }[]>([])
   const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
   const [ctaVisible, setCtaVisible] = useState(true)
   const [missingPhotoIds, setMissingPhotoIds] = useState<Set<string>>(new Set())
@@ -2070,6 +2070,7 @@ export default function FrameConfigurator() {
         promoCode={CART_PROMO_CODE}
         giftMessage={giftMessage}
         onAddAnother={(sizeId) => { setCartOpen(false); addFrame(sizeId); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+        onRemoveItem={(frameId) => { removeFrame(frameId); setCartItems(prev => { const next = prev.filter(i => i.frameId !== frameId); if (next.length === 0) setCartOpen(false); return next; }); }}
       />
 
       {/* Sticky Bottom Bar — shown when CTA scrolls out of view */}
@@ -2376,7 +2377,7 @@ function GiftMessageBox({ onMessageChange }: { onMessageChange?: (msg: string) =
 }
 
 function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMessage, todayOrders, onOpenCart, onMissingPhotos }: {
-  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem; giftMessage?: string; todayOrders?: number | null; onOpenCart?: (items: { variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number; photoThumb?: string }[]) => void; onMissingPhotos?: (ids: string[]) => void
+  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem; giftMessage?: string; todayOrders?: number | null; onOpenCart?: (items: { variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number; photoThumb?: string; frameId?: string }[]) => void; onMissingPhotos?: (ids: string[]) => void
 }) {
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
@@ -2463,6 +2464,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
         compareAt,
         quantity: 1,
         photoThumb: f.photo || undefined,
+        frameId: f.id,
       }
     }).filter(i => i.variantId)
 
