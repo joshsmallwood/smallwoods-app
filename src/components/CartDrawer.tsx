@@ -18,6 +18,7 @@ interface CartDrawerProps {
   items: CartItem[]
   promoCode: string
   giftMessage?: string
+  onAddAnother?: () => void
 }
 
 const UPSELL_SIZES = [
@@ -26,7 +27,7 @@ const UPSELL_SIZES = [
   { label: '12×16', id: '12x16', price: 89, discounted: 58 },
 ]
 
-export default function CartDrawer({ isOpen, onClose, items, promoCode, giftMessage }: CartDrawerProps) {
+export default function CartDrawer({ isOpen, onClose, items, promoCode, giftMessage, onAddAnother }: CartDrawerProps) {
   // Lock body scroll when open
   useEffect(() => {
     if (isOpen) {
@@ -137,11 +138,18 @@ export default function CartDrawer({ isOpen, onClose, items, promoCode, giftMess
             <div style={{ fontSize: 11, color: '#78716c', marginBottom: 12 }}>Build a gallery wall — same discount applies!</div>
             <div style={{ display: 'flex', gap: 8 }}>
               {UPSELL_SIZES.map(s => (
-                <div key={s.id} style={{ flex: 1, textAlign: 'center', padding: '8px 4px', borderRadius: 8, background: 'white', border: '1px solid #e5e0d8' }}>
+                <button
+                  key={s.id}
+                  onClick={() => { if (onAddAnother) onAddAnother(); else onClose(); }}
+                  style={{ flex: 1, textAlign: 'center', padding: '8px 4px', borderRadius: 8, background: 'white', border: '1px solid #e5e0d8', cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#1B5A4A'; (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 2px 8px rgba(27,90,74,0.15)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e0d8'; (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none' }}
+                  aria-label={`Add ${s.label} frame for $${s.discounted}`}
+                >
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a1a' }}>{s.label}</div>
                   <div style={{ fontSize: 11, fontWeight: 800, color: '#1B5A4A' }}>${s.discounted}</div>
                   <div style={{ fontSize: 9, color: '#aaa', textDecoration: 'line-through' }}>${s.price}</div>
-                </div>
+                </button>
               ))}
             </div>
           </div>

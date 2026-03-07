@@ -1987,6 +1987,7 @@ export default function FrameConfigurator() {
         items={cartItems}
         promoCode={CART_PROMO_CODE}
         giftMessage={giftMessage}
+        onAddAnother={() => { setCartOpen(false); addFrame(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
       />
 
       {/* Sticky Bottom Bar — shown when CTA scrolls out of view */}
