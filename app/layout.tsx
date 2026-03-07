@@ -95,6 +95,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Preconnect to critical third-party origins — eliminates DNS+TCP+TLS latency for images & scripts */}
+        <link rel="preconnect" href="https://cdn.shopify.com" />
+        <link rel="dns-prefetch" href="https://cdn.shopify.com" />
+        <link rel="preconnect" href="https://connect.facebook.net" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://analytics.tiktok.com" crossOrigin="anonymous" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#1B5A4A" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
