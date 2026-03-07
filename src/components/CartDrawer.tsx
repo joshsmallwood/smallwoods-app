@@ -10,8 +10,6 @@ interface CartItem {
   discountedPrice: number
   compareAt: number
   quantity: number
-  photoThumb?: string // data URL of user's uploaded photo
-  frameId?: string // links back to FrameItem.id for removal
 }
 
 interface CartDrawerProps {
@@ -20,8 +18,7 @@ interface CartDrawerProps {
   items: CartItem[]
   promoCode: string
   giftMessage?: string
-  onAddAnother?: (sizeId?: string) => void
-  onRemoveItem?: (frameId: string) => void
+  onAddAnother?: () => void
 }
 
 const UPSELL_SIZES = [
@@ -30,7 +27,7 @@ const UPSELL_SIZES = [
   { label: '12×16', id: '12x16', price: 89, discounted: 58 },
 ]
 
-export default function CartDrawer({ isOpen, onClose, items, promoCode, giftMessage, onAddAnother, onRemoveItem }: CartDrawerProps) {
+export default function CartDrawer({ isOpen, onClose, items, promoCode, giftMessage, onAddAnother }: CartDrawerProps) {
   // Lock body scroll when open
   useEffect(() => {
     if (isOpen) {
@@ -123,25 +120,14 @@ export default function CartDrawer({ isOpen, onClose, items, promoCode, giftMess
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
           {items.map((item, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: i < items.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
-              <div style={{ width: 48, height: 48, borderRadius: 8, background: '#f5f0eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0, overflow: 'hidden' }}>
-                {item.photoThumb ? (
-                  <img src={item.photoThumb} alt={`${item.size} ${item.color} frame preview`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : '🖼️'}
-              </div>
+              <div style={{ width: 48, height: 48, borderRadius: 8, background: '#f5f0eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>🖼️</div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a' }}>Custom Wood Framed Sign</div>
                 <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>{item.size} · {item.color}</div>
               </div>
-              <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+              <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: 15, fontWeight: 800, color: '#1B5A4A' }}>${item.discountedPrice}</div>
                 <div style={{ fontSize: 10, color: '#aaa', textDecoration: 'line-through' }}>${item.compareAt}</div>
-                {items.length > 1 && item.frameId && onRemoveItem && (
-                  <button
-                    onClick={() => onRemoveItem(item.frameId!)}
-                    aria-label={`Remove ${item.size} ${item.color} frame`}
-                    style={{ fontSize: 10, color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0', fontWeight: 600 }}
-                  >Remove</button>
-                )}
               </div>
             </div>
           ))}
@@ -154,7 +140,7 @@ export default function CartDrawer({ isOpen, onClose, items, promoCode, giftMess
               {UPSELL_SIZES.map(s => (
                 <button
                   key={s.id}
-                  onClick={() => { if (onAddAnother) onAddAnother(s.id); else onClose(); }}
+                  onClick={() => { if (onAddAnother) onAddAnother(); else onClose(); }}
                   style={{ flex: 1, textAlign: 'center', padding: '8px 4px', borderRadius: 8, background: 'white', border: '1px solid #e5e0d8', cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#1B5A4A'; (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 2px 8px rgba(27,90,74,0.15)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e0d8'; (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none' }}

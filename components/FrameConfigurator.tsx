@@ -945,10 +945,9 @@ export default function FrameConfigurator() {
   const [starRating, setStarRating] = useState<number>(4.74)
   const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>(savedDesign?.wall ?? 'classic')
   const [cartOpen, setCartOpen] = useState(false)
-  const [cartItems, setCartItems] = useState<{ variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number; photoThumb?: string; frameId?: string }[]>([])
+  const [cartItems, setCartItems] = useState<{ variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number }[]>([])
   const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
   const [ctaVisible, setCtaVisible] = useState(true)
-  const [missingPhotoIds, setMissingPhotoIds] = useState<Set<string>>(new Set())
   const [showSizeQuiz, setShowSizeQuiz] = useState(false)
   const [quizStep, setQuizStep] = useState(0)
   const [quizWall, setQuizWall] = useState<string | null>(null)
@@ -1022,20 +1021,12 @@ export default function FrameConfigurator() {
 
   const activeFrame = frames.find(f => f.id === activeId) ?? frames[0]
 
-  const updateFrame = useCallback((id: string, patch: Partial<FrameItem>) => {
-    if (patch.photo) setMissingPhotoIds(prev => { const next = new Set(prev); next.delete(id); return next })
-    setFrames(prev => prev.map(f => f.id === id ? { ...f, ...patch } : f))
-  }, [])
+  const updateFrame = useCallback((id: string, patch: Partial<FrameItem>) =>
+    setFrames(prev => prev.map(f => f.id === id ? { ...f, ...patch } : f)), [])
 
-  const addFrame = useCallback((sizeIdOrEvent?: string | React.MouseEvent) => {
-    const sizeId = typeof sizeIdOrEvent === 'string' ? sizeIdOrEvent : undefined
+  const addFrame = useCallback(() => {
     const id = `f${counterRef.current++}`
-    const frame = makeFrame(id)
-    if (sizeId) {
-      const matchedSize = SIZES.find(s => s.id === sizeId)
-      if (matchedSize) frame.size = matchedSize
-    }
-    setFrames(prev => [...prev, frame])
+    setFrames(prev => [...prev, makeFrame(id)])
     setActiveId(id)
   }, [])
 
@@ -1325,8 +1316,7 @@ export default function FrameConfigurator() {
               style={{
                 width: f.id === activeId ? 20 : 8,
                 height: 8,
-                background: missingPhotoIds.has(f.id) ? '#ef4444' : (f.id === activeId ? '#1B5A4A' : '#d1d5db'),
-                animation: missingPhotoIds.has(f.id) ? 'pulse 0.6s ease-in-out 3' : undefined,
+                background: f.id === activeId ? '#1B5A4A' : '#d1d5db',
               }}
             />
           ))}
@@ -1958,16 +1948,7 @@ export default function FrameConfigurator() {
       </div>
 
       <div className="px-4 pb-6" ref={ctaRef}>
-        <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} activeFrame={activeFrame} giftMessage={giftMessage} todayOrders={todayOrders} onOpenCart={(items) => { setCartItems(items); setCartOpen(true) }} onMissingPhotos={(ids) => {
-          if (ids.length > 0) {
-            setMissingPhotoIds(new Set(ids))
-            setActiveId(ids[0])
-            setTimeout(() => document.querySelector<HTMLElement>('[data-frame-upload]')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
-            setTimeout(() => setMissingPhotoIds(new Set()), 5000)
-          } else {
-            setMissingPhotoIds(new Set())
-          }
-        }} />
+        <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} activeFrame={activeFrame} giftMessage={giftMessage} todayOrders={todayOrders} onOpenCart={(items) => { setCartItems(items); setCartOpen(true) }} />
       </div>
 
       {showInfo && <InfoModal onClose={() => setShowInfo(false)} />}
@@ -2069,8 +2050,7 @@ export default function FrameConfigurator() {
         items={cartItems}
         promoCode={CART_PROMO_CODE}
         giftMessage={giftMessage}
-        onAddAnother={(sizeId) => { setCartOpen(false); addFrame(sizeId); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-        onRemoveItem={(frameId) => { removeFrame(frameId); setCartItems(prev => { const next = prev.filter(i => i.frameId !== frameId); if (next.length === 0) setCartOpen(false); return next; }); }}
+        onAddAnother={() => { setCartOpen(false); addFrame(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
       />
 
       {/* Sticky Bottom Bar — shown when CTA scrolls out of view */}
@@ -2376,14 +2356,13 @@ function GiftMessageBox({ onMessageChange }: { onMessageChange?: (msg: string) =
   )
 }
 
-function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMessage, todayOrders, onOpenCart, onMissingPhotos }: {
-  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem; giftMessage?: string; todayOrders?: number | null; onOpenCart?: (items: { variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number; photoThumb?: string; frameId?: string }[]) => void; onMissingPhotos?: (ids: string[]) => void
+function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMessage, todayOrders, onOpenCart }: {
+  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem; giftMessage?: string; todayOrders?: number | null; onOpenCart?: (items: { variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number }[]) => void
 }) {
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
   const [showOrderSummary, setShowOrderSummary] = useState(false)
   const [isCheckingOut, setIsCheckingOut] = useState(false)
-  const [missingPhotoCount, setMissingPhotoCount] = useState(0)
 
   // Escape key closes order summary modal
   useEffect(() => {
@@ -2424,16 +2403,6 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
       window.open(`${SHOPIFY_STORE}/products/copy-of-frames`, '_blank')
       return
     }
-    // Check all frames have photos — can't order a custom photo frame without a photo
-    const missing = frames.filter(f => !f.photo)
-    if (missing.length > 0) {
-      setMissingPhotoCount(missing.length)
-      if (onMissingPhotos) onMissingPhotos(missing.map(f => f.id))
-      setTimeout(() => setMissingPhotoCount(0), 5000)
-      return
-    }
-    setMissingPhotoCount(0)
-    if (onMissingPhotos) onMissingPhotos([])
     setShowOrderSummary(true)
   }
 
@@ -2463,8 +2432,6 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
         discountedPrice: Math.round(framePrice * 0.65),
         compareAt,
         quantity: 1,
-        photoThumb: f.photo || undefined,
-        frameId: f.id,
       }
     }).filter(i => i.variantId)
 
@@ -2671,21 +2638,6 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
               >
                 ← Back to customizing
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Missing photo warning — shown when user tries to checkout with frames missing photos */}
-      {missingPhotoCount > 0 && (
-        <div className="mx-4 mb-2 px-4 py-3 rounded-xl flex items-center gap-2" style={{ background: '#fef2f2', border: '1px solid #fca5a5', animation: 'slideUpPanel 0.3s ease-out' }}>
-          <span style={{ fontSize: '18px', flexShrink: 0 }}>📷</span>
-          <div>
-            <div style={{ fontSize: '12px', fontWeight: 800, color: '#991b1b' }}>
-              {missingPhotoCount === 1 ? 'Upload a photo to continue' : `${missingPhotoCount} frames need photos`}
-            </div>
-            <div style={{ fontSize: '11px', color: '#b91c1c', marginTop: '1px' }}>
-              Every frame needs a photo before checkout
             </div>
           </div>
         </div>
