@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Image from 'next/image'
 import InfoModal from './InfoModal'
 import PromoModal from './PromoModal'
 import CartDrawer from '../src/components/CartDrawer'
@@ -1678,7 +1679,7 @@ export default function FrameConfigurator() {
             { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/sweethomememories1-Copy_da4bc885-36fb-4cba-94a2-39b8bae83b7f.jpg?v=1764101397', room: 'Nursery', name: 'J.M.', size: '13×13 White' },
           ].map(c => (
             <div key={c.name} className="flex-shrink-0 relative rounded-xl overflow-hidden" style={{ width: 130, height: 160, scrollSnapAlign: 'start', boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }}>
-              <img src={c.img} alt={c.room} className="absolute inset-0 w-full h-full object-cover" style={{ filter: 'brightness(0.85)' }} loading="lazy" decoding="async" />
+              <Image src={c.img} alt={c.room} fill className="object-cover" style={{ filter: 'brightness(0.85)' }} loading="lazy" sizes="130px" />
               <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 55%)' }} />
               <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">{c.room}</div>
               <div className="absolute bottom-2 left-2 right-2">
@@ -1706,8 +1707,8 @@ export default function FrameConfigurator() {
               rel="noopener noreferrer"
               className="flex-shrink-0 w-28 bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col hover:border-[#1B5A4A] transition-colors"
             >
-              <div className="w-full h-16 overflow-hidden">
-                <img src={p.img} alt={p.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+              <div className="relative w-full h-16 overflow-hidden">
+                <Image src={p.img} alt={p.title} fill className="object-cover" loading="lazy" sizes="112px" />
               </div>
               <div className="p-2 flex flex-col gap-0.5">
                 <span className="text-[11px] font-bold text-gray-800 leading-tight">{p.title}</span>
