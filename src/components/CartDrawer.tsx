@@ -10,6 +10,7 @@ interface CartItem {
   discountedPrice: number
   compareAt: number
   quantity: number
+  photoThumb?: string // data URL of user's uploaded photo
 }
 
 interface CartDrawerProps {
@@ -120,7 +121,11 @@ export default function CartDrawer({ isOpen, onClose, items, promoCode, giftMess
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
           {items.map((item, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: i < items.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
-              <div style={{ width: 48, height: 48, borderRadius: 8, background: '#f5f0eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>🖼️</div>
+              <div style={{ width: 48, height: 48, borderRadius: 8, background: '#f5f0eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0, overflow: 'hidden' }}>
+                {item.photoThumb ? (
+                  <img src={item.photoThumb} alt={`${item.size} ${item.color} frame preview`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : '🖼️'}
+              </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a' }}>Custom Wood Framed Sign</div>
                 <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>{item.size} · {item.color}</div>

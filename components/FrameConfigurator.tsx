@@ -945,7 +945,7 @@ export default function FrameConfigurator() {
   const [starRating, setStarRating] = useState<number>(4.74)
   const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>(savedDesign?.wall ?? 'classic')
   const [cartOpen, setCartOpen] = useState(false)
-  const [cartItems, setCartItems] = useState<{ variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number }[]>([])
+  const [cartItems, setCartItems] = useState<{ variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number; photoThumb?: string }[]>([])
   const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
   const [ctaVisible, setCtaVisible] = useState(true)
   const [missingPhotoIds, setMissingPhotoIds] = useState<Set<string>>(new Set())
@@ -2376,7 +2376,7 @@ function GiftMessageBox({ onMessageChange }: { onMessageChange?: (msg: string) =
 }
 
 function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMessage, todayOrders, onOpenCart, onMissingPhotos }: {
-  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem; giftMessage?: string; todayOrders?: number | null; onOpenCart?: (items: { variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number }[]) => void; onMissingPhotos?: (ids: string[]) => void
+  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem; giftMessage?: string; todayOrders?: number | null; onOpenCart?: (items: { variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number; photoThumb?: string }[]) => void; onMissingPhotos?: (ids: string[]) => void
 }) {
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
@@ -2462,6 +2462,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
         discountedPrice: Math.round(framePrice * 0.65),
         compareAt,
         quantity: 1,
+        photoThumb: f.photo || undefined,
       }
     }).filter(i => i.variantId)
 
