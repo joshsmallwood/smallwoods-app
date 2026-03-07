@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── BELOW-FOLD RENDER OPTIMIZATION ─── */
+/* content-visibility: auto skips layout/paint for off-screen sections */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}
+
 :root {
   --green: #1B5A4A;
   --green-dark: #154739;
