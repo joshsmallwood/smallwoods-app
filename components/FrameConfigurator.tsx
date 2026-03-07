@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import Image from 'next/image'
 import InfoModal from './InfoModal'
 import PromoModal from './PromoModal'
@@ -956,35 +956,35 @@ export default function FrameConfigurator() {
 
   const activeFrame = frames.find(f => f.id === activeId) ?? frames[0]
 
-  const updateFrame = (id: string, patch: Partial<FrameItem>) =>
-    setFrames(prev => prev.map(f => f.id === id ? { ...f, ...patch } : f))
+  const updateFrame = useCallback((id: string, patch: Partial<FrameItem>) =>
+    setFrames(prev => prev.map(f => f.id === id ? { ...f, ...patch } : f)), [])
 
-  const addFrame = () => {
+  const addFrame = useCallback(() => {
     const id = `f${counterRef.current++}`
     setFrames(prev => [...prev, makeFrame(id)])
     setActiveId(id)
-  }
+  }, [])
 
-  const removeFrame = (id: string) => {
+  const removeFrame = useCallback((id: string) => {
     setFrames(prev => {
       const next = prev.filter(f => f.id !== id)
       if (activeId === id) setActiveId(next[next.length - 1]?.id ?? '')
       return next
     })
-  }
+  }, [activeId])
 
-  const clearAll = () => {
+  const clearAll = useCallback(() => {
     const hasPhotos = frames.some(f => f.photo)
     if (hasPhotos && !window.confirm('Clear all frames? Your uploaded photo(s) will be removed.')) return
     setFrames([makeFrame('f1')])
     setActiveId('f1')
     counterRef.current = 2
-  }
+  }, [frames])
 
-  const getFramePrice = (f: FrameItem) => f.color === 'noframe' ? f.size.noFramePrice : f.size.price
-  const totalPrice = frames.reduce((s, f) => s + getFramePrice(f), 0)
-  const bundleTotal = frames.length > 1 ? Math.round(totalPrice * (1 - BUNDLE_DISCOUNT)) : null
-  const fullTotal = frames.reduce((s, f) => s + (f.color === 'noframe' ? f.size.noFrameCompareAt : f.size.compareAt), 0)
+  const getFramePrice = useCallback((f: FrameItem) => f.color === 'noframe' ? f.size.noFramePrice : f.size.price, [])
+  const totalPrice = useMemo(() => frames.reduce((s, f) => s + (f.color === 'noframe' ? f.size.noFramePrice : f.size.price), 0), [frames])
+  const bundleTotal = useMemo(() => frames.length > 1 ? Math.round(totalPrice * (1 - BUNDLE_DISCOUNT)) : null, [frames.length, totalPrice])
+  const fullTotal = useMemo(() => frames.reduce((s, f) => s + (f.color === 'noframe' ? f.size.noFrameCompareAt : f.size.compareAt), 0), [frames])
   const activeFramePrice = activeFrame ? getFramePrice(activeFrame) : 0
   const displayBundle = bundleTotal ?? Math.round(activeFramePrice * (1 - BUNDLE_DISCOUNT))
 
