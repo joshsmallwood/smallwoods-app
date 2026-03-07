@@ -95,6 +95,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#1B5A4A" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
         {/* Meta Pixel — SmallwoodHome + Smallwood #2 */}
         <Script id="meta-pixel" strategy="afterInteractive">{`
           !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?

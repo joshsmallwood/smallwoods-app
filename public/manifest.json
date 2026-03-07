@@ -1,0 +1,24 @@
+{
+  "name": "Smallwoods — Custom Wood Frames",
+  "short_name": "Smallwoods",
+  "description": "Design your custom wood framed sign. Upload a photo, pick your size and frame color. Handcrafted in the USA.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ede8e0",
+  "theme_color": "#1B5A4A",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
