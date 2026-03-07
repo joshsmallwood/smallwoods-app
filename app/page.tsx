@@ -185,9 +185,11 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
-      <ErrorBoundary>
-        <FrameConfigurator />
-      </ErrorBoundary>
+      <main aria-label="Custom Wood Framed Sign Builder">
+        <ErrorBoundary>
+          <FrameConfigurator />
+        </ErrorBoundary>
+      </main>
     </>
   )
 }

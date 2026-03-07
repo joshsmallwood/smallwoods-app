@@ -581,6 +581,7 @@ function SingleFrame({
       {canRemove && (
         <button
           onClick={(e) => { e.stopPropagation(); onRemove() }}
+          aria-label="Remove frame"
           className="absolute -top-2.5 -right-2.5 z-20 w-6 h-6 bg-red-500 text-white rounded-full text-xs font-bold shadow-md flex items-center justify-center hover:bg-red-600"
         >×</button>
       )}
@@ -649,7 +650,7 @@ function SingleFrame({
           ) : frame.photo ? (
             <img
               src={frame.photo}
-              alt="Photo"
+              alt="Your uploaded photo in custom wood frame"
               className={`absolute inset-0 w-full h-full object-cover select-none ${photoExiting ? 'photo-exit' : 'photo-enter'}`}
               style={{ transform: `translate(${offset.x}px,${offset.y}px) scale(${zoom})`, transformOrigin: 'center', userSelect: 'none', pointerEvents: 'none' }}
               draggable={false}
@@ -661,7 +662,7 @@ function SingleFrame({
                 <img
                   key={src}
                   src={src}
-                  alt="Example photo in frame"
+                  alt="Example family photo in custom wood frame"
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{
                     filter: 'brightness(0.88) saturate(1.1)',
@@ -767,17 +768,17 @@ function SingleFrame({
                     className="text-[10px] font-bold px-2 py-1 rounded-full border border-gray-300 bg-white text-gray-600"
                     title="Reset to default"
                   >↩</button>
-                  <button onClick={() => setZoom(z => Math.min(z + 0.15, 3))} className="w-6 h-6 rounded-full bg-white border border-gray-300 text-gray-700 font-bold text-sm flex items-center justify-center">+</button>
-                  <button onClick={() => setZoom(z => Math.max(z - 0.15, 0.5))} className="w-6 h-6 rounded-full bg-white border border-gray-300 text-gray-700 font-bold text-sm flex items-center justify-center">−</button>
+                  <button onClick={() => setZoom(z => Math.min(z + 0.15, 3))} aria-label="Zoom in" className="w-6 h-6 rounded-full bg-white border border-gray-300 text-gray-700 font-bold text-sm flex items-center justify-center">+</button>
+                  <button onClick={() => setZoom(z => Math.max(z - 0.15, 0.5))} aria-label="Zoom out" className="w-6 h-6 rounded-full bg-white border border-gray-300 text-gray-700 font-bold text-sm flex items-center justify-center">−</button>
                 </div>
               )}
-              <button onClick={clearPhoto} className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white text-red-500 border border-red-200">✕</button>
+              <button onClick={clearPhoto} aria-label="Remove photo" className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white text-red-500 border border-red-200">✕</button>
             </>
           )}
         </div>
       )}
 
-      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} data-frame-upload="true" />
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} data-frame-upload="true" aria-label="Upload your photo" />
 
       {/* Photo quality indicator */}
       {photoQuality && (
@@ -1899,7 +1900,7 @@ export default function FrameConfigurator() {
             {/* Handle */}
             <div style={{ width: 40, height: 4, background: '#e5e7eb', borderRadius: 9, margin: '0 auto 16px' }} />
             {/* Close */}
-            <button onClick={() => setShowSizeQuiz(false)} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', fontSize: 20, color: '#9ca3af', cursor: 'pointer' }}>✕</button>
+            <button onClick={() => setShowSizeQuiz(false)} aria-label="Close size quiz" style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', fontSize: 20, color: '#9ca3af', cursor: 'pointer' }}>✕</button>
 
             {quizStep === 0 && (
               <div>
@@ -1958,7 +1959,7 @@ export default function FrameConfigurator() {
                     <span style={{ fontSize: 18, color: '#1B5A4A' }}>›</span>
                   </button>
                 ))}
-                <button onClick={() => setQuizStep(0)} style={{ background: 'none', border: 'none', fontSize: 13, color: '#9ca3af', cursor: 'pointer', marginTop: 4 }}>← Back</button>
+                <button onClick={() => setQuizStep(0)} aria-label="Go back to previous step" style={{ background: 'none', border: 'none', fontSize: 13, color: '#9ca3af', cursor: 'pointer', marginTop: 4 }}>← Back</button>
               </div>
             )}
 
@@ -2206,6 +2207,7 @@ function FAQAccordion() {
           <button
             className="w-full flex items-center justify-between px-4 py-3 text-left"
             onClick={() => setOpen(open === i ? null : i)}
+            aria-expanded={open === i}
           >
             <span className="text-[13px] font-semibold text-gray-800 leading-snug pr-2">{faq.q}</span>
             <span className="text-gray-400 text-lg flex-shrink-0 transition-transform duration-200" style={{ transform: open === i ? 'rotate(45deg)' : 'none' }}>+</span>
