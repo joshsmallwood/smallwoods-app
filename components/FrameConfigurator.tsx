@@ -993,6 +993,32 @@ export default function FrameConfigurator() {
     return () => obs.disconnect()
   }, [])
 
+  // Warn before navigating away when user has uploaded photos (prevents accidental data loss)
+  useEffect(() => {
+    const hasPhotos = frames.some(f => f.photo)
+    if (!hasPhotos) return
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+      // Modern browsers ignore custom messages but require returnValue to be set
+      e.returnValue = ''
+    }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [frames])
+
+  // Escape key closes any open modal/drawer
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      if (cartOpen) { setCartOpen(false); return }
+      if (showSizeQuiz) { setShowSizeQuiz(false); return }
+      if (showInfo) { setShowInfo(false); return }
+      if (showPromo) { setShowPromo(false); return }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [cartOpen, showSizeQuiz, showInfo, showPromo])
+
   const activeFrame = frames.find(f => f.id === activeId) ?? frames[0]
 
   const updateFrame = useCallback((id: string, patch: Partial<FrameItem>) =>
@@ -2337,6 +2363,14 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
   const [added, setAdded] = useState(false)
   const [showOrderSummary, setShowOrderSummary] = useState(false)
   const [isCheckingOut, setIsCheckingOut] = useState(false)
+
+  // Escape key closes order summary modal
+  useEffect(() => {
+    if (!showOrderSummary) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowOrderSummary(false) }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [showOrderSummary])
 
   const buildCartUrl = () => {
     const cartItems = frames.map(f => {
