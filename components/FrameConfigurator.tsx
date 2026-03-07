@@ -574,9 +574,26 @@ function SingleFrame({
         setTimeout(() => setOrientMismatch(null), 6000)
       }
       img.src = dataUrl
+      // Resize image client-side to reduce memory (phones shoot 5-15MB photos)
+      // Max 2048px on longest side, JPEG 0.85 quality — keeps print-quality assessment accurate
+      // while cutting data URL size by 80-90%
+      const resizePhoto = (srcImg: HTMLImageElement): string => {
+        const MAX = 2048
+        let { naturalWidth: rw, naturalHeight: rh } = srcImg
+        if (rw <= MAX && rh <= MAX) return dataUrl // already small enough
+        const scale = MAX / Math.max(rw, rh)
+        rw = Math.round(rw * scale)
+        rh = Math.round(rh * scale)
+        const cvs = document.createElement('canvas')
+        cvs.width = rw; cvs.height = rh
+        const ctx = cvs.getContext('2d')!
+        ctx.drawImage(srcImg, 0, 0, rw, rh)
+        return cvs.toDataURL('image/jpeg', 0.85)
+      }
       setTimeout(() => {
+        const compressed = resizePhoto(img)
         setZoom(1); setOffset({ x: 0, y: 0 }); setCropMode(false)
-        onUpdate({ photo: dataUrl })
+        onUpdate({ photo: compressed })
         trackEvent('ViewContent', { content_type: 'product', content_ids: ['CWFS'] })
         setLoading(false)
         setShowUploadCelebration(true)
