@@ -87,14 +87,57 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default function RootLayout({
+async function getJsonLd() {
+  const { reviewCount, starRating } = await getMetaStats()
+  const isSaleActive = new Date() < SALE_END
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'Custom Wood Framed Sign',
+    description: 'Upload your photo and create a custom wood framed sign. Handcrafted in the USA. Ships in 1–3 days.',
+    image: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397',
+    url: 'https://app.smallwoods.io',
+    brand: { '@type': 'Brand', name: 'Smallwoods' },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: starRating.toFixed(2),
+      reviewCount,
+      bestRating: 5,
+      worstRating: 1,
+    },
+    offers: {
+      '@type': 'AggregateOffer',
+      priceCurrency: 'USD',
+      lowPrice: '44.85',
+      highPrice: '129.00',
+      offerCount: 9,
+      availability: 'https://schema.org/InStock',
+      ...(isSaleActive ? {
+        priceValidUntil: '2026-03-17',
+      } : {}),
+    },
+    category: 'Home Décor > Wall Art > Custom Photo Frames',
+    manufacturer: { '@type': 'Organization', name: 'Smallwoods', url: 'https://www.smallwoodhome.com' },
+    countryOfOrigin: { '@type': 'Country', name: 'US' },
+    shippingDetails: {
+      '@type': 'OfferShippingDetails',
+      shippingRate: { '@type': 'MonetaryAmount', value: '0', currency: 'USD' },
+      deliveryTime: { '@type': 'ShippingDeliveryTime', handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' }, transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 5, unitCode: 'DAY' } },
+      shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'US' },
+    },
+  }
+}
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const jsonLd = await getJsonLd()
   return (
     <html lang="en">
       <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         {/* Preconnect to critical third-party origins — eliminates DNS+TCP+TLS latency for images & scripts */}
         <link rel="preconnect" href="https://cdn.shopify.com" />
         <link rel="dns-prefetch" href="https://cdn.shopify.com" />
