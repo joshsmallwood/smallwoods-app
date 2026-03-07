@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import InfoModal from './InfoModal'
 import PromoModal from './PromoModal'
+import CartDrawer from '../src/components/CartDrawer'
+import { trackEvent } from '../src/lib/analytics'
 
 const WALL_STYLES: Record<string, React.CSSProperties> = {
   classic: { backgroundColor: '#ede8e0', backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 24px,rgba(0,0,0,0.018) 24px,rgba(0,0,0,0.018) 25px),repeating-linear-gradient(90deg,transparent,transparent 24px,rgba(0,0,0,0.012) 24px,rgba(0,0,0,0.012) 25px)' },
@@ -543,6 +545,7 @@ function SingleFrame({
       setTimeout(() => {
         setZoom(1); setOffset({ x: 0, y: 0 }); setCropMode(false)
         onUpdate({ photo: dataUrl })
+        trackEvent('ViewContent', { content_type: 'product', content_ids: ['CWFS'] })
         setLoading(false)
         setShowUploadCelebration(true)
         setTimeout(() => setShowUploadCelebration(false), 2200)
@@ -901,6 +904,8 @@ export default function FrameConfigurator() {
   const [reviewCount, setReviewCount] = useState<number>(6494)
   const [starRating, setStarRating] = useState<number>(4.74)
   const [wallStyle, setWallStyle] = useState<'classic' | 'modern' | 'dark' | 'warm'>(savedDesign?.wall ?? 'classic')
+  const [cartOpen, setCartOpen] = useState(false)
+  const [cartItems, setCartItems] = useState<{ variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number }[]>([])
   const [wallPreviewMode, setWallPreviewMode] = useState<'with-frame' | 'empty'>('with-frame')
   const [ctaVisible, setCtaVisible] = useState(true)
   const [showSizeQuiz, setShowSizeQuiz] = useState(false)
@@ -1487,7 +1492,7 @@ export default function FrameConfigurator() {
                 // Size rank badges — based on real Neon DB order data (by size, all colors combined)
                 // 25x17: 21,304 | 44x22: 6,488 | 20x30: 6,352 | 24x36: 6,051 | 12x16: 4,106 | 16x16: 3,309 | 13x13: 3,097 (90-day, Mar 5 2026)
                 const stockHints: Record<string, { label: string; color: string }> = {
-                  '25x17': { label: '🏆 #1', color: '#1B5A4A' },
+                  '25x17': { label: '⭐ MOST POPULAR', color: '#b8860b' },
                   '44x22': { label: '🥈 #2', color: '#c8830a' },
                   '20x30': { label: '🔥 #3', color: '#EF4444' },
                   '24x36': { label: '🎯 #4', color: '#6366f1' },
@@ -1499,7 +1504,10 @@ export default function FrameConfigurator() {
                 return (
                   <button
                     key={size.id}
-                    onClick={() => updateFrame(activeId, { size })}
+                    onClick={() => {
+                      updateFrame(activeId, { size })
+                      trackEvent('ViewContent', { content_type: 'product', value: activeFrame.color === 'noframe' ? size.noFramePrice : size.price, currency: 'USD' })
+                    }}
                     className={`size-btn relative ${activeFrame.size.id === size.id ? 'active' : ''}`}
                   >
                     {hint && (
@@ -1874,7 +1882,7 @@ export default function FrameConfigurator() {
       </div>
 
       <div className="px-4 pb-6" ref={ctaRef}>
-        <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} activeFrame={activeFrame} giftMessage={giftMessage} />
+        <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} activeFrame={activeFrame} giftMessage={giftMessage} todayOrders={todayOrders} onOpenCart={(items) => { setCartItems(items); setCartOpen(true) }} />
       </div>
 
       {showInfo && <InfoModal onClose={() => setShowInfo(false)} />}
@@ -1969,6 +1977,14 @@ export default function FrameConfigurator() {
           </div>
         </div>
       )}
+
+      <CartDrawer
+        isOpen={cartOpen}
+        onClose={() => setCartOpen(false)}
+        items={cartItems}
+        promoCode={CART_PROMO_CODE}
+        giftMessage={giftMessage}
+      />
 
       {/* Sticky Bottom Bar — shown when CTA scrolls out of view */}
       <div
@@ -2269,8 +2285,8 @@ function GiftMessageBox({ onMessageChange }: { onMessageChange?: (msg: string) =
   )
 }
 
-function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMessage }: {
-  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem; giftMessage?: string
+function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMessage, todayOrders, onOpenCart }: {
+  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem; giftMessage?: string; todayOrders?: number | null; onOpenCart?: (items: { variantId: string; size: string; color: string; price: number; discountedPrice: number; compareAt: number; quantity: number }[]) => void
 }) {
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
@@ -2310,15 +2326,39 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
     setShowOrderSummary(true)
   }
 
-  const handleConfirmCheckout = () => {
+  const handleConfirmCheckout = async () => {
     setShowOrderSummary(false)
-    setAdding(true)
-    setTimeout(() => {
-      setAdded(true)
-      setAdding(false)
+
+    // Fire analytics events before opening cart drawer
+    const price = displayTotal
+    const variantIds = frames.map(f => getVariantId(f.size, f.color)).filter(Boolean)
+    trackEvent('AddToCart', { content_type: 'product', value: price, currency: 'USD', content_ids: variantIds.map(String) })
+    trackEvent('InitiateCheckout', { value: price, currency: 'USD' })
+    await new Promise(r => setTimeout(r, 300)) // ensure events fire
+
+    // Build cart items and open drawer instead of redirecting
+    const cartItemsList = frames.map(f => {
+      const vid = getVariantId(f.size, f.color)
+      const colorLabel = FRAME_COLORS.find(c => c.id === f.color)?.label ?? f.color
+      const framePrice = f.color === 'noframe' ? f.size.noFramePrice : f.size.price
+      const compareAt = f.color === 'noframe' ? f.size.noFrameCompareAt : f.size.compareAt
+      return {
+        variantId: String(vid ?? ''),
+        size: f.size.label,
+        color: colorLabel,
+        price: framePrice,
+        discountedPrice: Math.round(framePrice * 0.65),
+        compareAt,
+        quantity: 1,
+      }
+    }).filter(i => i.variantId)
+
+    if (onOpenCart) {
+      onOpenCart(cartItemsList)
+    } else {
+      // Fallback: redirect to Shopify cart
       window.open(buildCartUrl(), '_blank')
-      setTimeout(() => setAdded(false), 3000)
-    }, 600)
+    }
   }
 
   const hasPhotos = frames.some(f => f.photo)
@@ -2559,7 +2599,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
     </button>
 
     {/* Live social proof — below CTA */}
-    {todayOrders !== null && todayOrders > 0 && (
+    {todayOrders != null && todayOrders > 0 && (
       <p className="text-center mt-2" style={{ fontSize: '11px', color: '#6b7280', fontWeight: 600 }}>
         🔥 <span style={{ color: '#1B5A4A', fontWeight: 800 }}>{todayOrders.toLocaleString()}</span> frames ordered today · ships in 1–3 days 🇺🇸
       </p>
