@@ -18,7 +18,7 @@ interface CartDrawerProps {
   items: CartItem[]
   promoCode: string
   giftMessage?: string
-  onAddAnother?: () => void
+  onAddAnother?: (sizeId?: string) => void
 }
 
 const UPSELL_SIZES = [
@@ -140,7 +140,7 @@ export default function CartDrawer({ isOpen, onClose, items, promoCode, giftMess
               {UPSELL_SIZES.map(s => (
                 <button
                   key={s.id}
-                  onClick={() => { if (onAddAnother) onAddAnother(); else onClose(); }}
+                  onClick={() => { if (onAddAnother) onAddAnother(s.id); else onClose(); }}
                   style={{ flex: 1, textAlign: 'center', padding: '8px 4px', borderRadius: 8, background: 'white', border: '1px solid #e5e0d8', cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#1B5A4A'; (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 2px 8px rgba(27,90,74,0.15)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e0d8'; (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none' }}

@@ -1024,9 +1024,15 @@ export default function FrameConfigurator() {
   const updateFrame = useCallback((id: string, patch: Partial<FrameItem>) =>
     setFrames(prev => prev.map(f => f.id === id ? { ...f, ...patch } : f)), [])
 
-  const addFrame = useCallback(() => {
+  const addFrame = useCallback((sizeIdOrEvent?: string | React.MouseEvent) => {
+    const sizeId = typeof sizeIdOrEvent === 'string' ? sizeIdOrEvent : undefined
     const id = `f${counterRef.current++}`
-    setFrames(prev => [...prev, makeFrame(id)])
+    const frame = makeFrame(id)
+    if (sizeId) {
+      const matchedSize = SIZES.find(s => s.id === sizeId)
+      if (matchedSize) frame.size = matchedSize
+    }
+    setFrames(prev => [...prev, frame])
     setActiveId(id)
   }, [])
 
@@ -2050,7 +2056,7 @@ export default function FrameConfigurator() {
         items={cartItems}
         promoCode={CART_PROMO_CODE}
         giftMessage={giftMessage}
-        onAddAnother={() => { setCartOpen(false); addFrame(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+        onAddAnother={(sizeId) => { setCartOpen(false); addFrame(sizeId); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
       />
 
       {/* Sticky Bottom Bar — shown when CTA scrolls out of view */}
