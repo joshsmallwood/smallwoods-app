@@ -2071,7 +2071,10 @@ export default function FrameConfigurator() {
           </div>
         </div>
         <button
-          onClick={() => ctaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+          onClick={() => {
+            const mainCta = document.querySelector<HTMLElement>('[data-main-cta]')
+            if (mainCta) { mainCta.click() } else { ctaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }
+          }}
           style={{
             background: 'white',
             color: '#1B5A4A',
@@ -2607,6 +2610,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
       )}
 
       <button
+      data-main-cta="true"
       onClick={hasPhotos ? handleAddToCart : () => { document.querySelector<HTMLElement>('[data-frame-upload]')?.click() }}
       className="w-full font-bold rounded-xl transition-all active:scale-[0.98] relative overflow-hidden cursor-pointer"
       style={{
