@@ -600,6 +600,7 @@ function SingleFrame({
           style={{
             aspectRatio: `${aspectW} / ${aspectH}`,
             cursor: cropMode ? 'grab' : (frame.photo ? 'default' : 'pointer'),
+            touchAction: cropMode ? 'none' : undefined,
           }}
           onClick={(e) => { e.stopPropagation(); if (!frame.photo && !loading) fileRef.current?.click() }}
           onMouseDown={(e) => {
@@ -636,6 +637,7 @@ function SingleFrame({
               const scale = newDist / pinchRef.current.dist
               setZoom(Math.min(3, Math.max(0.5, pinchRef.current.zoom * scale)))
             } else if (touchRef.current) {
+              e.preventDefault()
               const t = e.touches[0]
               setOffset({ x: touchRef.current.ox + t.clientX - touchRef.current.tx, y: touchRef.current.oy + t.clientY - touchRef.current.ty })
             }
