@@ -80,6 +80,9 @@ export async function generateMetadata(): Promise<Metadata> {
       images: ['https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397'],
     },
     keywords: ['custom wood frames', 'personalized photo frames', 'wood framed signs', 'custom photo gifts', 'smallwoods'],
+    alternates: {
+      canonical: 'https://app.smallwoods.io',
+    },
     robots: {
       index: true,
       follow: true,
