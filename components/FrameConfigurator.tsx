@@ -478,10 +478,10 @@ function SingleFrame({
   const [showPhotoTips, setShowPhotoTips] = useState(false)
   const [sampleIdx, setSampleIdx] = useState(0)
   const SAMPLE_PHOTOS = [
-    'https://cdn.shopify.com/s/files/1/1091/1314/files/63A4970-2_b44b42d1-4e90-45f9-8479-046771313de6.jpg?v=1764101397',
-    'https://cdn.shopify.com/s/files/1/1091/1314/files/SmallwoodKids-3M_310829a1-d49a-4c9e-bfca-2d6bf9e21509.jpg?v=1764101397',
-    'https://cdn.shopify.com/s/files/1/1091/1314/files/laceyburgert_7217bd0e-cbbd-4bbc-9f2c-18ef9a38a8f4.jpg?v=1764101397',
-    'https://cdn.shopify.com/s/files/1/1091/1314/files/20200312-DrCulver_9fd36e38-7b6d-4758-b6cd-c680d813b789.jpg?v=1764101397',
+    'https://cdn.shopify.com/s/files/1/1091/1314/files/63A4970-2_b44b42d1-4e90-45f9-8479-046771313de6.jpg?v=1764101397&width=600',
+    'https://cdn.shopify.com/s/files/1/1091/1314/files/SmallwoodKids-3M_310829a1-d49a-4c9e-bfca-2d6bf9e21509.jpg?v=1764101397&width=600',
+    'https://cdn.shopify.com/s/files/1/1091/1314/files/laceyburgert_7217bd0e-cbbd-4bbc-9f2c-18ef9a38a8f4.jpg?v=1764101397&width=600',
+    'https://cdn.shopify.com/s/files/1/1091/1314/files/20200312-DrCulver_9fd36e38-7b6d-4758-b6cd-c680d813b789.jpg?v=1764101397&width=600',
   ]
   useEffect(() => {
     if (frame.photo) return
@@ -1673,11 +1673,11 @@ export default function FrameConfigurator() {
         <div className="flex gap-2.5 overflow-x-auto pb-1 px-4" style={{ scrollSnapType: 'x mandatory' }}>
           {[
             // Sizes sourced from real top-selling Neon DB data; names from real JudgeMe reviewers
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397', room: 'Living Room', name: 'Rene K.', size: '25×17 Walnut' },
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/220224Practicals_20.jpg?v=1764101397', room: 'Bedroom', name: 'Teri L.', size: '20×30 Walnut' },
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS_E_1x1_a97b2134-fd1d-4aeb-8cb8-6c4fc0f31d6e.jpg?v=1764101397', room: 'Office', name: 'Kalley M.', size: '16×16 Black' },
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS-BlackXL_ba652b45-37a3-4f18-8af8-d341b150f44a.jpg?v=1764101397', room: 'Gallery Wall', name: 'Amity R.', size: '44×22 Black' },
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/sweethomememories1-Copy_da4bc885-36fb-4cba-94a2-39b8bae83b7f.jpg?v=1764101397', room: 'Nursery', name: 'J.M.', size: '13×13 White' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397&width=300', room: 'Living Room', name: 'Rene K.', size: '25×17 Walnut' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/220224Practicals_20.jpg?v=1764101397&width=300', room: 'Bedroom', name: 'Teri L.', size: '20×30 Walnut' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS_E_1x1_a97b2134-fd1d-4aeb-8cb8-6c4fc0f31d6e.jpg?v=1764101397&width=300', room: 'Office', name: 'Kalley M.', size: '16×16 Black' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS-BlackXL_ba652b45-37a3-4f18-8af8-d341b150f44a.jpg?v=1764101397&width=300', room: 'Gallery Wall', name: 'Amity R.', size: '44×22 Black' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/sweethomememories1-Copy_da4bc885-36fb-4cba-94a2-39b8bae83b7f.jpg?v=1764101397&width=300', room: 'Nursery', name: 'J.M.', size: '13×13 White' },
           ].map(c => (
             <div key={c.name} className="flex-shrink-0 relative rounded-xl overflow-hidden" style={{ width: 130, height: 160, scrollSnapAlign: 'start', boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }}>
               <Image src={c.img} alt={c.room} fill className="object-cover" style={{ filter: 'brightness(0.85)' }} loading="lazy" sizes="130px" />
@@ -1697,9 +1697,9 @@ export default function FrameConfigurator() {
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Customers also love</p>
         <div className="flex gap-2 overflow-x-auto pb-1">
           {[
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HangingCanvas_Hero_Studio.jpg?v=1771287846', title: 'Hanging Canvas', subtitle: 'Custom · Wood Frame', price: 'from $85', href: 'https://www.smallwoodhome.com/products/custom-framed-hanging-canvas' },
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0002_Canvas-min.jpg?v=1764103392', title: 'Wrapped Canvas', subtitle: 'Custom · Gallery Wrap', price: 'from $69', href: 'https://www.smallwoodhome.com/products/custom-wrapped-canvas' },
-            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS-BlackXL_ba652b45-37a3-4f18-8af8-d341b150f44a.jpg?v=1764101397', title: 'Best Sellers', subtitle: 'Top-rated designs', price: 'from $69', badge: 'Shop all →', href: 'https://www.smallwoodhome.com/collections/bestseller' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HangingCanvas_Hero_Studio.jpg?v=1771287846&width=260', title: 'Hanging Canvas', subtitle: 'Custom · Wood Frame', price: 'from $85', href: 'https://www.smallwoodhome.com/products/custom-framed-hanging-canvas' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0002_Canvas-min.jpg?v=1764103392&width=260', title: 'Wrapped Canvas', subtitle: 'Custom · Gallery Wrap', price: 'from $69', href: 'https://www.smallwoodhome.com/products/custom-wrapped-canvas' },
+            { img: 'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS-BlackXL_ba652b45-37a3-4f18-8af8-d341b150f44a.jpg?v=1764101397&width=260', title: 'Best Sellers', subtitle: 'Top-rated designs', price: 'from $69', badge: 'Shop all →', href: 'https://www.smallwoodhome.com/collections/bestseller' },
           ].map(p => (
             <a
               key={p.title}
