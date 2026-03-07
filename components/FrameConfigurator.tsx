@@ -2292,6 +2292,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
   const [showOrderSummary, setShowOrderSummary] = useState(false)
+  const [isCheckingOut, setIsCheckingOut] = useState(false)
 
   const buildCartUrl = () => {
     const cartItems = frames.map(f => {
@@ -2328,6 +2329,8 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
   }
 
   const handleConfirmCheckout = async () => {
+    if (isCheckingOut) return
+    setIsCheckingOut(true)
     setShowOrderSummary(false)
 
     // Fire analytics events before opening cart drawer
@@ -2360,6 +2363,7 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
       // Fallback: redirect to Shopify cart
       window.open(buildCartUrl(), '_blank')
     }
+    setIsCheckingOut(false)
   }
 
   const hasPhotos = frames.some(f => f.photo)
@@ -2533,11 +2537,21 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
             <div className="px-5 pb-8 pt-2">
               <button
                 onClick={handleConfirmCheckout}
-                className="w-full rounded-xl py-4 font-bold flex items-center justify-center gap-2"
+                disabled={isCheckingOut}
+                className="w-full rounded-xl py-4 font-bold flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ background: 'linear-gradient(135deg, #1B5A4A 0%, #2d7a65 100%)', color: 'white', fontSize: '16px', boxShadow: '0 4px 18px rgba(27,90,74,0.4)' }}
               >
-                <span>🛒</span>
-                <span>Confirm &amp; Go to Checkout</span>
+                {isCheckingOut ? (
+                  <>
+                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Processing…</span>
+                  </>
+                ) : (
+                  <>
+                    <span>🛒</span>
+                    <span>Confirm &amp; Go to Checkout</span>
+                  </>
+                )}
               </button>
               <button
                 onClick={() => setShowOrderSummary(false)}
