@@ -136,6 +136,18 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
   const framePadding = frame.color === 'NoFrame' ? 0 : 14
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // Compute display size: fill 85vw or 50vh, whichever is smaller, respecting aspect ratio
+  const photoW = isLandscape ? frame.size.heightIn : frame.size.widthIn
+  const photoH = isLandscape ? frame.size.widthIn : frame.size.heightIn
+  const maxDisplayW = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.85, 380) : 300
+  const maxDisplayH = typeof window !== 'undefined' ? window.innerHeight * 0.48 : 280
+  const scaleByW = maxDisplayW / photoW
+  const scaleByH = maxDisplayH / photoH
+  const scale = Math.min(scaleByW, scaleByH)
+  const innerW = Math.round(photoW * scale)
+  const innerH = Math.round(photoH * scale)
+  const scaledPad = frame.color === 'NoFrame' ? 0 : Math.max(10, Math.round(framePadding * scale))
+
   const handleFile = (file: File) => {
     if (!file.type.startsWith('image/') && !file.name.match(/\.(heic|heif)$/i)) {
       alert('Please upload an image file (JPG, PNG, or HEIC).')
@@ -164,43 +176,38 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
     <div
       ref={containerRef}
       className="relative select-none"
-      style={{
-        outline: isActive ? '2px solid #143639' : '2px solid transparent',
-        borderRadius: 4, transition: 'outline 0.15s',
-        // Fill the container using CSS aspect-ratio trick
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+      style={{ lineHeight: 0 }}
       onClick={onClick}
     >
-      {/* Frame border using border-image — scaled via CSS to fill container */}
+      {/* Outer active ring */}
+      {isActive && (
+        <div style={{ position: 'absolute', inset: -3, borderRadius: 6, border: '2.5px solid #143639', pointerEvents: 'none', zIndex: 5 }} />
+      )}
+      {/* Frame border using border-image */}
       <div
         style={{
-          // Use container queries via CSS max dimensions
-          maxWidth: '100%',
-          maxHeight: '100%',
-          aspectRatio: `${isLandscape ? aspectH : aspectW} / ${isLandscape ? aspectW : aspectH}`,
+          width: innerW + scaledPad * 2,
+          height: innerH + scaledPad * 2,
           borderStyle: frameImgUrl ? 'solid' : 'none',
-          borderWidth: framePadding,
+          borderWidth: scaledPad,
           borderImageSource: frameImgUrl ? `url("${frameImgUrl}")` : 'none',
           borderImageSlice: 10,
           borderImageRepeat: 'stretch',
           lineHeight: 0,
-          boxSizing: 'border-box',
+          boxSizing: 'content-box',
           position: 'relative',
+          background: frame.color === 'NoFrame' ? '#f0ece4' : 'transparent',
         }}
       >
-        {/* Photo area — fills border box interior */}
+        {/* Photo area */}
         <div
           style={{
-            position: 'absolute',
-            inset: 0,
+            width: innerW,
+            height: innerH,
             overflow: 'hidden',
             cursor: frame.photo ? (dragging ? 'grabbing' : 'grab') : 'pointer',
             background: '#f0ece4',
+            position: 'relative',
           }}
           onClick={() => { if (!frame.photo && !loading) fileRef.current?.click() }}
           onMouseDown={(e) => {
