@@ -88,8 +88,7 @@ const SHOPIFY_STORE = 'https://smallwoodhome.com'
 
 const DEFAULT_SIZE = SIZES.find(s => s.id === '25x17')!
 
-// Portrait = taller than wide (good for filling phone screen height)
-// 25x17 landscape = 25w x 17h — but we display portrait by default (17w x 25h) to fill height
+// Default portrait — dev app shows 25x17 as portrait (rotated, 17w x 25h) to fill phone height
 function makeFrame(id: string): FrameItem {
   return { id, size: DEFAULT_SIZE, color: 'Stained', photo: null, orientation: 'portrait', zoom: 1, offsetX: 0, offsetY: 0 }
 }
@@ -130,9 +129,14 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
   const pinchRef = useRef<{ dist: number; zoom: number } | null>(null)
 
   const frameImgUrl = getFrameImageUrl(frame.size, frame.color)
+  // "portrait" mode = rotate so the longer dimension is vertical
+  // For 25x17: portrait shows 17w × 25h (tall), landscape shows 25w × 17h (wide)
   const isLandscape = frame.orientation === 'landscape'
-  const aspectW = isLandscape ? frame.size.heightIn : frame.size.widthIn
-  const aspectH = isLandscape ? frame.size.widthIn : frame.size.heightIn
+  // In portrait: swap so taller dimension is height
+  const longerDim = Math.max(frame.size.widthIn, frame.size.heightIn)
+  const shorterDim = Math.min(frame.size.widthIn, frame.size.heightIn)
+  const aspectW = isLandscape ? longerDim : shorterDim
+  const aspectH = isLandscape ? shorterDim : longerDim
 
   // Frame border via CSS border-image (same technique as dev app)
   const framePadding = frame.color === 'NoFrame' ? 0 : 14
@@ -141,10 +145,10 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
   // Compute display size: fill available space, respecting aspect ratio
   // Border stays fixed — only the photo interior scales
   const BORDER_PX = frame.color === 'NoFrame' ? 0 : 16 // fixed border width regardless of frame size
-  const photoW = isLandscape ? frame.size.heightIn : frame.size.widthIn
-  const photoH = isLandscape ? frame.size.widthIn : frame.size.heightIn
-  const maxDisplayW = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.82, 360) - BORDER_PX * 2 : 260
-  const maxDisplayH = typeof window !== 'undefined' ? window.innerHeight * 0.58 - BORDER_PX * 2 : 340
+  const photoW = aspectW
+  const photoH = aspectH
+  const maxDisplayW = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.78, 320) - BORDER_PX * 2 : 240
+  const maxDisplayH = typeof window !== 'undefined' ? window.innerHeight * 0.62 - BORDER_PX * 2 : 380
   const scaleByW = maxDisplayW / photoW
   const scaleByH = maxDisplayH / photoH
   const scale = Math.min(scaleByW, scaleByH)
