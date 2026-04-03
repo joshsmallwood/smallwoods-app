@@ -134,32 +134,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
 
   // Frame border via CSS border-image (same technique as dev app)
   const framePadding = frame.color === 'NoFrame' ? 0 : 14
-  // Scale frame to fill available height
   const containerRef = useRef<HTMLDivElement>(null)
-  const [containerH, setContainerH] = useState(400)
-  useEffect(() => {
-    if (!containerRef.current) return
-    const parent = containerRef.current.closest('[data-canvas-area]') as HTMLElement
-    if (parent) setContainerH(parent.clientHeight - 24)
-    const obs = new ResizeObserver(() => {
-      if (parent) setContainerH(parent.clientHeight - 24)
-    })
-    if (parent) obs.observe(parent)
-    return () => obs.disconnect()
-  }, [])
-  // Compute frame display size based on container
-  const maxH = containerH
-  const maxW = containerRef.current?.closest('[data-canvas-area]')?.clientWidth ?? 340
-  const photoW = isLandscape ? frame.size.heightIn : frame.size.widthIn
-  const photoH = isLandscape ? frame.size.widthIn : frame.size.heightIn
-  const scaleH = maxH / (photoH + framePadding * 2)
-  const scaleW = (maxW * 0.88) / (photoW + framePadding * 2)
-  const scale = Math.min(scaleH, scaleW, 1.5)
-  const displayW = Math.round((photoW + framePadding * 2) * scale)
-  const displayH = Math.round((photoH + framePadding * 2) * scale)
-  const innerW = Math.round(photoW * scale)
-  const innerH = Math.round(photoH * scale)
-  const scaledPad = Math.round(framePadding * scale)
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith('image/') && !file.name.match(/\.(heic|heif)$/i)) {
@@ -189,32 +164,40 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
     <div
       ref={containerRef}
       className="relative select-none"
-      style={{ outline: isActive ? '2px solid #143639' : '2px solid transparent', borderRadius: 4, transition: 'outline 0.15s', lineHeight: 0 }}
+      style={{
+        outline: isActive ? '2px solid #143639' : '2px solid transparent',
+        borderRadius: 4, transition: 'outline 0.15s',
+        // Fill the container using CSS aspect-ratio trick
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
       onClick={onClick}
     >
-      {/* Frame border using border-image like the dev app */}
+      {/* Frame border using border-image — scaled via CSS to fill container */}
       <div
         style={{
-          width: displayW,
-          height: displayH,
-          padding: scaledPad,
+          // Use container queries via CSS max dimensions
+          maxWidth: '100%',
+          maxHeight: '100%',
+          aspectRatio: `${isLandscape ? aspectH : aspectW} / ${isLandscape ? aspectW : aspectH}`,
           borderStyle: frameImgUrl ? 'solid' : 'none',
-          borderWidth: scaledPad,
+          borderWidth: framePadding,
           borderImageSource: frameImgUrl ? `url("${frameImgUrl}")` : 'none',
           borderImageSlice: 10,
           borderImageRepeat: 'stretch',
-          display: 'inline-block',
           lineHeight: 0,
-          boxSizing: 'content-box',
-          flexShrink: 0,
+          boxSizing: 'border-box',
+          position: 'relative',
         }}
       >
-        {/* Photo area */}
+        {/* Photo area — fills border box interior */}
         <div
           style={{
-            position: 'relative',
-            width: innerW,
-            height: innerH,
+            position: 'absolute',
+            inset: 0,
             overflow: 'hidden',
             cursor: frame.photo ? (dragging ? 'grabbing' : 'grab') : 'pointer',
             background: '#f0ece4',
