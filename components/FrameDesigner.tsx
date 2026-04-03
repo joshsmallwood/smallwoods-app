@@ -13,7 +13,7 @@ import {
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
-type ColorId = 'Stained' | 'Almond' | 'Black' | 'White' | 'Natural' | 'NoFrame'
+type ColorId = 'Stained' | 'Almond' | 'Black' | 'White'
 
 interface SizeOption {
   id: string
@@ -43,16 +43,14 @@ interface FrameItem {
 const CDN = 'https://d1ekkteymj95ic.cloudfront.net/images'
 
 const COLORS: { id: ColorId; label: string; corner: string; hex: string }[] = [
-  { id: 'Stained', label: 'Walnut',  corner: `${CDN}/frame_corner_SB_Stained.png`, hex: '#5a3010' },
-  { id: 'Almond',  label: 'Oak',     corner: `${CDN}/frame_corner_SB_Almond.png`,  hex: '#c8a060' },
-  { id: 'Black',   label: 'Black',   corner: `${CDN}/frame_corner_SB_Black.png`,   hex: '#1a1a1a' },
-  { id: 'White',   label: 'White',   corner: `${CDN}/frame_corner_SB_White.png`,   hex: '#f0ece4' },
-  { id: 'Natural', label: 'Natural', corner: `${CDN}/frame_corner_SB_Natural.png`, hex: '#d4b87a' },
-  { id: 'NoFrame', label: 'No Frame',corner: '', hex: '#e8e0d5' },
+  { id: 'Stained', label: 'Walnut', corner: `${CDN}/frame_corner_SB_Stained.png`, hex: '#5a3010' },
+  { id: 'Almond',  label: 'Oak',    corner: `${CDN}/frame_corner_SB_Almond.png`,  hex: '#c8a060' },
+  { id: 'Black',   label: 'Black',  corner: `${CDN}/frame_corner_SB_Black.png`,   hex: '#1a1a1a' },
+  { id: 'White',   label: 'White',  corner: `${CDN}/frame_corner_SB_White.png`,   hex: '#f0ece4' },
 ]
 
 const COLOR_SHORT: Record<ColorId, string> = {
-  Stained: 'S', Almond: 'A', Black: 'B', White: 'W', Natural: 'N', NoFrame: 'NF',
+  Stained: 'S', Almond: 'A', Black: 'B', White: 'W',
 }
 
 const SIZES: SizeOption[] = [
@@ -94,23 +92,19 @@ function makeFrame(id: string): FrameItem {
 }
 
 function getFrameImageUrl(size: SizeOption, color: ColorId): string {
-  if (color === 'NoFrame') return ''
-  const colorShort = COLOR_SHORT[color]
-  return `${CDN}/frame_rotated_${size.frameSku}-CUSTOM-100-${colorShort}-A0.png`
+  return `${CDN}/frame_rotated_${size.frameSku}-CUSTOM-100-${COLOR_SHORT[color]}-A0.png`
 }
 
 function getVariantId(size: SizeOption, color: ColorId): number | null {
-  const colorLabel = color === 'NoFrame' ? 'No Frame' : COLORS.find(c => c.id === color)?.label ?? ''
-  // Map our color labels to Shopify color labels
-  const shopifyColorMap: Record<string, string> = {
-    'Walnut': 'Stained', 'Oak': 'Almond', 'Black': 'Black', 'White': 'White', 'Natural': 'Natural', 'No Frame': 'No Frame'
+  // Map ColorId directly to Shopify variant color names
+  const shopifyColorMap: Record<ColorId, string> = {
+    Stained: 'Stained', Almond: 'Almond', Black: 'Black', White: 'White',
   }
-  const shopifyColor = shopifyColorMap[colorLabel] ?? colorLabel
-  return VARIANT_MAP[size.shopifySize]?.[shopifyColor] ?? null
+  return VARIANT_MAP[size.shopifySize]?.[shopifyColorMap[color]] ?? null
 }
 
 function getPrice(frame: FrameItem) {
-  return frame.color === 'NoFrame' ? frame.size.noFramePrice : frame.size.price
+  return frame.size.price
 }
 
 // ─── Sub-components ─────────────────────────────────────────────────────────
@@ -139,12 +133,12 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
   const aspectH = isLandscape ? shorterDim : longerDim
 
   // Frame border via CSS border-image (same technique as dev app)
-  const framePadding = frame.color === 'NoFrame' ? 0 : 14
+  const framePadding = 14
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Compute display size: fill available space, respecting aspect ratio
   // Border stays fixed — only the photo interior scales
-  const BORDER_PX = frame.color === 'NoFrame' ? 0 : 16 // fixed border width regardless of frame size
+  const BORDER_PX = 16 // fixed border width
   const photoW = aspectW
   const photoH = aspectH
   // Scale frame to fill available space — container is max 480px wide, height depends on viewport
@@ -206,7 +200,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
           lineHeight: 0,
           boxSizing: 'content-box',
           position: 'relative',
-          background: frame.color === 'NoFrame' ? '#f0ece4' : 'transparent',
+          background: 'transparent',
         }}
       >
         {/* Photo area */}
@@ -379,7 +373,7 @@ function ColorSwatch({ color, selected, onSelect }: { color: typeof COLORS[0]; s
 }
 
 function PriceRow({ frames }: { frames: FrameItem[] }) {
-  const fullTotal = frames.reduce((s, f) => s + (f.color === 'NoFrame' ? f.size.noFramePrice : f.size.compareAt), 0)
+  const fullTotal = frames.reduce((s, f) => s + (f.size.compareAt), 0)
   const saleTotal = frames.reduce((s, f) => s + getPrice(f), 0)
   const bundleTotal = Math.round(saleTotal * (1 - DISCOUNT))
 
@@ -547,7 +541,7 @@ export default function FrameDesigner() {
   const hasAnyPhoto = frames.some(f => f.photo)
   const saleTotal = frames.reduce((s, f) => s + getPrice(f), 0)
   const discountedTotal = Math.round(saleTotal * (1 - DISCOUNT))
-  const fullTotal = frames.reduce((s, f) => s + (f.color === 'NoFrame' ? f.size.noFramePrice : f.size.compareAt), 0)
+  const fullTotal = frames.reduce((s, f) => s + (f.size.compareAt), 0)
 
   return (
     <div
@@ -749,7 +743,7 @@ export default function FrameDesigner() {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 15, fontWeight: 800, color: '#143639' }}>${Math.round(getPrice(f) * (1 - DISCOUNT))}</div>
-                  <div style={{ fontSize: 10, color: '#aaa', textDecoration: 'line-through' }}>${f.color === 'NoFrame' ? f.size.noFramePrice : f.size.compareAt}</div>
+                  <div style={{ fontSize: 10, color: '#aaa', textDecoration: 'line-through' }}>${f.size.compareAt}</div>
                 </div>
               </div>
             ))}
