@@ -3,6 +3,17 @@
 import { useState, useRef, useEffect } from 'react'
 import InfoModal from './InfoModal'
 import PromoModal from './PromoModal'
+import {
+  trackViewContent,
+  trackSizeSelected,
+  trackColorSelected,
+  trackPhotoUploaded,
+  trackAddToCart,
+  trackInitiateCheckout,
+  trackGalleryWallAdded,
+  trackSizeQuizStarted,
+  trackSizeQuizCompleted,
+} from '@/lib/pixels'
 
 const WALL_STYLES: Record<string, React.CSSProperties> = {
   classic: { backgroundColor: '#ede8e0', backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 24px,rgba(0,0,0,0.018) 24px,rgba(0,0,0,0.018) 25px),repeating-linear-gradient(90deg,transparent,transparent 24px,rgba(0,0,0,0.012) 24px,rgba(0,0,0,0.012) 25px)' },
@@ -910,6 +921,18 @@ export default function FrameConfigurator() {
   const counterRef = useRef(savedDesign ? savedDesign.frames.length + 1 : 2)
   const ctaRef = useRef<HTMLDivElement>(null)
 
+  // Fire ViewContent on mount — signals to Meta/GA/TikTok that a real person landed
+  useEffect(() => {
+    const af = frames[0]
+    if (!af) return
+    trackViewContent({
+      sizeId: af.size.id,
+      colorId: af.color,
+      price: af.color === 'noframe' ? af.size.noFramePrice : af.size.price,
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // only on mount
+
   // Fetch weekly order count from Neon DB via API route (30min cache)
   useEffect(() => {
     fetch('/api/stats')
@@ -950,12 +973,55 @@ export default function FrameConfigurator() {
 
   const activeFrame = frames.find(f => f.id === activeId) ?? frames[0]
 
-  const updateFrame = (id: string, patch: Partial<FrameItem>) =>
-    setFrames(prev => prev.map(f => f.id === id ? { ...f, ...patch } : f))
+  const updateFrame = (id: string, patch: Partial<FrameItem>) => {
+    setFrames(prev => {
+      const updated = prev.map(f => {
+        if (f.id !== id) return f
+        const next = { ...f, ...patch }
+        // Track size change
+        if (patch.size && patch.size.id !== f.size.id) {
+          trackSizeSelected({
+            sizeId: patch.size.id,
+            sizeLabel: patch.size.label,
+            price: next.color === 'noframe' ? patch.size.noFramePrice : patch.size.price,
+          })
+        }
+        // Track color change
+        if (patch.color && patch.color !== f.color) {
+          trackColorSelected({
+            colorId: patch.color,
+            colorLabel: FRAME_COLORS.find(c => c.id === patch.color)?.label ?? patch.color,
+            sizeId: next.size.id,
+            price: patch.color === 'noframe' ? next.size.noFramePrice : next.size.price,
+          })
+        }
+        // Track photo upload
+        if (patch.photo && !f.photo && patch.photoQuality) {
+          trackPhotoUploaded({
+            sizeId: next.size.id,
+            colorId: next.color,
+            price: next.color === 'noframe' ? next.size.noFramePrice : next.size.price,
+            quality: patch.photoQuality,
+            frameCount: prev.length,
+          })
+        }
+        return next
+      })
+      return updated
+    })
+  }
 
   const addFrame = () => {
     const id = `f${counterRef.current++}`
-    setFrames(prev => [...prev, makeFrame(id)])
+    setFrames(prev => {
+      const next = [...prev, makeFrame(id)]
+      // Track gallery wall add when going from 1 to 2+ frames
+      if (prev.length === 1) {
+        const total = next.reduce((s, f) => s + (f.color === 'noframe' ? f.size.noFramePrice : f.size.price), 0)
+        trackGalleryWallAdded({ frameCount: next.length, totalValue: total })
+      }
+      return next
+    })
     setActiveId(id)
   }
 
@@ -1459,7 +1525,7 @@ export default function FrameConfigurator() {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Size (inches)</p>
-                <button onClick={() => { setShowSizeQuiz(true); setQuizStep(0); setQuizWall(null); setQuizDist(null) }}
+                <button onClick={() => { setShowSizeQuiz(true); setQuizStep(0); setQuizWall(null); setQuizDist(null); trackSizeQuizStarted() }}
                   style={{ fontSize: 10, color: '#1B5A4A', fontWeight: 700, background: '#f0faf6', border: '1px solid #1B5A4A', borderRadius: 20, padding: '2px 8px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
                   🎯 Not sure?
                 </button>
@@ -1874,7 +1940,7 @@ export default function FrameConfigurator() {
       </div>
 
       <div className="px-4 pb-6" ref={ctaRef}>
-        <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} activeFrame={activeFrame} giftMessage={giftMessage} />
+        <AddToCartButton frames={frames} bundleTotal={bundleTotal} totalPrice={totalPrice} activeFrame={activeFrame} giftMessage={giftMessage} todayOrders={todayOrders} />
       </div>
 
       {showInfo && <InfoModal onClose={() => setShowInfo(false)} />}
@@ -1939,6 +2005,7 @@ export default function FrameConfigurator() {
                       const sizeId = map[quizWall || 'medium']?.[opt.val] || '16x16'
                       const found = SIZES.find(s => s.id === sizeId) || SIZES.find(s => s.id === '16x16')!
                       updateFrame(activeId, { size: found })
+                      trackSizeQuizCompleted({ recommendedSize: sizeId, accepted: true })
                       setQuizStep(2)
                     }}
                     style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', marginBottom: 8, borderRadius: 12, border: '2px solid #e5e7eb', background: '#fff', cursor: 'pointer', textAlign: 'left' }}>
@@ -2269,8 +2336,8 @@ function GiftMessageBox({ onMessageChange }: { onMessageChange?: (msg: string) =
   )
 }
 
-function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMessage }: {
-  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem; giftMessage?: string
+function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMessage, todayOrders }: {
+  frames: FrameItem[]; bundleTotal: number | null; totalPrice: number; activeFrame: FrameItem; giftMessage?: string; todayOrders: number | null
 }) {
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
@@ -2307,11 +2374,38 @@ function AddToCartButton({ frames, bundleTotal, totalPrice, activeFrame, giftMes
       window.open(`${SHOPIFY_STORE}/products/copy-of-frames`, '_blank')
       return
     }
+    // Track AddToCart
+    const discountedTotal = bundleTotal ?? Math.round(totalPrice * 0.65)
+    trackAddToCart({
+      frames: frames.map(f => ({
+        sizeId: f.size.id,
+        colorId: f.color,
+        price: f.color === 'noframe' ? f.size.noFramePrice : f.size.price,
+        sizeLabel: f.size.label,
+        colorLabel: FRAME_COLORS.find(c => c.id === f.color)?.label ?? f.color,
+      })),
+      totalValue: totalPrice,
+      discountedValue: discountedTotal,
+      promoCode: CART_PROMO_CODE,
+    })
     setShowOrderSummary(true)
   }
 
   const handleConfirmCheckout = () => {
     setShowOrderSummary(false)
+    // Track InitiateCheckout — fires right before redirect
+    const checkoutDiscounted = bundleTotal ?? Math.round(totalPrice * 0.65)
+    trackInitiateCheckout({
+      frames: frames.map(f => ({
+        sizeId: f.size.id,
+        colorId: f.color,
+        price: f.color === 'noframe' ? f.size.noFramePrice : f.size.price,
+      })),
+      totalValue: totalPrice,
+      discountedValue: checkoutDiscounted,
+      promoCode: CART_PROMO_CODE,
+      numItems: frames.length,
+    })
     setAdding(true)
     setTimeout(() => {
       setAdded(true)
