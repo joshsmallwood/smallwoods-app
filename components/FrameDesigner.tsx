@@ -136,17 +136,18 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
   const framePadding = frame.color === 'NoFrame' ? 0 : 14
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Compute display size: fill 85vw or 50vh, whichever is smaller, respecting aspect ratio
+  // Compute display size: fill available space, respecting aspect ratio
+  // Border stays fixed — only the photo interior scales
+  const BORDER_PX = frame.color === 'NoFrame' ? 0 : 16 // fixed border width regardless of frame size
   const photoW = isLandscape ? frame.size.heightIn : frame.size.widthIn
   const photoH = isLandscape ? frame.size.widthIn : frame.size.heightIn
-  const maxDisplayW = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.85, 380) : 300
-  const maxDisplayH = typeof window !== 'undefined' ? window.innerHeight * 0.48 : 280
+  const maxDisplayW = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.90, 420) - BORDER_PX * 2 : 300
+  const maxDisplayH = typeof window !== 'undefined' ? window.innerHeight * 0.50 - BORDER_PX * 2 : 280
   const scaleByW = maxDisplayW / photoW
   const scaleByH = maxDisplayH / photoH
   const scale = Math.min(scaleByW, scaleByH)
   const innerW = Math.round(photoW * scale)
   const innerH = Math.round(photoH * scale)
-  const scaledPad = frame.color === 'NoFrame' ? 0 : Math.max(10, Math.round(framePadding * scale))
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith('image/') && !file.name.match(/\.(heic|heif)$/i)) {
@@ -183,13 +184,13 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
       {isActive && (
         <div style={{ position: 'absolute', inset: -3, borderRadius: 6, border: '2.5px solid #143639', pointerEvents: 'none', zIndex: 5 }} />
       )}
-      {/* Frame border using border-image */}
+      {/* Frame border using border-image — fixed border width, variable interior */}
       <div
         style={{
-          width: innerW + scaledPad * 2,
-          height: innerH + scaledPad * 2,
+          width: innerW + BORDER_PX * 2,
+          height: innerH + BORDER_PX * 2,
           borderStyle: frameImgUrl ? 'solid' : 'none',
-          borderWidth: scaledPad,
+          borderWidth: BORDER_PX,
           borderImageSource: frameImgUrl ? `url("${frameImgUrl}")` : 'none',
           borderImageSlice: 10,
           borderImageRepeat: 'stretch',
