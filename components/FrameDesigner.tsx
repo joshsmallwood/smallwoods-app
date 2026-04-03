@@ -327,20 +327,23 @@ function ColorSwatch({ color, selected, onSelect }: { color: typeof COLORS[0]; s
       onClick={onSelect}
       title={color.label}
       style={{
-        width: 36, height: 38, padding: 0, border: 'none', background: 'none',
-        cursor: 'pointer', borderRadius: 2,
-        outline: selected ? `2px solid #143639` : 'none',
-        outlineOffset: 2,
+        width: 44, height: 44, padding: 3, border: 'none', background: 'none',
+        cursor: 'pointer', borderRadius: 4, flexShrink: 0,
+        outline: selected ? `2.5px solid #143639` : '2.5px solid transparent',
+        outlineOffset: 1,
+        transition: 'outline 0.1s',
       }}
     >
       {color.corner ? (
         <img
           src={color.corner}
           alt={color.label}
-          style={{ width: '100%', height: '100%', display: 'block', borderRadius: 2 }}
+          style={{ width: '100%', height: '100%', display: 'block', borderRadius: 3, objectFit: 'cover' }}
         />
       ) : (
-        <div style={{ width: '100%', height: '100%', background: '#e8e4dc', borderRadius: 2, border: '1px solid #d0ccc4' }} />
+        <div style={{ width: '100%', height: '100%', background: '#e8e4dc', borderRadius: 3, border: '1px solid #d0ccc4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: 8, color: '#999', fontWeight: 600 }}>None</span>
+        </div>
       )}
     </button>
   )
@@ -352,18 +355,25 @@ function PriceRow({ frames }: { frames: FrameItem[] }) {
   const bundleTotal = Math.round(saleTotal * (1 - DISCOUNT))
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', gap: 20, padding: '8px 16px' }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#bd7b57', textDecoration: 'line-through' }}>${fullTotal}</div>
-        <div style={{ fontSize: 9, color: '#888', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Price</div>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, padding: '6px 20px', background: 'white', borderTop: '1px solid #f0ece4' }}>
+      {/* Full price - struck through, small */}
+      <div style={{ textAlign: 'center', flex: 1 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: '#bd7b57', textDecoration: 'line-through' }}>${fullTotal}</div>
+        <div style={{ fontSize: 8, color: '#aaa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Full Price</div>
       </div>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#143639' }}>${saleTotal}</div>
-        <div style={{ fontSize: 9, color: '#888', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sale Price</div>
+      {/* Divider */}
+      <div style={{ width: 1, height: 32, background: '#e5e7eb', margin: '0 4px' }} />
+      {/* Sale price */}
+      <div style={{ textAlign: 'center', flex: 1 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: '#143639' }}>${saleTotal}</div>
+        <div style={{ fontSize: 8, color: '#aaa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Sale Price</div>
       </div>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#143639' }}>${bundleTotal}</div>
-        <div style={{ fontSize: 9, color: '#888', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Bundle Price</div>
+      {/* Divider */}
+      <div style={{ width: 1, height: 32, background: '#e5e7eb', margin: '0 4px' }} />
+      {/* Bundle price - hero */}
+      <div style={{ textAlign: 'center', flex: 1 }}>
+        <div style={{ fontSize: 22, fontWeight: 900, color: '#143639', lineHeight: 1 }}>${bundleTotal}</div>
+        <div style={{ fontSize: 8, color: '#143639', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Bundle Price</div>
       </div>
     </div>
   )
@@ -374,6 +384,7 @@ function PriceRow({ frames }: { frames: FrameItem[] }) {
 export default function FrameDesigner() {
   const [frames, setFrames] = useState<FrameItem[]>([makeFrame('f1')])
   const [activeId, setActiveId] = useState('f1')
+  // Always start with exactly one frame
   const [showOrderSummary, setShowOrderSummary] = useState(false)
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
@@ -549,11 +560,12 @@ export default function FrameDesigner() {
       </div>
 
       {/* ── Canvas Area ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, overflow: 'hidden', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 16px', overflow: 'hidden', gap: 10, height: '100%' }}>
         {frames.map(frame => (
           <div
             key={frame.id}
-            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, maxWidth: frames.length === 1 ? 280 : `${Math.floor(88 / frames.length)}%` }}
+            style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', maxWidth: frames.length === 1 ? 300 : `${Math.floor(92 / frames.length)}%` }}
+            onClick={() => setActiveId(frame.id)}
           >
             <FrameCanvas
               frame={frame}
@@ -564,9 +576,16 @@ export default function FrameDesigner() {
             {frames.length > 1 && (
               <button
                 onClick={(e) => { e.stopPropagation(); removeFrame(frame.id) }}
-                style={{ fontSize: 10, color: '#999', background: 'none', border: 'none', cursor: 'pointer' }}
+                style={{
+                  position: 'absolute', top: -8, right: -8, zIndex: 10,
+                  width: 22, height: 22, borderRadius: '50%',
+                  background: '#e53e3e', color: 'white', border: 'none',
+                  fontSize: 12, fontWeight: 800, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                }}
               >
-                Remove
+                ✕
               </button>
             )}
           </div>
@@ -596,9 +615,9 @@ export default function FrameDesigner() {
         </div>
 
         {/* Size + Color row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '4px 16px 8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 12px 8px', gap: 8 }}>
           <SizeSelector selected={activeFrame.size} onSelect={(s) => updateFrame(activeId, { size: s })} />
-          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
             {COLORS.map(c => (
               <ColorSwatch
                 key={c.id}
