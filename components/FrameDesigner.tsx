@@ -88,6 +88,8 @@ const SHOPIFY_STORE = 'https://smallwoodhome.com'
 
 const DEFAULT_SIZE = SIZES.find(s => s.id === '25x17')!
 
+// Portrait = taller than wide (good for filling phone screen height)
+// 25x17 landscape = 25w x 17h — but we display portrait by default (17w x 25h) to fill height
 function makeFrame(id: string): FrameItem {
   return { id, size: DEFAULT_SIZE, color: 'Stained', photo: null, orientation: 'portrait', zoom: 1, offsetX: 0, offsetY: 0 }
 }
@@ -141,8 +143,8 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
   const BORDER_PX = frame.color === 'NoFrame' ? 0 : 16 // fixed border width regardless of frame size
   const photoW = isLandscape ? frame.size.heightIn : frame.size.widthIn
   const photoH = isLandscape ? frame.size.widthIn : frame.size.heightIn
-  const maxDisplayW = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.90, 420) - BORDER_PX * 2 : 300
-  const maxDisplayH = typeof window !== 'undefined' ? window.innerHeight * 0.50 - BORDER_PX * 2 : 280
+  const maxDisplayW = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.82, 360) - BORDER_PX * 2 : 260
+  const maxDisplayH = typeof window !== 'undefined' ? window.innerHeight * 0.58 - BORDER_PX * 2 : 340
   const scaleByW = maxDisplayW / photoW
   const scaleByH = maxDisplayH / photoH
   const scale = Math.min(scaleByW, scaleByH)
@@ -617,18 +619,56 @@ export default function FrameDesigner() {
 
       {/* ── Controls ── */}
       <div style={{ background: 'white', borderTop: '1px solid #f0ece4', borderBottom: '1px solid #f0ece4' }}>
-        {/* Toolbar */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 24, padding: '8px 16px 4px' }}>
+        {/* Toolbar — matching dev app: Add, Frame(rotate), Clear, Info */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 20, padding: '6px 16px 2px' }}>
           {[
-            { label: 'Rotate', icon: '↺', action: rotateFrame },
-            { label: 'Clear', icon: '🗑', action: clearPhoto },
+            {
+              label: 'Add',
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <rect width="18" height="18" fill="#143639" rx="2"/>
+                  <path fill="white" d="M8 3h2v12H8z"/>
+                  <path fill="white" d="M15 8v2H3V8z"/>
+                </svg>
+              ),
+              action: () => { const f = document.querySelector<HTMLInputElement>('input[type="file"]'); f?.click() }
+            },
+            {
+              label: 'Frame',
+              icon: (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path fill="#143639" d="M10.99 1.68C13.17 2.71 14.73 4.83 14.97 7.33h1C15.63 3.23 12.2 0 8 0L7.56.02l2.54 2.54.89-.88zM6.82 1.17c-.39-.39-1.03-.39-1.41 0L1.17 5.41c-.39.39-.39 1.03 0 1.41l8.01 8.01c.39.39 1.03.39 1.41 0l4.24-4.24c.39-.39.39-1.03 0-1.41L6.82 1.17zm3.07 12.96L1.87 6.11l4.24-4.24 8.01 8.01-4.23 4.25zM5.01 14.32c-2.18-1.03-3.74-3.15-3.98-5.66h-1C.37 12.77 3.81 16 8 16l.44-.02-2.54-2.54-.89.88z"/>
+                </svg>
+              ),
+              action: rotateFrame
+            },
+            {
+              label: 'Clear',
+              icon: (
+                <svg width="14" height="17" viewBox="0 0 16 17" fill="#143639">
+                  <path d="M12.5 16.91H3.35c-.31 0-.58-.24-.61-.54L1.87 2.9H.6C.26 2.9 0 2.65 0 2.33s.26-.57.6-.57h4.9V1.0C5.5.44 5.98 0 6.55 0h2.75c.58 0 1.05.44 1.05 1v.75h4.9c.33 0 .6.25.6.57s-.26.57-.6.57h-1.28L12.5 16.91zm-8.6-1.14h7.99l.85-12.88H3.06l.85 12.88zm2.78-13.9h2.47V.76H6.69v1.11z"/>
+                </svg>
+              ),
+              action: clearPhoto
+            },
+            {
+              label: 'Info',
+              icon: (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              ),
+              action: () => {}
+            },
           ].map(btn => (
             <button
               key={btn.label}
               onClick={btn.action}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer' }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', minWidth: 40, padding: '2px 0' }}
             >
-              <span style={{ fontSize: 16 }}>{btn.icon}</span>
+              <span style={{ height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{btn.icon}</span>
               <span style={{ fontSize: 9, fontWeight: 600, color: '#143639' }}>{btn.label}</span>
             </button>
           ))}
@@ -650,50 +690,30 @@ export default function FrameDesigner() {
         </div>
       </div>
 
-      {/* ── Upload / Add to Cart CTA ── */}
-      <div style={{ background: '#143639', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px', gap: 12 }}>
-        {!hasAnyPhoto ? (
-          <button
-            onClick={() => {
-              // Trigger file input on active frame
-              const fileInput = document.querySelector<HTMLInputElement>('input[type="file"]')
-              fileInput?.click()
-            }}
-            style={{
-              flex: 1, padding: '12px 0', background: 'white', color: '#143639',
-              border: 'none', borderRadius: 6, fontSize: 14, fontWeight: 800,
-              cursor: 'pointer', letterSpacing: '0.02em',
-            }}
-          >
-            Upload Photos
-          </button>
-        ) : (
-          <button
-            onClick={handleAddToCart}
-            disabled={adding}
-            style={{
-              flex: 1, padding: '12px 0',
-              background: added ? '#22c55e' : 'white',
-              color: '#143639', border: 'none', borderRadius: 6,
-              fontSize: 14, fontWeight: 800, cursor: 'pointer',
-              transition: 'background 0.2s',
-            }}
-          >
-            {adding ? 'Adding…' : added ? '✓ Added!' : `Add to Cart — $${discountedTotal}`}
-          </button>
-        )}
+      {/* ── Upload / Add to Cart CTA — matches dev app dark teal bar ── */}
+      <div style={{ background: '#143639', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px', gap: 10 }}>
         <button
-          onClick={() => {
-            const fileInput = document.querySelector<HTMLInputElement>('input[type="file"]')
-            fileInput?.click()
+          onClick={hasAnyPhoto ? handleAddToCart : () => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
+          disabled={adding}
+          style={{
+            flex: 1, padding: '14px 0',
+            background: added ? '#22c55e' : 'white',
+            color: '#143639', border: 'none', borderRadius: 6,
+            fontSize: 15, fontWeight: 800, cursor: 'pointer',
+            transition: 'background 0.2s',
+            letterSpacing: '0.01em',
           }}
-          style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 6, padding: '10px 14px', cursor: 'pointer' }}
-          title="Upload photo"
+        >
+          {adding ? 'Adding…' : added ? '✓ Added!' : hasAnyPhoto ? `Add to Cart — $${discountedTotal}` : 'Upload Photos'}
+        </button>
+        {/* Camera icon shortcut */}
+        <button
+          onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
+          style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 6, padding: '11px 13px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-            <rect x="3" y="3" width="18" height="18" rx="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21,15 16,10 5,21"/>
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
           </svg>
         </button>
       </div>
