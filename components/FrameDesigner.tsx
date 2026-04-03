@@ -147,8 +147,11 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
   const BORDER_PX = frame.color === 'NoFrame' ? 0 : 16 // fixed border width regardless of frame size
   const photoW = aspectW
   const photoH = aspectH
-  const maxDisplayW = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.78, 320) - BORDER_PX * 2 : 240
-  const maxDisplayH = typeof window !== 'undefined' ? window.innerHeight * 0.62 - BORDER_PX * 2 : 380
+  // Scale frame to fill available space — container is max 480px wide, height depends on viewport
+  const viewW = typeof window !== 'undefined' ? Math.min(window.innerWidth, 480) : 390
+  const viewH = typeof window !== 'undefined' ? window.innerHeight : 844
+  const maxDisplayW = viewW * 0.72 - BORDER_PX * 2
+  const maxDisplayH = viewH * 0.60 - BORDER_PX * 2
   const scaleByW = maxDisplayW / photoW
   const scaleByH = maxDisplayH / photoH
   const scale = Math.min(scaleByW, scaleByH)
@@ -694,28 +697,26 @@ export default function FrameDesigner() {
         </div>
       </div>
 
-      {/* ── Upload / Add to Cart CTA — matches dev app dark teal bar ── */}
-      <div style={{ background: '#143639', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px', gap: 10 }}>
+      {/* ── CTA Bar — full width, matches dev app ── */}
+      <div style={{ background: '#143639', display: 'flex', alignItems: 'center', padding: '0 12px', gap: 10 }}>
         <button
           onClick={hasAnyPhoto ? handleAddToCart : () => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
           disabled={adding}
           style={{
-            flex: 1, padding: '14px 0',
+            flex: 1, padding: '16px 0',
             background: added ? '#22c55e' : 'white',
-            color: '#143639', border: 'none', borderRadius: 6,
+            color: '#143639', border: 'none', borderRadius: 8,
             fontSize: 15, fontWeight: 800, cursor: 'pointer',
             transition: 'background 0.2s',
-            letterSpacing: '0.01em',
           }}
         >
           {adding ? 'Adding…' : added ? '✓ Added!' : hasAnyPhoto ? `Add to Cart — $${discountedTotal}` : 'Upload Photos'}
         </button>
-        {/* Camera icon shortcut */}
         <button
           onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
-          style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 6, padding: '11px 13px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+          style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 8, padding: '13px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
             <circle cx="12" cy="13" r="4"/>
           </svg>
