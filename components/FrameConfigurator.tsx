@@ -475,6 +475,7 @@ function SingleFrame({
 }) {
   const [cropMode, setCropMode] = useState(false)
   const [filter, setFilter] = useState('none')
+  const [reflection, setReflection] = useState(true)
   const [cropOverlayVisible, setCropOverlayVisible] = useState(true)
   const [zoom, setZoom] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
