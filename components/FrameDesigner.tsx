@@ -127,13 +127,14 @@ function getPrice(frame: FrameItem, isRefill: boolean) {
 
 // ─── Sub-components ─────────────────────────────────────────────────────────
 
-function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOrientMismatch }: {
+function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOrientMismatch, showGalleryRing }: {
   frame: FrameItem
   onPhotoChange: (photo: string | null, quality: 'excellent' | 'good' | 'low', photoW: number, photoH: number) => void
   isActive: boolean
   onClick: () => void
   showRefill?: boolean
   onOrientMismatch?: (suggestion: 'portrait' | 'landscape') => void
+  showGalleryRing?: boolean
 }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
@@ -164,8 +165,8 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   // Scale frame to fill available space — container is max 480px wide, height depends on viewport
   const viewW = typeof window !== 'undefined' ? Math.min(window.innerWidth, 480) : 390
   const viewH = typeof window !== 'undefined' ? window.innerHeight : 844
-  const maxDisplayW = viewW * 0.78 - BORDER_PX * 2
-  const maxDisplayH = viewH * 0.64 - BORDER_PX * 2
+  const maxDisplayW = viewW * 0.70 - BORDER_PX * 2
+  const maxDisplayH = viewH * 0.68 - BORDER_PX * 2
   const scaleByW = maxDisplayW / photoW
   const scaleByH = maxDisplayH / photoH
   const scale = Math.min(scaleByW, scaleByH)
@@ -212,8 +213,8 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
       style={{ lineHeight: 0 }}
       onClick={onClick}
     >
-      {/* Outer active ring */}
-      {isActive && (
+      {/* Active ring — only show in gallery mode (multiple frames) */}
+      {isActive && showGalleryRing && (
         <div style={{ position: 'absolute', inset: -3, borderRadius: 6, border: '2.5px solid #143639', pointerEvents: 'none', zIndex: 5 }} />
       )}
       {/* Frame border using border-image — fixed border width, variable interior */}
@@ -580,7 +581,7 @@ export default function FrameDesigner() {
         height: '100dvh',
         maxWidth: 480,
         margin: '0 auto',
-        background: '#fdf9ed',
+        background: '#d8d2cc',
         fontFamily: '"Poppins", sans-serif',
         overflow: 'hidden',
         position: 'relative',
@@ -626,6 +627,7 @@ export default function FrameDesigner() {
               onPhotoChange={(photo, quality, w, h) => handlePhotoChange(frame.id, photo, quality, w, h)}
               showRefill={isRefill}
               onOrientMismatch={(s) => setOrientMismatch(s)}
+              showGalleryRing={frames.length > 1}
             />
             {frames.length > 1 && (
               <button
