@@ -806,8 +806,8 @@ export default function FrameDesigner() {
           </button>
           {/* Size selector */}
           <SizeSelector selected={activeFrame.size} onSelect={(s) => updateFrame(activeId, { size: s })} />
-          {/* 4 color swatches — fixed size, always all visible */}
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginLeft: 'auto' }}>
+          {/* 4 color swatches — fixed size, always all visible, right-aligned with padding */}
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginLeft: 'auto', paddingRight: 4 }}>
             {COLORS.map(c => (
               <ColorSwatch key={c.id} color={c} selected={activeFrame.color === c.id} onSelect={() => updateFrame(activeId, { color: c.id })} />
             ))}
