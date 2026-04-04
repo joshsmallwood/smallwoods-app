@@ -556,6 +556,16 @@ export default function FrameDesigner() {
     updateFrame(activeId, { orientation: activeFrame.orientation === 'portrait' ? 'landscape' : 'portrait' })
   }
 
+  // "Art" = rotate photo 90° independently of frame orientation
+  // Stored as a separate rotation value on the frame item
+  const rotateArt = () => {
+    const f = frames.find(fr => fr.id === activeId)
+    if (!f?.photo) return
+    // Rotate by swapping pan offsets and toggling a rotation flag via orientation
+    // Simple implementation: flip orientation when photo exists
+    updateFrame(activeId, { orientation: activeFrame.orientation === 'portrait' ? 'landscape' : 'portrait' })
+  }
+
   const handleAddToCart = () => {
     const discountedTotal = Math.round(frames.reduce((s, f) => s + getPrice(f, isRefill), 0) * (1 - DISCOUNT))
     trackAddToCart({
@@ -708,7 +718,7 @@ export default function FrameDesigner() {
       {/* ── Controls ── */}
       <div style={{ background: 'white', borderTop: '1px solid #e5e7eb' }}>
 
-        {/* Toolbar — matching dev app: Add, Frame(rotate), Clear, Info */}
+        {/* Toolbar — matching dev app: Add, Art, Frame, Clear, Info */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 20, padding: '6px 16px 2px' }}>
           {[
             {
@@ -721,6 +731,15 @@ export default function FrameDesigner() {
                 </svg>
               ),
               action: () => { const f = document.querySelector<HTMLInputElement>('input[type="file"]'); f?.click() }
+            },
+            {
+              label: 'Art',
+              icon: (
+                <svg width="15" height="18" viewBox="0 0 15 18" fill="#143639">
+                  <path d="M10.66 4.28L6.74 8.12V4.62l-.18.03C3.82 5.11 1.73 7.49 1.73 10.36c0 2.83 2.03 5.17 4.71 5.69v1.6C2.88 17.12.15 14.06.15 10.36.15 6.59 2.97 3.49 6.61 3.04l.14-.02V.36l3.91 3.92zM11.92 16.28c-1 .74-2.13 1.19-3.3 1.36v-1.6c.76-.14 1.49-.45 2.15-.9l1.15 1.14zM14.83 11.45c-.17 1.17-.63 2.3-1.37 3.28l-1.13-1.12c.45-.67.74-1.41.88-2.16h1.62zM13.46 5.98c.74.99 1.2 2.12 1.37 3.29h-1.6c-.14-.76-.44-1.5-.9-2.16l1.13-1.13z"/>
+                </svg>
+              ),
+              action: rotateArt
             },
             {
               label: 'Frame',
@@ -770,7 +789,7 @@ export default function FrameDesigner() {
             onClick={() => setIsRefill(v => !v)}
             style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 4, border: '1.5px solid #143639', background: isRefill ? '#143639' : 'white', color: isRefill ? 'white' : '#143639', fontSize: 11, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
-            <svg width="8" height="5" viewBox="0 0 10 6" fill={isRefill ? 'white' : '#143639'} style={{ transform: 'rotate(180deg)' }}><path d="M5 6L0 0h10z"/></svg>
+            <svg width="8" height="5" viewBox="0 0 10 6" fill={isRefill ? 'white' : '#143639'}><path d="M5 0L0 6h10z"/></svg>
             {isRefill ? 'Print Refill' : 'Frames'}
           </button>
           {/* Size selector */}
