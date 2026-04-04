@@ -179,17 +179,22 @@ function SamplePhotoRotator() {
       ))}
       {/* "SAMPLE" badge */}
       <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.4)', color: 'white', fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10, letterSpacing: '0.06em', textTransform: 'uppercase', pointerEvents: 'none' }}>Sample</div>
-      {/* Upload CTA overlay — centered, clean */}
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)', pointerEvents: 'none', padding: '0 0 10px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(255,255,255,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <svg width="13" height="11" viewBox="0 0 28 22" fill="none" stroke="#143639" strokeWidth="2.2">
+      {/* Upload CTA overlay — prominent pill button, impossible to miss */}
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)', pointerEvents: 'none', paddingBottom: 14 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: 'rgba(255,255,255,0.96)',
+            borderRadius: 24, padding: '9px 18px',
+            boxShadow: '0 3px 14px rgba(0,0,0,0.3)',
+          }}>
+            <svg width="16" height="13" viewBox="0 0 28 22" fill="none" stroke="#143639" strokeWidth="2.5">
               <rect x="1" y="5" width="26" height="16" rx="2"/><circle cx="14" cy="13" r="4"/><path d="M9 5V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1"/>
             </svg>
+            <span style={{ fontSize: 14, fontWeight: 800, color: '#143639', whiteSpace: 'nowrap' }}>Tap to Add Your Photo</span>
           </div>
-          <p style={{ margin: 0, fontSize: 12, fontWeight: 800, color: 'white', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>Tap to Add Your Photo</p>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', fontWeight: 500 }}>JPG · PNG · HEIC</span>
         </div>
-        <p style={{ margin: '3px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.8)' }}>JPG, PNG or HEIC</p>
       </div>
     </>
   )
