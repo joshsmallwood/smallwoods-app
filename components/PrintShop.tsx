@@ -200,12 +200,10 @@ export default function PrintShop() {
       const photoId = storeData.photoId || crypto.randomUUID()
 
       // Build Shopify cart URL with line item properties
+      // Use /cart/{id}:1 format — no properties in URL (Shopify doesn't support it)
+      // Properties will be added via the Shopify AJAX cart API in production
+      // For now: simple cart URL with discount
       let cartUrl = `${SHOPIFY_STORE}/cart/${variantId}:1?discount=${PROMO_CODE}`
-      cartUrl += `&properties[photo_id]=${photoId}`
-      cartUrl += `&properties[material]=${material}`
-      cartUrl += `&properties[appVersion]=printshop-1.0`
-      cartUrl += `&properties[features]=${mode === 'generate' ? 'ai-generated' : 'uploaded'}${style ? ',' + style : ''}`
-      cartUrl += `&properties[ssTags]=${mode === 'generate' ? 'AI Generated' : ''}`
 
       // Pass UTM params
       if (typeof window !== 'undefined') {
