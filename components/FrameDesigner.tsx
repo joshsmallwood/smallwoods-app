@@ -105,8 +105,13 @@ const REFILL_VARIANT_MAP: Record<string, number> = {
 const DEFAULT_SIZE = SIZES.find(s => s.id === '25x17')!
 
 // Default portrait — dev app shows 25x17 as portrait (rotated, 17w x 25h) to fill phone height
+// Natural orientation: landscape when width > height (e.g. 44x22, 25x17), portrait when height > width
+function naturalOrientation(size: SizeOption): 'portrait' | 'landscape' {
+  return size.widthIn > size.heightIn ? 'landscape' : 'portrait'
+}
+
 function makeFrame(id: string): FrameItem {
-  return { id, size: DEFAULT_SIZE, color: 'Stained', photo: null, orientation: 'portrait', zoom: 1, offsetX: 0, offsetY: 0 }
+  return { id, size: DEFAULT_SIZE, color: 'Stained', photo: null, orientation: naturalOrientation(DEFAULT_SIZE), zoom: 1, offsetX: 0, offsetY: 0 }
 }
 
 function getFrameImageUrl(size: SizeOption, color: ColorId): string {
@@ -510,6 +515,11 @@ export default function FrameDesigner() {
       const next = { ...f, ...patch }
       if (patch.size && patch.size.id !== f.size.id) {
         trackSizeSelected({ sizeId: patch.size.id, sizeLabel: patch.size.label, price: patch.size.price })
+        // Auto-update orientation to match natural shape of new size
+        // unless explicitly being set in the same patch
+        if (!patch.orientation) {
+          next.orientation = naturalOrientation(patch.size)
+        }
       }
       if (patch.color && patch.color !== f.color) {
         const colorObj = COLORS.find(c => c.id === patch.color)
