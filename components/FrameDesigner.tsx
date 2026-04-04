@@ -286,7 +286,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
           borderStyle: frameImgUrl ? 'solid' : 'none',
           borderWidth: BORDER_PX,
           borderImageSource: frameImgUrl ? `url("${frameImgUrl}")` : 'none',
-          borderImageSlice: 18, // 18px crops inner light lip of frame PNG, no inner glow
+          borderImageSlice: '22 fill', // fill keyword fills center with frame's inner pixels, eliminates white gap
           borderImageRepeat: 'stretch',
           lineHeight: 0,
           boxSizing: 'content-box',
@@ -301,7 +301,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
             height: innerH,
             overflow: 'hidden',
             cursor: frame.photo ? (dragging ? 'grabbing' : 'grab') : 'pointer',
-            background: 'white',
+            background: frame.photo ? '#000' : 'white', // dark when photo fills it, white for empty state
             position: 'relative',
           }}
           onClick={() => { if (!frame.photo && !loading) fileRef.current?.click() }}
