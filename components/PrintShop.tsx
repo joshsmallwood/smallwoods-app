@@ -237,51 +237,42 @@ export default function PrintShop() {
       </div>
 
       {/* Mode tabs */}
-      <div style={{ display: 'flex', gap: 8, padding: '0 16px 10px' }}>
+      <div style={{ display: 'flex', gap: 8, padding: '0 16px 16px' }}>
         {(['generate', 'upload'] as Mode[]).map(m => (
           <button key={m} onClick={() => setMode(m)} style={{
-            padding: '7px 16px', borderRadius: 20, border: 'none', cursor: 'pointer',
-            fontSize: 13, fontWeight: 700,
-            background: mode === m ? '#143639' : '#f0ece4',
+            flex: 1, padding: '12px 16px', borderRadius: 0, border: mode === m ? '2px solid #143639' : '1px solid #e5e7eb', cursor: 'pointer',
+            fontSize: 13, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em',
+            background: mode === m ? '#143639' : 'white',
             color: mode === m ? 'white' : '#555',
           }}>
-            {m === 'generate' ? '✨ AI Generate' : '📷 Upload Photo'}
+            {m === 'generate' ? 'AI Generate' : 'Upload Photo'}
           </button>
         ))}
       </div>
 
-      {/* Product trust bar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 10px', borderBottom: '1px solid #f0ece4', marginBottom: 4 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-          <span style={{ color: '#F59E0B', fontSize: 11 }}>★★★★★</span>
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#1a1a1a' }}>{starRating.toFixed(2)}</span>
-          <span style={{ fontSize: 10, color: '#888' }}>({reviewCount.toLocaleString()})</span>
-        </div>
+      {/* Product info */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ fontSize: 10, fontWeight: 600, color: '#143639' }}>{shipText}</span>
-          <span style={{ fontSize: 10, color: '#aaa' }}>· arrives in 3–5 days</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#143639', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{shipText}</span>
+          <span style={{ fontSize: 11, color: '#888' }}>· arrives in 3–5 days</span>
         </div>
-      </div>
-
-      {/* Viewers */}
-      <div style={{ padding: '0 16px 8px', display: 'flex', alignItems: 'center', gap: 5 }}>
-        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 0 2px rgba(34,197,94,0.3)' }} />
-        <span style={{ fontSize: 11, color: '#555' }}><strong>{viewers}</strong> people viewing right now</span>
       </div>
 
       {mode === 'generate' ? (
         <>
           {/* Style presets */}
-          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', padding: '0 16px 10px', scrollbarWidth: 'none' }}>
+          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', padding: '0 16px 12px', scrollbarWidth: 'none' }}>
             {STYLES.map(s => (
               <button key={s.id} onClick={() => setStyle(s.id)} style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                padding: '6px 12px', borderRadius: 16, border: 'none', cursor: 'pointer',
-                fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0,
-                background: style === s.id ? '#143639' : '#f0ece4',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: '8px 14px', borderRadius: 0, cursor: 'pointer',
+                border: style === s.id ? '2px solid #143639' : '1px solid #e5e7eb',
+                fontSize: 12, fontWeight: 800, whiteSpace: 'nowrap', flexShrink: 0,
+                background: style === s.id ? '#143639' : 'white',
                 color: style === s.id ? 'white' : '#555',
+                textTransform: 'uppercase', letterSpacing: '0.05em'
               }}>
-                <span>{s.emoji}</span><span>{s.label}</span>
+                <span>{s.label}</span>
               </button>
             ))}
           </div>
@@ -293,19 +284,20 @@ export default function PrintShop() {
               <button
                 onClick={() => refImageRef.current?.click()}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 5,
-                  padding: '6px 12px', borderRadius: 8,
-                  border: referenceThumb ? '2px solid #143639' : '1.5px dashed #c8c0b8',
-                  background: referenceThumb ? '#f0faf5' : '#f8f5f0',
-                  cursor: 'pointer', fontSize: 11, fontWeight: 700, color: '#143639',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '8px 12px', borderRadius: 0,
+                  border: referenceThumb ? '2px solid #143639' : '1px dashed #c8c0b8',
+                  background: referenceThumb ? '#143639' : 'transparent',
+                  cursor: 'pointer', fontSize: 11, fontWeight: 800, 
+                  color: referenceThumb ? 'white' : '#143639',
+                  textTransform: 'uppercase', letterSpacing: '0.05em'
                 }}
               >
-                <span>📎</span>
-                <span>{referenceThumb ? 'Reference attached' : 'Attach reference photo'}</span>
+                <span>{referenceThumb ? 'REFERENCE ATTACHED' : '+ ATTACH REFERENCE'}</span>
               </button>
               {referenceThumb && (
                 <>
-                  <div style={{ width: 36, height: 36, borderRadius: 6, overflow: 'hidden', flexShrink: 0, border: '1px solid #e5e7eb' }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 0, overflow: 'hidden', flexShrink: 0, border: '1px solid #143639' }}>
                     <img src={referenceThumb} alt="Reference" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                   <button
@@ -322,8 +314,8 @@ export default function PrintShop() {
               rows={3}
               maxLength={500}
               style={{
-                width: '100%', padding: '12px', borderRadius: 10,
-                border: '1.5px solid #e5e7eb', fontSize: 13, fontFamily: 'inherit',
+                width: '100%', padding: '12px', borderRadius: 0,
+                border: '1px solid #e5e7eb', fontSize: 13, fontFamily: 'inherit',
                 resize: 'none', boxSizing: 'border-box', outline: 'none', lineHeight: 1.5,
               }}
               onFocus={e => e.target.style.borderColor = '#143639'}
@@ -342,18 +334,17 @@ export default function PrintShop() {
         <div style={{ padding: '0 16px 10px' }}>
           {!uploadedImage ? (
             <button onClick={() => fileRef.current?.click()} style={{
-              width: '100%', padding: '28px', background: '#f8f5f0',
-              border: '2px dashed #c8c0b8', borderRadius: 16,
+              width: '100%', padding: '28px', background: 'transparent',
+              border: '1px dashed #c8c0b8', borderRadius: 0,
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, cursor: 'pointer'
             }}>
-              <span style={{ fontSize: 36 }}>📷</span>
-              <span style={{ fontSize: 15, fontWeight: 800, color: '#143639' }}>Tap to upload your photo</span>
-              <span style={{ fontSize: 12, color: '#aaa' }}>JPG · PNG · HEIC</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: '#143639', textTransform: 'uppercase', letterSpacing: '0.05em' }}>TAP TO UPLOAD PHOTO</span>
+              <span style={{ fontSize: 11, color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.05em' }}>JPG · PNG · HEIC</span>
             </button>
           ) : (
             <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => fileRef.current?.click()} style={{ flex: 1, padding: '12px', background: '#f0ece4', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, color: '#143639', cursor: 'pointer' }}>↩ Change Photo</button>
-              <button onClick={() => setUploadedImage(null)} style={{ padding: '12px 14px', background: 'none', border: '1px solid #e5e7eb', borderRadius: 10, fontSize: 13, color: '#888', cursor: 'pointer' }}>✕</button>
+              <button onClick={() => fileRef.current?.click()} style={{ flex: 1, padding: '12px', background: 'white', border: '1px solid #e5e7eb', borderRadius: 0, fontSize: 12, fontWeight: 800, color: '#143639', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.05em' }}>CHANGE PHOTO</button>
+              <button onClick={() => setUploadedImage(null)} style={{ padding: '12px 14px', background: 'none', border: '1px solid #e5e7eb', borderRadius: 0, fontSize: 12, color: '#888', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.05em' }}>✕</button>
             </div>
           )}
         </div>
@@ -375,25 +366,27 @@ export default function PrintShop() {
       )}
 
       {/* Material selector */}
-      <div style={{ display: 'flex', gap: 6, padding: '0 16px 8px' }}>
+      <div style={{ display: 'flex', gap: 6, padding: '0 16px 12px', overflowX: 'auto', scrollbarWidth: 'none' }}>
         {MATERIALS.map(m => (
           <button key={m.id} onClick={() => setMaterial(m.id)} title={m.desc} style={{
-            display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 8,
-            border: material === m.id ? '2px solid #143639' : '1.5px solid #e5e7eb',
-            background: material === m.id ? '#f0faf5' : 'white', cursor: 'pointer',
-            fontSize: 11, fontWeight: 700, color: material === m.id ? '#143639' : '#555',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 12px', borderRadius: 0,
+            border: material === m.id ? '2px solid #143639' : '1px solid #e5e7eb',
+            background: material === m.id ? '#143639' : 'white', cursor: 'pointer', flexShrink: 0,
+            fontSize: 11, fontWeight: 800, color: material === m.id ? 'white' : '#555',
+            textTransform: 'uppercase', letterSpacing: '0.05em'
           }}>
-            <span>{m.emoji}</span><span>{m.label}</span>
+            <span>{m.label}</span>
           </button>
         ))}
       </div>
 
       {/* Size + pricing TBD */}
-      <div style={{ display: 'flex', alignItems: 'center', padding: '0 16px 10px', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', padding: '0 16px 16px', gap: 8 }}>
         <button onClick={() => setShowSizePanel(true)} style={{
-          display: 'flex', alignItems: 'center', gap: 4, padding: '8px 14px', height: 44,
-          borderRadius: 4, border: '1.5px solid #143639', background: 'white',
-          fontSize: 13, fontWeight: 700, color: '#143639', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 44,
+          borderRadius: 0, border: '1px solid #e5e7eb', background: 'white',
+          fontSize: 13, fontWeight: 800, color: '#143639', cursor: 'pointer',
+          textTransform: 'uppercase', letterSpacing: '0.05em'
         }} aria-label="Choose size">
           {selectedSize.label}
           <svg width="8" height="5" viewBox="0 0 10 6" fill="#143639"><path d="M5 6L0 0h10z"/></svg>
@@ -401,7 +394,7 @@ export default function PrintShop() {
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'baseline', gap: 6 }}>
           
           
-          <span style={{ fontSize: 12, color: '#aaa', fontStyle: 'italic' }}>Pricing coming soon</span>
+          <span style={{ fontSize: 11, color: '#888', fontStyle: 'italic' }}>Pricing coming soon</span>
         </div>
       </div>
 
@@ -411,40 +404,44 @@ export default function PrintShop() {
           generationState === 'success' && currentImage ? (
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => { setGenerationState('idle'); setCurrentImage(null) }} style={{
-                padding: '13px 16px', background: '#f0ece4', border: 'none', borderRadius: 10,
-                fontSize: 13, fontWeight: 700, color: '#143639', cursor: 'pointer',
-              }}>↩ Redo</button>
+                padding: '16px 20px', background: 'white', border: '1px solid #143639', borderRadius: 0,
+                fontSize: 13, fontWeight: 800, color: '#143639', cursor: 'pointer',
+                textTransform: 'uppercase', letterSpacing: '0.05em'
+              }}>REDO</button>
               <button onClick={handleAddToCart} disabled={adding} style={{
-                flex: 1, padding: '13px 0', background: added ? '#22c55e' : '#143639',
-                color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 800, cursor: 'pointer',
+                flex: 1, padding: '16px 0', background: added ? '#1B5A4A' : '#143639',
+                color: 'white', border: 'none', borderRadius: 0, fontSize: 15, fontWeight: 900, cursor: 'pointer',
+                textTransform: 'uppercase', letterSpacing: '0.05em'
               }}>
-                {adding ? 'Adding…' : added ? '✓ Added!' : '🖨️ Order Print'}
+                {adding ? 'ADDING…' : added ? 'ADDED!' : 'ORDER PRINT'}
               </button>
             </div>
           ) : (
             <button onClick={handleGenerate} disabled={!prompt.trim() || isGenerating} style={{
-              width: '100%', padding: '15px 0', borderRadius: 10, border: 'none',
-              background: !prompt.trim() || isGenerating ? '#94a3b8' : '#143639',
-              color: 'white', fontSize: 15, fontWeight: 800, cursor: prompt.trim() ? 'pointer' : 'default',
+              width: '100%', padding: '16px 0', borderRadius: 0, border: 'none',
+              background: !prompt.trim() || isGenerating ? '#e5e7eb' : '#143639',
+              color: !prompt.trim() || isGenerating ? '#aaa' : 'white', fontSize: 15, fontWeight: 900, cursor: prompt.trim() ? 'pointer' : 'default',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              textTransform: 'uppercase', letterSpacing: '0.05em'
             }}>
               {isGenerating ? (
-                <><div style={{ width: 18, height: 18, borderRadius: '50%', border: '2.5px solid rgba(255,255,255,0.4)', borderTopColor: 'white', animation: 'spin 0.8s linear infinite' }} /><span>Creating your print…</span></>
-              ) : '✨ Generate My Print'}
+                <><div style={{ width: 18, height: 18, borderRadius: '50%', border: '2.5px solid rgba(0,0,0,0.2)', borderTopColor: '#143639', animation: 'spin 0.8s linear infinite' }} /><span>CREATING…</span></>
+              ) : 'GENERATE PRINT'}
             </button>
           )
         ) : (
           <button onClick={canOrder ? handleAddToCart : () => fileRef.current?.click()} disabled={adding} style={{
-            width: '100%', padding: '15px 0', background: added ? '#22c55e' : canOrder ? '#143639' : '#f0ece4',
-            color: canOrder ? 'white' : '#143639', border: 'none', borderRadius: 10,
-            fontSize: 15, fontWeight: 800, cursor: 'pointer',
+            width: '100%', padding: '16px 0', background: added ? '#1B5A4A' : canOrder ? '#143639' : 'white',
+            color: canOrder || added ? 'white' : '#143639', border: canOrder || added ? 'none' : '1px solid #143639', borderRadius: 0,
+            fontSize: 15, fontWeight: 900, cursor: 'pointer',
+            textTransform: 'uppercase', letterSpacing: '0.05em'
           }}>
-            {adding ? 'Adding…' : added ? '✓ Added!' : canOrder ? '🖨️ Order Print' : '📷 Upload Photo to Start'}
+            {adding ? 'ADDING…' : added ? 'ADDED!' : canOrder ? 'ORDER PRINT' : 'UPLOAD PHOTO'}
           </button>
         )}
 
       {/* Trust badges */}
-      <div style={{ display: 'flex', justifyContent: 'space-around', padding: '8px 16px 4px', borderTop: '1px solid #f0ece4' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-around', padding: '16px 16px 4px', borderTop: '1px solid #f0ece4' }}>
         {[
           { icon: '🚚', label: 'Free Shipping' },
           { icon: '🇺🇸', label: 'Made in USA' },
