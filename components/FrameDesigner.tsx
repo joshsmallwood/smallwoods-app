@@ -164,7 +164,7 @@ function SamplePhotoRotator() {
         />
       ))}
       {/* "SAMPLE" badge */}
-      <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.4)', color: 'white', fontSize: 8, fontWeight: 700, padding: '2px 6px', borderRadius: 10, letterSpacing: '0.08em', textTransform: 'uppercase', pointerEvents: 'none' }}>Sample</div>
+      <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.4)', color: 'white', fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10, letterSpacing: '0.06em', textTransform: 'uppercase', pointerEvents: 'none' }}>Sample</div>
       {/* Upload CTA overlay — centered, clean */}
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)', pointerEvents: 'none', padding: '0 0 10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -175,7 +175,7 @@ function SamplePhotoRotator() {
           </div>
           <p style={{ margin: 0, fontSize: 12, fontWeight: 800, color: 'white', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>Tap to Add Your Photo</p>
         </div>
-        <p style={{ margin: '3px 0 0', fontSize: 9, color: 'rgba(255,255,255,0.75)' }}>JPG, PNG or HEIC</p>
+        <p style={{ margin: '3px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.8)' }}>JPG, PNG or HEIC</p>
       </div>
     </>
   )
@@ -385,7 +385,7 @@ function SizeSelector({ selected, onSelect }: { selected: SizeOption; onSelect: 
         onClick={() => setOpen(v => !v)}
         style={{
           display: 'flex', alignItems: 'center', gap: 4,
-          padding: '6px 12px', borderRadius: 4,
+          padding: '8px 12px', minHeight: 44, borderRadius: 4,
           border: '1.5px solid #143639', background: 'white',
           fontSize: 13, fontWeight: 700, color: '#143639',
           cursor: 'pointer',
@@ -664,7 +664,7 @@ export default function FrameDesigner() {
           {frames.length < 3 && (
             <button
               onClick={addFrame}
-              style={{ fontSize: 11, fontWeight: 700, color: '#143639', background: 'none', border: '1px solid #143639', borderRadius: 4, padding: '4px 10px', cursor: 'pointer' }}
+              style={{ fontSize: 12, fontWeight: 700, color: '#143639', background: 'none', border: '1px solid #143639', borderRadius: 4, padding: '10px', minHeight: 44, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
             >
               + Frame
             </button>
@@ -802,7 +802,7 @@ export default function FrameDesigner() {
         </div>
 
         {/* Bottom row: [Frames▾] [25x17▾] [swatch][swatch][swatch][swatch] — exact match to dev app */}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '4px 10px 6px', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', padding: '2px 8px 4px', gap: 4 }}>
           {/* Product type — matches dev app "Frames" dropdown pill */}
           <button
             onClick={() => setIsRefill(v => !v)}
