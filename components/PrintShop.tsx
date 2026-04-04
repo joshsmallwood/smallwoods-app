@@ -268,6 +268,28 @@ export default function PrintShop() {
             {adding ? 'Adding…' : added ? '✓ Added!' : canOrder ? `$${discountedPrice} — Order Print` : '📷 Upload Photo to Start'}
           </button>
         )}
+
+      {/* Example prints — fills space, shows what's possible */}
+      <div style={{ padding: '4px 16px 16px' }}>
+        <p style={{ margin: '0 0 10px', fontSize: 12, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Examples</p>
+        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', scrollbarWidth: 'none' }}>
+          {[
+            { url: 'https://cdn.shopify.com/s/files/1/1091/1314/files/63A4953.jpg?v=1726361626&width=300', label: 'Family portrait' },
+            { url: 'https://cdn.shopify.com/s/files/1/1091/1314/files/2K1A4158.jpg?v=1717001123&width=300', label: 'Modern abstract' },
+            { url: 'https://cdn.shopify.com/s/files/1/1091/1314/files/FWRC21.jpg?v=1717001067&width=300', label: 'Landscape art' },
+            { url: 'https://cdn.shopify.com/s/files/1/1091/1314/files/220224Practicals_20.jpg?v=1764101397&width=300', label: 'Home décor' },
+          ].map((ex, i) => (
+            <div key={i} style={{ flexShrink: 0, width: 100, borderRadius: 8, overflow: 'hidden', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+              onClick={() => setPrompt(ex.label + ' wall art, premium canvas print quality')}>
+              <img src={ex.url} alt={ex.label} style={{ width: '100%', aspectRatio: '3/4', objectFit: 'cover', display: 'block' }} loading="lazy" />
+              <div style={{ padding: '4px 6px', background: 'white' }}>
+                <p style={{ margin: 0, fontSize: 10, color: '#555', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ex.label}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p style={{ margin: '8px 0 0', fontSize: 10, color: '#bbb', textAlign: 'center' }}>Tap any example to use as inspiration</p>
+      </div>
       </div>
     </div>
   )
@@ -286,10 +308,15 @@ export default function PrintShop() {
       )}
     </div>
   ) : (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 200, background: '#f8f5f0', borderRadius: 12, gap: 12, padding: 24 }}>
-      <div style={{ fontSize: 48, lineHeight: 1 }}>🖼️</div>
-      <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#143639', textAlign: 'center' }}>Your print will appear here</p>
-      <p style={{ margin: 0, fontSize: 12, color: '#aaa', textAlign: 'center' }}>Describe your vision below and tap Generate</p>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 200, background: 'linear-gradient(135deg, #f8f5f0 0%, #f0ece4 100%)', borderRadius: 12, gap: 16, padding: 32, position: 'relative', overflow: 'hidden' }}>
+      {/* Decorative frame outline */}
+      <div style={{ width: '60%', paddingBottom: '80%', position: 'relative', border: '3px dashed #c8c0b8', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+          <div style={{ fontSize: 40 }}>✨</div>
+          <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#143639', textAlign: 'center', lineHeight: 1.3 }}>Your AI print<br/>appears here</p>
+        </div>
+      </div>
+      <p style={{ margin: 0, fontSize: 12, color: '#aaa', textAlign: 'center', maxWidth: 200 }}>Describe your vision and tap Generate — ready to ship in 1–3 days</p>
     </div>
   )
 
