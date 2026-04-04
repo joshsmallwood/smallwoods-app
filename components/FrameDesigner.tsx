@@ -207,7 +207,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   const aspectW = isLandscape ? longerDim : shorterDim
   const aspectH = isLandscape ? shorterDim : longerDim
 
-    const BORDER_PX = showRefill ? 0 : 20 // border-width to match borderImageSlice:26 at rendered scale
+    const BORDER_PX = showRefill ? 0 : 16 // tighter border shows less inner lip from PNG
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerSize, setContainerSize] = useState({ w: 340, h: 500 })
 
@@ -286,12 +286,12 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
           borderStyle: frameImgUrl ? 'solid' : 'none',
           borderWidth: BORDER_PX,
           borderImageSource: frameImgUrl ? `url("${frameImgUrl}")` : 'none',
-          borderImageSlice: '22 fill', // fill keyword fills center with frame's inner pixels, eliminates white gap
+          borderImageSlice: 22,
           borderImageRepeat: 'stretch',
           lineHeight: 0,
           boxSizing: 'content-box',
           position: 'relative',
-          background: '#2a1a0a', // dark wood tone — semi-transparent edge pixels blend dark, no inner glow
+          background: '#3d2010', // matches walnut dark tone
         }}
       >
         {/* Photo area */}
@@ -301,7 +301,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
             height: innerH,
             overflow: 'hidden',
             cursor: frame.photo ? (dragging ? 'grabbing' : 'grab') : 'pointer',
-            background: frame.photo ? '#000' : 'white', // dark when photo fills it, white for empty state
+            background: '#f5f0eb', // warm neutral — no harsh white-on-dark contrast at frame edge
             position: 'relative',
           }}
           onClick={() => { if (!frame.photo && !loading) fileRef.current?.click() }}
