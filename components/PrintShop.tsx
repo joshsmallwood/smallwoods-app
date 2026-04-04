@@ -510,7 +510,7 @@ export default function PrintShop() {
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 120, background: '#f5f0e8', borderRadius: 12, padding: 16, position: 'relative', overflow: 'hidden' }}>
       {/* Proportional preview matching selected size */}
       <div style={{
-        width: '70%', maxWidth: 280,
+        width: '75%', maxWidth: 320,
         aspectRatio: `${selectedSize.widthIn} / ${selectedSize.heightIn}`,
         border: '2px dashed #c8c0b8', borderRadius: 4,
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -540,8 +540,8 @@ export default function PrintShop() {
           </a>
         </div>
 
-        {/* Image preview — always shown, capped height on mobile */}
-        <div style={{ flex: displayImage ? '1 1 auto' : '0 0 auto', padding: '8px 12px', minHeight: 100, maxHeight: displayImage ? 'unset' : '35vh', position: 'relative' }}>
+        {/* Image preview — generous height to accommodate all orientations */}
+        <div style={{ flex: displayImage ? '1 1 auto' : '0 0 auto', padding: '8px 12px', minHeight: 220, position: 'relative' }}>
           {imagePanel}
         </div>
 
