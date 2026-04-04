@@ -207,9 +207,11 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   const [containerSize, setContainerSize] = useState({ w: 340, h: 500 })
 
   useEffect(() => {
-    const el = containerRef.current?.closest('[data-canvas-area]') as HTMLElement | null
-    if (!el) return
-    const measure = () => setContainerSize({ w: el.clientWidth, h: el.clientHeight })
+    // Measure the GRID container (stable 390px), not the canvas (which expands with frame)
+    const el = containerRef.current?.closest('[style*="grid-template-rows"]') as HTMLElement | null
+    const canvasEl = containerRef.current?.closest('[data-canvas-area]') as HTMLElement | null
+    if (!el || !canvasEl) return
+    const measure = () => setContainerSize({ w: el.clientWidth, h: canvasEl.clientHeight })
     measure()
     const obs = new ResizeObserver(measure)
     obs.observe(el)
@@ -672,7 +674,7 @@ export default function FrameDesigner() {
       </div>
 
       {/* ── Canvas Area ── */}
-      <div data-canvas-area style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 8px', overflow: 'visible', gap: 10, minHeight: 0, position: 'relative' }}>
+      <div data-canvas-area style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 8px', overflow: 'hidden', gap: 10, minHeight: 0, position: 'relative' }}>
         {/* Floating banners — orientation mismatch + quality, bottom of canvas */}
         <div style={{ position: 'absolute', bottom: 6, left: 8, right: 8, zIndex: 20, display: 'flex', flexDirection: 'column', gap: 4, pointerEvents: 'none' }}>
           {orientMismatch && activeFrame.photo && (
