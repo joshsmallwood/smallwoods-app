@@ -20,11 +20,11 @@ interface SizeOption {
   label: string
   widthIn: number
   heightIn: number
-  price: number
-  compareAt: number
-  noFramePrice: number
+  price: number         // framed price
+  compareAt: number     // framed compare-at
+  refillPrice: number   // print refill (No Frame) price — verified from Shopify API
   shopifySize: string
-  frameSku: string // for frame image
+  frameSku: string
 }
 
 interface FrameItem {
@@ -53,17 +53,18 @@ const COLOR_SHORT: Record<ColorId, string> = {
   Stained: 'S', Almond: 'A', Black: 'B', White: 'W',
 }
 
+// Prices verified against live Shopify API (product 7241370435721)
 const SIZES: SizeOption[] = [
-  { id: '8x10',  label: '8×10',  widthIn: 8,  heightIn: 10, price: 69,  compareAt: 100, noFramePrice: 39,  shopifySize: '8x10',                 frameSku: 'SB-M'    },
-  { id: '10x12', label: '10×12', widthIn: 10, heightIn: 12, price: 75,  compareAt: 100, noFramePrice: 42,  shopifySize: '10x12',                frameSku: 'SB-M'    },
-  { id: '12x16', label: '12×16', widthIn: 12, heightIn: 16, price: 89,  compareAt: 120, noFramePrice: 49,  shopifySize: '12x16',                frameSku: 'SB-M'    },
-  { id: '13x13', label: '13×13', widthIn: 13, heightIn: 13, price: 79,  compareAt: 100, noFramePrice: 45,  shopifySize: 'Small Square 13" x 13"',frameSku: 'SB-M'   },
-  { id: '16x16', label: '16×16', widthIn: 16, heightIn: 16, price: 99,  compareAt: 130, noFramePrice: 55,  shopifySize: '16x16',                frameSku: 'SB-M'    },
-  { id: '25x17', label: '25×17', widthIn: 25, heightIn: 17, price: 109, compareAt: 150, noFramePrice: 59,  shopifySize: 'Medium 25" x 17"',     frameSku: 'SB-M'    },
-  { id: '20x30', label: '20×30', widthIn: 20, heightIn: 30, price: 119, compareAt: 170, noFramePrice: 69,  shopifySize: '20x30',                frameSku: 'SB-20x30'},
-  { id: '25x25', label: '25×25', widthIn: 25, heightIn: 25, price: 129, compareAt: 190, noFramePrice: 79,  shopifySize: 'Square 25" x 25"',     frameSku: 'SB-M'    },
-  { id: '24x36', label: '24×36', widthIn: 24, heightIn: 36, price: 129, compareAt: 190, noFramePrice: 79,  shopifySize: '24x36',                frameSku: 'SB-24x36'},
-  { id: '44x22', label: '44×22', widthIn: 44, heightIn: 22, price: 139, compareAt: 200, noFramePrice: 89,  shopifySize: 'Extra Large 44" x 22"',frameSku: 'SB-XL'   },
+  { id: '8x10',  label: '8×10',  widthIn: 8,  heightIn: 10, price: 69,  compareAt: 100, refillPrice: 39,  shopifySize: '8x10',                  frameSku: 'SB-M'     },
+  { id: '10x12', label: '10×12', widthIn: 10, heightIn: 12, price: 75,  compareAt: 100, refillPrice: 42,  shopifySize: '10x12',                 frameSku: 'SB-M'     },
+  { id: '12x16', label: '12×16', widthIn: 12, heightIn: 16, price: 89,  compareAt: 120, refillPrice: 49,  shopifySize: '12x16',                 frameSku: 'SB-M'     },
+  { id: '13x13', label: '13×13', widthIn: 13, heightIn: 13, price: 79,  compareAt: 100, refillPrice: 45,  shopifySize: 'Small Square 13" x 13"', frameSku: 'SB-M'    },
+  { id: '16x16', label: '16×16', widthIn: 16, heightIn: 16, price: 99,  compareAt: 130, refillPrice: 55,  shopifySize: '16x16',                 frameSku: 'SB-M'     },
+  { id: '25x17', label: '25×17', widthIn: 25, heightIn: 17, price: 109, compareAt: 150, refillPrice: 59,  shopifySize: 'Medium 25" x 17"',      frameSku: 'SB-M'     },
+  { id: '20x30', label: '20×30', widthIn: 20, heightIn: 30, price: 119, compareAt: 170, refillPrice: 69,  shopifySize: '20x30',                 frameSku: 'SB-20x30' },
+  { id: '25x25', label: '25×25', widthIn: 25, heightIn: 25, price: 129, compareAt: 190, refillPrice: 79,  shopifySize: 'Square 25" x 25"',      frameSku: 'SB-M'     },
+  { id: '24x36', label: '24×36', widthIn: 24, heightIn: 36, price: 129, compareAt: 190, refillPrice: 79,  shopifySize: '24x36',                 frameSku: 'SB-24x36' },
+  { id: '44x22', label: '44×22', widthIn: 44, heightIn: 22, price: 139, compareAt: 200, refillPrice: 89,  shopifySize: 'Extra Large 44" x 22"', frameSku: 'SB-XL'    },
 ]
 
 // Shopify variant map [shopifySize][colorLabel]
@@ -84,6 +85,20 @@ const DISCOUNT = 0.35
 const PROMO_CODE = 'MYWALL35'
 const SHOPIFY_STORE = 'https://smallwoodhome.com'
 
+// No Frame (Print Refill) variant IDs — verified from Shopify API Apr 2026
+const REFILL_VARIANT_MAP: Record<string, number> = {
+  '8x10':                   42725040554121,
+  '10x12':                  42725040521353,
+  '12x16':                  42725040423049,
+  'Small Square 13" x 13"': 42725040488585,
+  '16x16':                  42725040455817,
+  'Medium 25" x 17"':       42725040291977,
+  '20x30':                  42725040357513,
+  'Square 25" x 25"':       42725040390281,
+  '24x36':                  43361961214089,
+  'Extra Large 44" x 22"':  42725040324745,
+}
+
 const DEFAULT_SIZE = SIZES.find(s => s.id === '25x17')!
 
 // Default portrait — dev app shows 25x17 as portrait (rotated, 17w x 25h) to fill phone height
@@ -95,25 +110,26 @@ function getFrameImageUrl(size: SizeOption, color: ColorId): string {
   return `${CDN}/frame_rotated_${size.frameSku}-CUSTOM-100-${COLOR_SHORT[color]}-A0.png`
 }
 
-function getVariantId(size: SizeOption, color: ColorId): number | null {
-  // Map ColorId directly to Shopify variant color names
+function getVariantId(size: SizeOption, color: ColorId, isRefill: boolean): number | null {
+  if (isRefill) return REFILL_VARIANT_MAP[size.shopifySize] ?? null
   const shopifyColorMap: Record<ColorId, string> = {
     Stained: 'Stained', Almond: 'Almond', Black: 'Black', White: 'White',
   }
   return VARIANT_MAP[size.shopifySize]?.[shopifyColorMap[color]] ?? null
 }
 
-function getPrice(frame: FrameItem) {
-  return frame.size.price
+function getPrice(frame: FrameItem, isRefill: boolean) {
+  return isRefill ? frame.size.refillPrice : frame.size.price
 }
 
 // ─── Sub-components ─────────────────────────────────────────────────────────
 
-function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
+function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill }: {
   frame: FrameItem
   onPhotoChange: (photo: string | null, quality: 'excellent' | 'good' | 'low') => void
   isActive: boolean
   onClick: () => void
+  showRefill?: boolean
 }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
@@ -138,7 +154,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick }: {
 
   // Compute display size: fill available space, respecting aspect ratio
   // Border stays fixed — only the photo interior scales
-  const BORDER_PX = 16 // fixed border width
+  const BORDER_PX = showRefill ? 0 : 16 // no border for print refill
   const photoW = aspectW
   const photoH = aspectH
   // Scale frame to fill available space — container is max 480px wide, height depends on viewport
@@ -372,10 +388,11 @@ function ColorSwatch({ color, selected, onSelect }: { color: typeof COLORS[0]; s
   )
 }
 
-function PriceRow({ frames }: { frames: FrameItem[] }) {
-  const fullTotal = frames.reduce((s, f) => s + (f.size.compareAt), 0)
-  const saleTotal = frames.reduce((s, f) => s + getPrice(f), 0)
-  const bundleTotal = Math.round(saleTotal * (1 - DISCOUNT))
+function PriceRow({ frames, isRefill }: { frames: FrameItem[]; isRefill: boolean }) {
+  const fullTotal = frames.reduce((s, f) => s + f.size.compareAt, 0)
+  const saleTotal = frames.reduce((s, f) => s + getPrice(f, isRefill), 0)
+  // Refills don't get 35% bundle discount — price is already final
+  const bundleTotal = isRefill ? saleTotal : Math.round(saleTotal * (1 - DISCOUNT))
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, padding: '6px 20px', background: 'white', borderTop: '1px solid #f0ece4' }}>
@@ -407,7 +424,7 @@ function PriceRow({ frames }: { frames: FrameItem[] }) {
 export default function FrameDesigner() {
   const [frames, setFrames] = useState<FrameItem[]>([makeFrame('f1')])
   const [activeId, setActiveId] = useState('f1')
-  // Always start with exactly one frame
+  const [isRefill, setIsRefill] = useState(false)
   const [showOrderSummary, setShowOrderSummary] = useState(false)
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
@@ -448,7 +465,7 @@ export default function FrameDesigner() {
       }
       if (patch.color && patch.color !== f.color) {
         const colorObj = COLORS.find(c => c.id === patch.color)
-        trackColorSelected({ colorId: patch.color as string, colorLabel: colorObj?.label ?? patch.color as string, sizeId: next.size.id, price: getPrice(next) })
+        trackColorSelected({ colorId: patch.color as string, colorLabel: colorObj?.label ?? patch.color as string, sizeId: next.size.id, price: getPrice(next, isRefill) })
       }
       return next
     }))
@@ -457,7 +474,7 @@ export default function FrameDesigner() {
   const handlePhotoChange = (id: string, photo: string | null, quality: 'excellent' | 'good' | 'low') => {
     updateFrame(id, { photo, zoom: 1, offsetX: 0, offsetY: 0 })
     if (photo) {
-      trackPhotoUploaded({ sizeId: activeFrame.size.id, colorId: activeFrame.color, price: getPrice(activeFrame), quality, frameCount: frames.length })
+      trackPhotoUploaded({ sizeId: activeFrame.size.id, colorId: activeFrame.color, price: getPrice(activeFrame, isRefill), quality, frameCount: frames.length })
     }
   }
 
@@ -466,7 +483,7 @@ export default function FrameDesigner() {
     setFrames(prev => {
       const next = [...prev, makeFrame(id)]
       if (prev.length === 1) {
-        trackGalleryWallAdded({ frameCount: 2, totalValue: next.reduce((s, f) => s + getPrice(f), 0) })
+        trackGalleryWallAdded({ frameCount: 2, totalValue: next.reduce((s, f) => s + getPrice(f, isRefill), 0) })
       }
       return next
     })
@@ -488,10 +505,10 @@ export default function FrameDesigner() {
   }
 
   const handleAddToCart = () => {
-    const discountedTotal = Math.round(frames.reduce((s, f) => s + getPrice(f), 0) * (1 - DISCOUNT))
+    const discountedTotal = Math.round(frames.reduce((s, f) => s + getPrice(f, isRefill), 0) * (1 - DISCOUNT))
     trackAddToCart({
-      frames: frames.map(f => ({ sizeId: f.size.id, colorId: f.color, price: getPrice(f), sizeLabel: f.size.label, colorLabel: COLORS.find(c => c.id === f.color)?.label ?? f.color })),
-      totalValue: frames.reduce((s, f) => s + getPrice(f), 0),
+      frames: frames.map(f => ({ sizeId: f.size.id, colorId: f.color, price: getPrice(f, isRefill), sizeLabel: f.size.label, colorLabel: COLORS.find(c => c.id === f.color)?.label ?? f.color })),
+      totalValue: frames.reduce((s, f) => s + getPrice(f, isRefill), 0),
       discountedValue: discountedTotal,
       promoCode: PROMO_CODE,
     })
@@ -499,10 +516,10 @@ export default function FrameDesigner() {
   }
 
   const handleConfirmCheckout = () => {
-    const saleTotal = frames.reduce((s, f) => s + getPrice(f), 0)
+    const saleTotal = frames.reduce((s, f) => s + getPrice(f, isRefill), 0)
     const discountedTotal = Math.round(saleTotal * (1 - DISCOUNT))
     trackInitiateCheckout({
-      frames: frames.map(f => ({ sizeId: f.size.id, colorId: f.color, price: getPrice(f) })),
+      frames: frames.map(f => ({ sizeId: f.size.id, colorId: f.color, price: getPrice(f, isRefill) })),
       totalValue: saleTotal,
       discountedValue: discountedTotal,
       promoCode: PROMO_CODE,
@@ -513,7 +530,7 @@ export default function FrameDesigner() {
 
     // Build cart URL
     const items = frames.map(f => {
-      const vid = getVariantId(f.size, f.color)
+      const vid = getVariantId(f.size, f.color, isRefill)
       return vid ? `${vid}:1` : null
     }).filter(Boolean).join(',')
 
@@ -539,7 +556,7 @@ export default function FrameDesigner() {
   }
 
   const hasAnyPhoto = frames.some(f => f.photo)
-  const saleTotal = frames.reduce((s, f) => s + getPrice(f), 0)
+  const saleTotal = frames.reduce((s, f) => s + getPrice(f, isRefill), 0)
   const discountedTotal = Math.round(saleTotal * (1 - DISCOUNT))
   const fullTotal = frames.reduce((s, f) => s + (f.size.compareAt), 0)
 
@@ -595,6 +612,7 @@ export default function FrameDesigner() {
               isActive={frame.id === activeId}
               onClick={() => setActiveId(frame.id)}
               onPhotoChange={(photo, quality) => handlePhotoChange(frame.id, photo, quality)}
+              showRefill={isRefill}
             />
             {frames.length > 1 && (
               <button
@@ -616,10 +634,45 @@ export default function FrameDesigner() {
       </div>
 
       {/* ── Price Row ── */}
-      <PriceRow frames={frames} />
+      <PriceRow frames={frames} isRefill={isRefill} />
 
       {/* ── Controls ── */}
       <div style={{ background: 'white', borderTop: '1px solid #f0ece4', borderBottom: '1px solid #f0ece4' }}>
+        {/* Frame / Print Refill toggle */}
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '6px 16px 2px' }}>
+          <div style={{ display: 'flex', background: '#f0ece4', borderRadius: 20, padding: 3, gap: 2 }}>
+            <button
+              onClick={() => setIsRefill(false)}
+              style={{
+                padding: '5px 16px', borderRadius: 16, border: 'none', cursor: 'pointer',
+                fontSize: 12, fontWeight: 700, transition: 'all 0.15s',
+                background: !isRefill ? '#143639' : 'transparent',
+                color: !isRefill ? 'white' : '#666',
+              }}
+            >
+              Frame
+            </button>
+            <button
+              onClick={() => setIsRefill(true)}
+              style={{
+                padding: '5px 16px', borderRadius: 16, border: 'none', cursor: 'pointer',
+                fontSize: 12, fontWeight: 700, transition: 'all 0.15s',
+                background: isRefill ? '#143639' : 'transparent',
+                color: isRefill ? 'white' : '#666',
+              }}
+            >
+              Print Refill
+            </button>
+          </div>
+        </div>
+        {isRefill && (
+          <div style={{ margin: '0 16px 4px', padding: '6px 10px', background: '#f0faf5', borderRadius: 8, border: '1px solid #c6e6d8' }}>
+            <p style={{ margin: 0, fontSize: 10, color: '#143639', fontWeight: 600, lineHeight: 1.4 }}>
+              🖼 Replaces the print inside your existing Smallwoods frame · Barcode on back is hidden behind the face-frame
+            </p>
+          </div>
+        )}
+
         {/* Toolbar — matching dev app: Add, Frame(rotate), Clear, Info */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 20, padding: '6px 16px 2px' }}>
           {[
@@ -742,7 +795,7 @@ export default function FrameDesigner() {
                   {!f.photo && <div style={{ fontSize: 10, color: '#e67e22', fontWeight: 600 }}>⚠ No photo uploaded</div>}
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: '#143639' }}>${Math.round(getPrice(f) * (1 - DISCOUNT))}</div>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: '#143639' }}>${Math.round(getPrice(f, isRefill) * (1 - DISCOUNT))}</div>
                   <div style={{ fontSize: 10, color: '#aaa', textDecoration: 'line-through' }}>${f.size.compareAt}</div>
                 </div>
               </div>
