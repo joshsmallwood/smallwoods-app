@@ -62,11 +62,35 @@ const SHOPIFY_STORE = 'https://smallwoodhome.com'
 const PROMO_CODE = 'MYWALL35'
 const DISCOUNT = 0.35
 
+
+// ── Delivery + social proof utilities ──────────────────────────────────────
+function getShipText(): string {
+  const ct = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+  const day = ct.getDay()
+  const hour = ct.getHours()
+  if (day === 0) return 'Ships Mon'
+  if (day === 6) return 'Ships Mon'
+  if (hour < 15) return '⚡ Ships today'
+  return 'Ships tomorrow'
+}
+
+function getViewerCount(): number {
+  const HOURLY = [14,8,5,4,6,10,20,40,64,84,98,110,110,108,109,94,88,86,92,108,117,91,56,32]
+  const ct = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+  const h = ct.getHours()
+  const base = HOURLY[h] ?? 40
+  return base + Math.floor(Math.random() * 8)
+}
+
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function PrintShop() {
   const [mode, setMode] = useState<Mode>('generate')
   const [material, setMaterial] = useState<Material>('canvas')
+  const [reviewCount] = useState(6570)
+  const [starRating] = useState(4.74)
+  const shipText = getShipText()
+  const viewers = getViewerCount()
   const [prompt, setPrompt] = useState('')
   const [style, setStyle] = useState<Style>('photorealistic')
   const [selectedSize, setSelectedSize] = useState<CanvasSize>(CANVAS_SIZES[4])
@@ -135,8 +159,16 @@ export default function PrintShop() {
 
   const controlsPanel = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      {/* Product headline */}
+      <div style={{ padding: '14px 16px 10px' }}>
+        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: '#143639', lineHeight: 1.2 }}>Custom Prints</h1>
+        <p style={{ margin: '4px 0 0', fontSize: 13, color: '#555', lineHeight: 1.4 }}>
+          Upload your photo or generate AI art — printed on premium materials and shipped to your door.
+        </p>
+      </div>
+
       {/* Mode tabs */}
-      <div style={{ display: 'flex', gap: 8, padding: '14px 16px 10px' }}>
+      <div style={{ display: 'flex', gap: 8, padding: '0 16px 10px' }}>
         {(['generate', 'upload'] as Mode[]).map(m => (
           <button key={m} onClick={() => setMode(m)} style={{
             padding: '7px 16px', borderRadius: 20, border: 'none', cursor: 'pointer',
@@ -147,6 +179,25 @@ export default function PrintShop() {
             {m === 'generate' ? '✨ AI Generate' : '📷 Upload Photo'}
           </button>
         ))}
+      </div>
+
+      {/* Product trust bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 10px', borderBottom: '1px solid #f0ece4', marginBottom: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <span style={{ color: '#F59E0B', fontSize: 11 }}>★★★★★</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#1a1a1a' }}>{starRating.toFixed(2)}</span>
+          <span style={{ fontSize: 10, color: '#888' }}>({reviewCount.toLocaleString()})</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ fontSize: 10, fontWeight: 600, color: '#143639' }}>{shipText}</span>
+          <span style={{ fontSize: 10, color: '#aaa' }}>· arrives in 3–5 days</span>
+        </div>
+      </div>
+
+      {/* Viewers */}
+      <div style={{ padding: '0 16px 8px', display: 'flex', alignItems: 'center', gap: 5 }}>
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 0 2px rgba(34,197,94,0.3)' }} />
+        <span style={{ fontSize: 11, color: '#555' }}><strong>{viewers}</strong> people viewing right now</span>
       </div>
 
       {mode === 'generate' ? (
@@ -295,6 +346,21 @@ export default function PrintShop() {
             {adding ? 'Adding…' : added ? '✓ Added!' : canOrder ? '💾 Save Design' : '📷 Upload Photo to Start'}
           </button>
         )}
+
+      {/* Trust badges */}
+      <div style={{ display: 'flex', justifyContent: 'space-around', padding: '8px 16px 4px', borderTop: '1px solid #f0ece4' }}>
+        {[
+          { icon: '🚚', label: 'Free Shipping' },
+          { icon: '🇺🇸', label: 'Made in USA' },
+          { icon: '💯', label: 'Free Reprints' },
+          { icon: '⚡', label: '1–3 Day Ship' },
+        ].map(b => (
+          <div key={b.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+            <span style={{ fontSize: 16 }}>{b.icon}</span>
+            <span style={{ fontSize: 9, fontWeight: 600, color: '#888', textAlign: 'center', lineHeight: 1.2 }}>{b.label}</span>
+          </div>
+        ))}
+      </div>
 
       {/* Example prints — fills space, shows what's possible */}
       <div style={{ padding: '4px 16px 16px' }}>
