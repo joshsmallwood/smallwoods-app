@@ -107,7 +107,12 @@ const DEFAULT_SIZE = SIZES.find(s => s.id === '25x17')!
 // Default portrait — dev app shows 25x17 as portrait (rotated, 17w x 25h) to fill phone height
 // Natural orientation: landscape when width > height (e.g. 44x22, 25x17), portrait when height > width
 function naturalOrientation(size: SizeOption): 'portrait' | 'landscape' {
-  return size.widthIn > size.heightIn ? 'landscape' : 'portrait'
+  // Portrait = tall on screen. Always default portrait for phone.
+  // Exception: 44x22 and 25x17 are wide prints, show landscape by default
+  // so the user sees the natural shape of what they're ordering
+  const ratio = size.widthIn / size.heightIn
+  // Only auto-landscape if significantly wider than tall (>1.5 ratio)
+  return ratio > 1.5 ? 'landscape' : 'portrait'
 }
 
 function makeFrame(id: string): FrameItem {
@@ -160,17 +165,17 @@ function SamplePhotoRotator() {
       ))}
       {/* "SAMPLE" badge */}
       <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.4)', color: 'white', fontSize: 8, fontWeight: 700, padding: '2px 6px', borderRadius: 10, letterSpacing: '0.08em', textTransform: 'uppercase', pointerEvents: 'none' }}>Sample</div>
-      {/* Upload CTA overlay */}
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.65), transparent)', padding: '16px 12px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, pointerEvents: 'none' }}>
+      {/* Upload CTA overlay — centered, clean */}
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)', pointerEvents: 'none', padding: '0 0 10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="12" height="10" viewBox="0 0 28 22" fill="none" stroke="#143639" strokeWidth="2">
+          <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(255,255,255,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="13" height="11" viewBox="0 0 28 22" fill="none" stroke="#143639" strokeWidth="2.2">
               <rect x="1" y="5" width="26" height="16" rx="2"/><circle cx="14" cy="13" r="4"/><path d="M9 5V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1"/>
             </svg>
           </div>
-          <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: 'white' }}>Tap to Add Your Photo</p>
+          <p style={{ margin: 0, fontSize: 12, fontWeight: 800, color: 'white', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>Tap to Add Your Photo</p>
         </div>
-        <p style={{ margin: 0, fontSize: 9, color: 'rgba(255,255,255,0.7)' }}>JPG, PNG or HEIC</p>
+        <p style={{ margin: '3px 0 0', fontSize: 9, color: 'rgba(255,255,255,0.75)' }}>JPG, PNG or HEIC</p>
       </div>
     </>
   )
@@ -458,17 +463,17 @@ function PriceRow({ frames, isRefill }: { frames: FrameItem[]; isRefill: boolean
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, padding: '5px 16px', background: 'white', borderTop: '1px solid #f0ece4' }}>
       <div style={{ textAlign: 'center', flex: 1 }}>
         <div style={{ fontSize: 14, fontWeight: 600, color: '#bd7b57', textDecoration: 'line-through' }}>${fullTotal}</div>
-        <div style={{ fontSize: 7, color: '#bbb', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Full Price</div>
+        <div style={{ fontSize: 8, color: '#999', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Price</div>
       </div>
       <div style={{ width: 1, height: 28, background: '#e5e7eb' }} />
       <div style={{ textAlign: 'center', flex: 1 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: '#143639' }}>${saleTotal}</div>
-        <div style={{ fontSize: 7, color: '#bbb', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Sale Price</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: '#143639' }}>${saleTotal}</div>
+        <div style={{ fontSize: 8, color: '#999', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sale Price</div>
       </div>
       <div style={{ width: 1, height: 28, background: '#e5e7eb' }} />
       <div style={{ textAlign: 'center', flex: 1 }}>
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#143639', lineHeight: 1 }}>${bundleTotal}</div>
-        <div style={{ fontSize: 7, color: '#888', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Bundle Price</div>
+        <div style={{ fontSize: 20, fontWeight: 900, color: '#143639', lineHeight: 1 }}>${bundleTotal}</div>
+        <div style={{ fontSize: 8, color: '#143639', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Bundle Price</div>
       </div>
     </div>
   )
@@ -638,7 +643,7 @@ export default function FrameDesigner() {
     <div
       style={{
         display: 'grid',
-        gridTemplateRows: '48px 1fr auto auto 56px',
+        gridTemplateRows: '44px 1fr auto auto 52px',
         height: '100dvh',
         maxWidth: 480,
         margin: '0 auto',
@@ -786,7 +791,7 @@ export default function FrameDesigner() {
             <button
               key={btn.label}
               onClick={btn.action}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', minWidth: 40, padding: '2px 0' }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', minWidth: 44, minHeight: 44, padding: '4px 0', justifyContent: 'center' }}
             >
               <span style={{ height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{btn.icon}</span>
               <span style={{ fontSize: 9, fontWeight: 600, color: '#143639' }}>{btn.label}</span>
@@ -816,7 +821,7 @@ export default function FrameDesigner() {
       </div>
 
       {/* ── CTA Bar — full width, matches dev app exactly ── */}
-      <div style={{ background: '#143639', padding: '8px 12px', paddingBottom: 'calc(8px + env(safe-area-inset-bottom, 0px))' }}>
+      <div style={{ background: '#143639', padding: '6px 12px', paddingBottom: 'calc(6px + env(safe-area-inset-bottom, 0px))', display: 'flex', alignItems: 'center' }}>
         <button
           onClick={hasAnyPhoto ? handleAddToCart : () => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
           disabled={adding}
