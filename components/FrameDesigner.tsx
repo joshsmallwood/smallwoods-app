@@ -181,7 +181,7 @@ function SamplePhotoRotator() {
   )
 }
 
-function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOrientMismatch, showGalleryRing }: {
+function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOrientMismatch, showGalleryRing, frameCount }: {
   frame: FrameItem
   onPhotoChange: (photo: string | null, quality: 'excellent' | 'good' | 'low', photoW: number, photoH: number) => void
   isActive: boolean
@@ -189,6 +189,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   showRefill?: boolean
   onOrientMismatch?: (suggestion: 'portrait' | 'landscape') => void
   showGalleryRing?: boolean
+  frameCount?: number
 }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
@@ -209,26 +210,19 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
 
     const BORDER_PX = showRefill ? 0 : 16 // tighter border shows less inner lip from PNG
   const containerRef = useRef<HTMLDivElement>(null)
-  const [containerSize, setContainerSize] = useState({ w: 340, h: 500 })
 
-  useEffect(() => {
-    // Measure the GRID container (stable 390px), not the canvas (which expands with frame)
-    const el = containerRef.current?.closest('[style*="grid-template-rows"]') as HTMLElement | null
-    const canvasEl = containerRef.current?.closest('[data-canvas-area]') as HTMLElement | null
-    if (!el || !canvasEl) return
-    const measure = () => setContainerSize({ w: el.clientWidth, h: canvasEl.clientHeight })
-    measure()
-    const obs = new ResizeObserver(measure)
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [])
-
+  // Use stable window dimensions — avoids stale state lag on orientation change
+  const vw = typeof window !== 'undefined' ? Math.min(window.innerWidth, 480) : 390
+  const vh = typeof window !== 'undefined' ? window.innerHeight : 844
+  // Canvas height = viewport minus fixed rows: 44 header + 40 price + 84 controls + 52 CTA = 220
+  const canvasH = Math.max(200, vh - 220)
+  const count = frameCount || 1
   const photoW = aspectW
   const photoH = aspectH
-  // innerW/innerH = photo area (fills frame exactly, no mat)
-  // Frame total = innerW + BORDER_PX*2, so max photo = available space minus borders and breathing room
-  const maxDisplayW = containerSize.w - 48 - BORDER_PX * 2
-  const maxDisplayH = containerSize.h - 32 - BORDER_PX * 2
+  // Divide available width by number of frames for gallery wall
+  const availableW = Math.floor((vw - 48) / count) - BORDER_PX * 2 - (count > 1 ? 8 : 0)
+  const maxDisplayW = availableW
+  const maxDisplayH = canvasH - 32 - BORDER_PX * 2
   const scale = Math.min(maxDisplayW / photoW, maxDisplayH / photoH)
   const innerW = Math.round(photoW * scale)
   const innerH = Math.round(photoH * scale)
@@ -433,7 +427,7 @@ function ColorSwatch({ color, selected, onSelect }: { color: typeof COLORS[0]; s
       onClick={onSelect}
       title={color.label}
       style={{
-        width: 36, height: 36, padding: 2, border: 'none', background: 'none',
+        width: 44, height: 44, padding: 4, border: 'none', background: 'none',
         cursor: 'pointer', borderRadius: 3, flexShrink: 0,
         outline: selected ? `2px solid #143639` : '2px solid transparent',
         outlineOffset: 1,
@@ -711,6 +705,7 @@ export default function FrameDesigner() {
               showRefill={isRefill}
               onOrientMismatch={(s) => setOrientMismatch(s)}
               showGalleryRing={frames.length > 1}
+              frameCount={frames.length}
             />
             {frames.length > 1 && (
               <button
