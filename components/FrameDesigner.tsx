@@ -649,7 +649,7 @@ export default function FrameDesigner() {
         height: '100dvh',
         maxWidth: 480,
         margin: '0 auto',
-        background: '#c8c4be',
+        background: '#fdf9ed',
         fontFamily: '"Poppins", sans-serif',
         overflow: 'hidden',
         position: 'relative',
