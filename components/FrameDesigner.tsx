@@ -208,7 +208,9 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   const aspectW = isLandscape ? longerDim : shorterDim
   const aspectH = isLandscape ? shorterDim : longerDim
 
-    const BORDER_PX = showRefill ? 0 : 16 // tighter border shows less inner lip from PNG
+    // Reduce border for gallery wall so frames don't get too tiny
+  const galleryBorderPx = frameCount && frameCount >= 3 ? 10 : frameCount === 2 ? 12 : 16
+  const BORDER_PX = showRefill ? 0 : galleryBorderPx
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Use stable window dimensions — avoids stale state lag on orientation change
@@ -219,10 +221,17 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   const count = frameCount || 1
   const photoW = aspectW
   const photoH = aspectH
-  // Divide available width by number of frames for gallery wall
-  const availableW = Math.floor((vw - 48) / count) - BORDER_PX * 2 - (count > 1 ? 8 : 0)
-  const maxDisplayW = availableW
+  // Gallery wall: use height as primary constraint, width secondary
+  // Single frame: fill width. Multiple frames: height-driven, divide remaining width
+  const gap = count > 1 ? 8 : 0
   const maxDisplayH = canvasH - 32 - BORDER_PX * 2
+  // For gallery wall: scale by height first, then check if all fit in width
+  const scaleByH = maxDisplayH / photoH
+  const frameWidthAtScaleH = photoW * scaleByH + BORDER_PX * 2
+  const totalWidthNeeded = frameWidthAtScaleH * count + gap * (count - 1) + 48
+  // If all frames fit at height scale, use that; otherwise constrain by width
+  const scaleByW = (Math.floor((vw - 48 - gap * (count - 1)) / count) - BORDER_PX * 2) / photoW
+  const maxDisplayW = totalWidthNeeded <= vw ? photoW * scaleByH : photoW * scaleByW
   const scale = Math.min(maxDisplayW / photoW, maxDisplayH / photoH)
   const innerW = Math.round(photoW * scale)
   const innerH = Math.round(photoH * scale)
@@ -709,14 +718,17 @@ export default function FrameDesigner() {
             />
             {frames.length > 1 && (
               <button
+                data-remove-frame
                 onClick={(e) => { e.stopPropagation(); removeFrame(frame.id) }}
+                aria-label="Remove frame"
                 style={{
-                  position: 'absolute', top: -8, right: -8, zIndex: 10,
-                  width: 22, height: 22, borderRadius: '50%',
-                  background: '#e53e3e', color: 'white', border: 'none',
-                  fontSize: 12, fontWeight: 800, cursor: 'pointer',
+                  position: 'absolute', top: -12, right: -12, zIndex: 10,
+                  width: 28, height: 28, borderRadius: '50%',
+                  background: '#e53e3e', color: 'white', border: '2px solid white',
+                  fontSize: 13, fontWeight: 800, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+                  lineHeight: 1,
                 }}
               >
                 ✕
@@ -731,6 +743,28 @@ export default function FrameDesigner() {
 
       {/* ── Controls ── */}
       <div style={{ background: 'white', borderTop: '1px solid #e5e7eb' }}>
+
+        {/* Gallery wall active frame indicator */}
+        {frames.length > 1 && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '4px 0 0' }}>
+            {frames.map((f, i) => (
+              <button
+                key={f.id}
+                onClick={() => setActiveId(f.id)}
+                style={{
+                  width: f.id === activeId ? 20 : 8, height: 8,
+                  borderRadius: 4, border: 'none', cursor: 'pointer',
+                  background: f.id === activeId ? '#143639' : '#d1d5db',
+                  transition: 'all 0.2s', padding: 0, flexShrink: 0,
+                }}
+                aria-label={`Select frame ${i + 1}`}
+              />
+            ))}
+            <span style={{ fontSize: 10, color: '#888', fontWeight: 500 }}>
+              Frame {frames.findIndex(f => f.id === activeId) + 1} of {frames.length}
+            </span>
+          </div>
+        )}
 
         {/* Toolbar — 5 buttons full width, 44px touch targets */}
         <div style={{ display: 'flex', padding: '0 8px' }}>
