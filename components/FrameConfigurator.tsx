@@ -474,6 +474,7 @@ function SingleFrame({
   canRemove: boolean
 }) {
   const [cropMode, setCropMode] = useState(false)
+  const [cropOverlayVisible, setCropOverlayVisible] = useState(true)
   const [zoom, setZoom] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [loading, setLoading] = useState(false)
@@ -700,6 +701,9 @@ function SingleFrame({
               {/* Animated dashed border hint */}
               <div className="absolute inset-2 rounded-lg border-2 border-dashed border-white/30 pointer-events-none" style={{ animation: 'dashPulse 2s ease-in-out infinite' }}/>
             </div>
+          )}
+          {cropMode && frame.photo && cropOverlayVisible && (
+            <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', pointerEvents: 'none' }} />
           )}
           {cropMode && frame.photo && (
             <div className="absolute inset-0 pointer-events-none">
