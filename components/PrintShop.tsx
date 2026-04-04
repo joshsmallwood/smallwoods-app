@@ -507,15 +507,21 @@ export default function PrintShop() {
       )}
     </div>
   ) : (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 200, background: 'linear-gradient(135deg, #f8f5f0 0%, #f0ece4 100%)', borderRadius: 12, gap: 16, padding: 32, position: 'relative', overflow: 'hidden' }}>
-      {/* Decorative frame outline */}
-      <div style={{ width: '60%', paddingBottom: '80%', position: 'relative', border: '3px dashed #c8c0b8', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-          <div style={{ fontSize: 40 }}>✨</div>
-          <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#143639', textAlign: 'center', lineHeight: 1.3 }}>Your AI print<br/>appears here</p>
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 120, background: '#f5f0e8', borderRadius: 12, padding: 16, position: 'relative', overflow: 'hidden' }}>
+      {/* Proportional preview matching selected size */}
+      <div style={{
+        width: '70%', maxWidth: 280,
+        aspectRatio: `${selectedSize.widthIn} / ${selectedSize.heightIn}`,
+        border: '2px dashed #c8c0b8', borderRadius: 4,
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
+        background: 'rgba(255,255,255,0.6)',
+        transition: 'aspect-ratio 0.3s ease',
+      }}>
+        <div style={{ fontSize: 28 }}>✨</div>
+        <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: '#143639', textAlign: 'center' }}>Your print preview</p>
+        <span style={{ fontSize: 10, color: '#aaa', background: 'rgba(0,0,0,0.05)', padding: '2px 8px', borderRadius: 8 }}>{selectedSize.label}</span>
       </div>
-      <p style={{ margin: 0, fontSize: 12, color: '#aaa', textAlign: 'center', maxWidth: 200 }}>Describe your vision and tap Generate — ready to ship in 1–3 days</p>
+      <p style={{ margin: '8px 0 0', fontSize: 11, color: '#aaa', textAlign: 'center' }}>Generate or upload — ships in 1–3 days</p>
     </div>
   )
 
