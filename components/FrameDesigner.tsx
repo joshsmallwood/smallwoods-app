@@ -579,6 +579,7 @@ export default function FrameDesigner() {
   const [frames, setFrames] = useState<FrameItem[]>([makeFrame('f1')])
   const [activeId, setActiveId] = useState('f1')
   const [isRefill, setIsRefill] = useState(false)
+  const [showStylePanel, setShowStylePanel] = useState(false)
   const [reviewCount, setReviewCount] = useState(6494)
   const [starRating, setStarRating] = useState(4.74)
   const deliveryInfo = getDeliveryInfo()
@@ -993,14 +994,22 @@ export default function FrameDesigner() {
           ))}
         </div>
 
-        {/* Controls: Row 1 — size + color swatches + refill toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '2px 8px 2px', gap: 4 }}>
+        {/* Controls: Row 1 — size + Style button (FrameForest pattern: tap to open panel) */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '2px 8px 2px', gap: 6 }}>
           <SizeSelector selected={activeFrame.size} onSelect={(s) => updateFrame(activeId, { size: s })} />
-          <div style={{ display: 'flex', gap: 3, alignItems: 'center', marginLeft: 'auto' }}>
-            {COLORS.map(c => (
-              <ColorSwatch key={c.id} color={c} selected={activeFrame.color === c.id} onSelect={() => updateFrame(activeId, { color: c.id })} />
-            ))}
-          </div>
+          {/* Style button — shows selected color, opens panel on tap */}
+          <button
+            onClick={() => setShowStylePanel(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 44, borderRadius: 4, border: '1.5px solid #e5e7eb', background: 'white', cursor: 'pointer', marginLeft: 'auto', flexShrink: 0 }}
+            aria-label="Choose frame style"
+          >
+            {/* Mini swatch of currently selected color */}
+            <div style={{ width: 24, height: 24, borderRadius: 3, overflow: 'hidden', flexShrink: 0 }}>
+              <img src={COLORS.find(c => c.id === activeFrame.color)?.corner} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#143639' }}>{COLORS.find(c => c.id === activeFrame.color)?.label}</span>
+            <svg width="8" height="5" viewBox="0 0 10 6" fill="#143639"><path d="M5 6L0 0h10z"/></svg>
+          </button>
         </div>
         {/* Controls: Row 2 — mat + refill (secondary options) */}
         <div style={{ display: 'flex', alignItems: 'center', padding: '0 8px 4px', gap: 6 }}>
@@ -1017,6 +1026,52 @@ export default function FrameDesigner() {
           </button>
         </div>
       </div>
+
+      {/* ── Style Panel — FrameForest-style slide-up panel for color selection ── */}
+      {showStylePanel && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 9998, background: 'rgba(0,0,0,0.4)' }}
+          onClick={() => setShowStylePanel(false)}
+        >
+          <div
+            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'white', borderRadius: '20px 20px 0 0', padding: '16px 16px 32px' }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <span style={{ fontSize: 16, fontWeight: 800, color: '#1a1a1a' }}>Style</span>
+              <button
+                onClick={() => setShowStylePanel(false)}
+                style={{ background: '#143639', color: 'white', border: 'none', borderRadius: 8, padding: '6px 16px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+              >
+                Done
+              </button>
+            </div>
+            {/* Large swatches — FrameForest layout */}
+            <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 }}>
+              {COLORS.map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => { updateFrame(activeId, { color: c.id }); setShowStylePanel(false) }}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                    padding: '8px', borderRadius: 8, border: activeFrame.color === c.id ? '2.5px solid #143639' : '2px solid #e5e7eb',
+                    background: activeFrame.color === c.id ? '#f0faf5' : 'white',
+                    cursor: 'pointer', flexShrink: 0, minWidth: 72,
+                  }}
+                  aria-label={c.label}
+                  aria-pressed={activeFrame.color === c.id}
+                >
+                  <div style={{ width: 56, height: 56, borderRadius: 6, overflow: 'hidden' }}>
+                    <img src={c.corner} alt={c.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: activeFrame.color === c.id ? 800 : 600, color: activeFrame.color === c.id ? '#143639' : '#555' }}>{c.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── CTA Bar — full width, matches dev app exactly ── */}
       <div style={{ background: '#143639', padding: '6px 12px', paddingBottom: 'calc(6px + env(safe-area-inset-bottom, 0px))', display: 'flex', alignItems: 'center' }}>

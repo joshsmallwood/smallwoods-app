@@ -70,13 +70,23 @@ async function runTests(page, vp) {
   );
   assert(defaultSize?.includes('25'), `${tag} Default size is 25x17`, defaultSize || 'not found');
 
-  // T5: 4 color swatches visible and in viewport
+  // T5: Style button opens panel with 4 color swatches
+  // Open the style panel first
+  const styleBtn = await page.$('button[aria-label="Choose frame style"]');
+  if (styleBtn) {
+    await styleBtn.click();
+    await page.waitForTimeout(300);
+  }
   const swatches = await page.evaluate((vw) => {
-    const s = [...document.querySelectorAll('button[title]')].filter(b => ['Walnut','Oak','Black','White'].includes(b.getAttribute('title') || ''));
+    const s = [...document.querySelectorAll('button[aria-label]')].filter(b => ['Walnut','Oak','Black','White'].includes(b.getAttribute('aria-label') || ''));
     return { count: s.length, overflow: s.filter(b => b.getBoundingClientRect().right > vw + 2).length };
   }, vw);
-  assert(swatches.count === 4, `${tag} 4 color swatches present`, `found ${swatches.count}`);
-  assert(swatches.overflow === 0, `${tag} All swatches in viewport`, `overflow=${swatches.overflow}`);
+  assert(swatches.count === 4, `${tag} 4 color swatches in style panel`, `found ${swatches.count}`);
+  assert(swatches.overflow === 0, `${tag} All swatches visible in panel`, `overflow=${swatches.overflow}`);
+  // Close panel
+  const doneBtn = await page.$('button:has-text("Done")');
+  if (doneBtn) await doneBtn.click();
+  await page.waitForTimeout(200);
 
   // T6: Touch targets >= 44px (exempt "+ Frame" header utility)
   const small = await page.evaluate(() =>
@@ -118,10 +128,15 @@ async function runTests(page, vp) {
   await selectSize(page, '25×17');
   await page.waitForTimeout(300);
 
-  // T9: Color swatches update frame image
+  // T9: Color swatches update frame image (via style panel)
   for (const color of ['Black','White','Oak','Walnut']) {
+    // Open style panel
+    await page.evaluate(() => {
+      document.querySelector('button[aria-label="Choose frame style"]')?.click();
+    });
+    await page.waitForTimeout(200);
     const changed = await page.evaluate((c) => {
-      const btn = document.querySelector(`button[title="${c}"]`);
+      const btn = document.querySelector(`button[aria-label="${c}"]`);
       btn?.click(); return !!btn;
     }, color);
     await page.waitForTimeout(200);
