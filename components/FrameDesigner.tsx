@@ -169,8 +169,9 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
 
   const photoW = aspectW
   const photoH = aspectH
-  const maxDisplayW = containerSize.w * 0.90 - BORDER_PX * 2
-  const maxDisplayH = containerSize.h * 0.90 - BORDER_PX * 2
+  // Leave 24px breathing room on each side so border-image renders fully
+  const maxDisplayW = containerSize.w - 48 - BORDER_PX * 2
+  const maxDisplayH = containerSize.h - 32 - BORDER_PX * 2
   const scale = Math.min(maxDisplayW / photoW, maxDisplayH / photoH)
   const innerW = Math.round(photoW * scale)
   const innerH = Math.round(photoH * scale)
@@ -615,7 +616,7 @@ export default function FrameDesigner() {
       </div>
 
       {/* ── Canvas Area ── */}
-      <div data-canvas-area style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 8px', overflow: 'hidden', gap: 10, minHeight: 0, position: 'relative' }}>
+      <div data-canvas-area style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 8px', overflow: 'visible', gap: 10, minHeight: 0, position: 'relative' }}>
         {/* Floating banners — orientation mismatch + quality, bottom of canvas */}
         <div style={{ position: 'absolute', bottom: 6, left: 8, right: 8, zIndex: 20, display: 'flex', flexDirection: 'column', gap: 4, pointerEvents: 'none' }}>
           {orientMismatch && activeFrame.photo && (
