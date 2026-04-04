@@ -165,8 +165,8 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   // Scale frame to fill available space — container is max 480px wide, height depends on viewport
   const viewW = typeof window !== 'undefined' ? Math.min(window.innerWidth, 480) : 390
   const viewH = typeof window !== 'undefined' ? window.innerHeight : 844
-  const maxDisplayW = viewW * 0.65 - BORDER_PX * 2
-  const maxDisplayH = viewH * 0.72 - BORDER_PX * 2
+  const maxDisplayW = viewW * 0.80 - BORDER_PX * 2
+  const maxDisplayH = viewH * 0.76 - BORDER_PX * 2
   const scaleByW = maxDisplayW / photoW
   const scaleByH = maxDisplayH / photoH
   const scale = Math.min(scaleByW, scaleByH)
@@ -581,7 +581,7 @@ export default function FrameDesigner() {
         height: '100dvh',
         maxWidth: 480,
         margin: '0 auto',
-        background: '#d3d3d3',
+        background: '#b0aaa4',
         fontFamily: '"Poppins", sans-serif',
         overflow: 'hidden',
         position: 'relative',
