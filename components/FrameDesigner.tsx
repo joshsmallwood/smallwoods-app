@@ -28,13 +28,22 @@ interface SizeOption {
 }
 
 type MatOption = 'none' | 'standard'
-const MAT_PRICE = 8 // $8 for standard mat, verified from competitor pricing model
+const MAT_PRICE = 8
+
+type BorderDepth = 'none' | 'small' | 'medium' | 'large'
+const BORDER_DEPTHS: { id: BorderDepth; label: string; inches: number; desc: string }[] = [
+  { id: 'none',   label: 'No Border',  inches: 0,    desc: 'Edge to edge' },
+  { id: 'small',  label: 'Small',      inches: 0.25, desc: '1/4" white border' },
+  { id: 'medium', label: 'Medium',     inches: 0.5,  desc: '1/2" white border' },
+  { id: 'large',  label: 'Large',      inches: 1.0,  desc: '1" white border' },
+]
 
 interface FrameItem {
   id: string
   size: SizeOption
   color: ColorId
   mat: MatOption
+  border: BorderDepth
   photo: string | null
   orientation: 'portrait' | 'landscape'
   zoom: number
@@ -120,7 +129,7 @@ function naturalOrientation(size: SizeOption): 'portrait' | 'landscape' {
 }
 
 function makeFrame(id: string): FrameItem {
-  return { id, size: DEFAULT_SIZE, color: 'Stained', mat: 'none', photo: null, orientation: naturalOrientation(DEFAULT_SIZE), zoom: 1, offsetX: 0, offsetY: 0 }
+  return { id, size: DEFAULT_SIZE, color: 'Stained', mat: 'none', border: 'none', photo: null, orientation: naturalOrientation(DEFAULT_SIZE), zoom: 1, offsetX: 0, offsetY: 0 }
 }
 
 function getFrameImageUrl(size: SizeOption, color: ColorId): string {
@@ -376,12 +385,24 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
               }}
             />
           ) : (
-            // Gallery wall: clean placeholder (sample photos look broken at small sizes)
-            // Single frame: rotating sample photos
-            showGalleryRing
-              ? <SimplePlaceholder />
-              : <SamplePhotoRotator />
+            showGalleryRing ? <SimplePlaceholder /> : <SamplePhotoRotator />
           )}
+          {/* White border overlay — printed white border around photo */}
+          {frame.border !== 'none' && frame.photo && (() => {
+            const depth = BORDER_DEPTHS.find(b => b.id === frame.border)
+            if (!depth || depth.inches === 0) return null
+            // Convert inches to pixels based on frame size
+            const ppi = innerW / (frame.orientation === 'landscape' ? Math.max(frame.size.widthIn, frame.size.heightIn) : Math.min(frame.size.widthIn, frame.size.heightIn))
+            const borderPx = Math.round(depth.inches * ppi)
+            return (
+              <>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: borderPx, background: 'white', pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: borderPx, background: 'white', pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: borderPx, background: 'white', pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: borderPx, background: 'white', pointerEvents: 'none' }} />
+              </>
+            )
+          })()}
         </div>
       </div>
       {/* multiple allows picking several photos at once — each gets its own frame */}
@@ -597,6 +618,7 @@ export default function FrameDesigner() {
   const [isRefill, setIsRefill] = useState(false)
   const [showStylePanel, setShowStylePanel] = useState(false)
   const [showSizePanel, setShowSizePanel] = useState(false)
+  const [showBorderPanel, setShowBorderPanel] = useState(false)
   const [reviewCount, setReviewCount] = useState(6494)
   const [starRating, setStarRating] = useState(4.74)
   const deliveryInfo = getDeliveryInfo()
@@ -932,20 +954,22 @@ export default function FrameDesigner() {
           </div>
         )}
 
-        {/* 4 icon buttons — FrameForest style */}
+        {/* 6 icon buttons — Size, Style, Art, Frame, Mat, Clear */}
         <div style={{ display: 'flex', padding: '4px 8px 0' }}>
           {[
-            { label: 'Size', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>, action: () => setShowSizePanel(true) },
-            { label: 'Style', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>, action: () => setShowStylePanel(true) },
-            { label: 'Mat', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="2"/><rect x="6" y="6" width="12" height="12" rx="1"/></svg>, action: () => updateFrame(activeId, { mat: activeFrame.mat === 'none' ? 'standard' : 'none' }) },
-            { label: 'Clear', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>, action: clearPhoto },
+            { label: 'Size', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>, action: () => setShowSizePanel(true) },
+            { label: 'Style', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>, action: () => setShowStylePanel(true) },
+            { label: 'Art', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="#143639"><path d="M10.66 4.28L6.74 8.12V4.62l-.18.03C3.82 5.11 1.73 7.49 1.73 10.36c0 2.83 2.03 5.17 4.71 5.69v1.6C2.88 17.12.15 14.06.15 10.36.15 6.59 2.97 3.49 6.61 3.04l.14-.02V.36l3.91 3.92zM11.92 16.28c-1 .74-2.13 1.19-3.3 1.36v-1.6c.76-.14 1.49-.45 2.15-.9l1.15 1.14zM14.83 11.45c-.17 1.17-.63 2.3-1.37 3.28l-1.13-1.12c.45-.67.74-1.41.88-2.16h1.62zM13.46 5.98c.74.99 1.2 2.12 1.37 3.29h-1.6c-.14-.76-.44-1.5-.9-2.16l1.13-1.13z"/></svg>, action: rotateArt },
+            { label: 'Frame', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="#143639"><path d="M10.99 1.68C13.17 2.71 14.73 4.83 14.97 7.33h1C15.63 3.23 12.2 0 8 0L7.56.02l2.54 2.54.89-.88zM6.82 1.17c-.39-.39-1.03-.39-1.41 0L1.17 5.41c-.39.39-.39 1.03 0 1.41l8.01 8.01c.39.39 1.03.39 1.41 0l4.24-4.24c.39-.39.39-1.03 0-1.41L6.82 1.17zm3.07 12.96L1.87 6.11l4.24-4.24 8.01 8.01-4.23 4.25zM5.01 14.32c-2.18-1.03-3.74-3.15-3.98-5.66h-1C.37 12.77 3.81 16 8 16l.44-.02-2.54-2.54-.89.88z"/></svg>, action: rotateFrame },
+            { label: 'Mat', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={activeFrame.mat === 'standard' ? '#22c55e' : '#143639'} strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="2"/><rect x="6" y="6" width="12" height="12" rx="1"/></svg>, action: () => updateFrame(activeId, { mat: activeFrame.mat === 'none' ? 'standard' : 'none' }) },
+            { label: 'Clear', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>, action: clearPhoto },
           ].map(btn => (
             <button key={btn.label} onClick={btn.action}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, background: 'none', border: 'none', cursor: 'pointer', flex: 1, padding: '8px 4px', color: '#143639' }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, background: 'none', border: 'none', cursor: 'pointer', flex: 1, padding: '6px 2px', color: '#143639' }}
               aria-label={btn.label}
             >
-              {btn.icon}
-              <span style={{ fontSize: 11, fontWeight: 600 }}>{btn.label}</span>
+              <span style={{ height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{btn.icon}</span>
+              <span style={{ fontSize: 10, fontWeight: 600 }}>{btn.label}</span>
             </button>
           ))}
         </div>
@@ -1001,6 +1025,43 @@ export default function FrameDesigner() {
                 </button>
               ))}
             </div>
+            {/* Border depth section */}
+            {activeFrame.photo && (
+              <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #f0ece4' }}>
+                <p style={{ margin: '0 0 10px', fontSize: 13, fontWeight: 700, color: '#1a1a1a' }}>Print Border</p>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {BORDER_DEPTHS.map(bd => (
+                    <button
+                      key={bd.id}
+                      onClick={() => updateFrame(activeId, { border: bd.id })}
+                      style={{
+                        flex: 1, padding: '8px 4px', borderRadius: 8, border: activeFrame.border === bd.id ? '2.5px solid #143639' : '2px solid #e5e7eb',
+                        background: activeFrame.border === bd.id ? '#f0faf5' : 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                      }}
+                      aria-label={`Border ${bd.label}`}
+                      aria-pressed={activeFrame.border === bd.id}
+                    >
+                      {/* Visual preview of border depth */}
+                      <div style={{ width: 36, height: 36, border: '2px solid #143639', borderRadius: 2, position: 'relative', background: '#f5f0eb' }}>
+                        {bd.inches > 0 && (
+                          <div style={{
+                            position: 'absolute',
+                            inset: Math.round(bd.inches * 6),
+                            background: '#c8a060',
+                            borderRadius: 1,
+                          }} />
+                        )}
+                        {bd.inches === 0 && <div style={{ position: 'absolute', inset: 2, background: '#c8a060', borderRadius: 1 }} />}
+                      </div>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: activeFrame.border === bd.id ? '#143639' : '#555' }}>{bd.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <p style={{ margin: '6px 0 0', fontSize: 10, color: '#888' }}>
+                  {BORDER_DEPTHS.find(b => b.id === activeFrame.border)?.desc}
+                </p>
+              </div>
+            )}
             {/* Refill option at bottom of style panel */}
             <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #f0ece4' }}>
               <button onClick={() => { setIsRefill(v => !v); setShowStylePanel(false) }}
