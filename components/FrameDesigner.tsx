@@ -158,15 +158,17 @@ function SimplePlaceholder() {
 
 // Sample photos — single portraits/families only, not gallery wall scenes
 // These show what a customer's photo looks like inside ONE frame
+// VERIFIED SINGLE-FRAME PHOTOS ONLY — do not replace with gallery wall scenes
+// Each was visually checked on 2026-04-04. Must show ONE portrait/family, not multiple frames.
 const SAMPLE_PHOTOS = [
-  // Couple portrait — best single-frame photo
-  'https://cdn.shopify.com/s/files/1/1091/1314/files/laceyburgert_7217bd0e-cbbd-4bbc-9f2c-18ef9a38a8f4.jpg?v=1764101397&width=600',
-  // Family lifestyle
-  'https://cdn.shopify.com/s/files/1/1091/1314/files/220224Practicals_20.jpg?v=1764101397&width=600',
-  // Product hero — frame with photo
+  // ✅ Woman holding single large frame with 3 kids — shows product in use
   'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397&width=600',
-  // Family with kids
+  // ✅ Wedding portrait in single large frame at front door — emotional/personal
   'https://cdn.shopify.com/s/files/1/1091/1314/files/sweethomememories1-Copy_da4bc885-36fb-4cba-94a2-39b8bae83b7f.jpg?v=1764101397&width=600',
+  // ✅ Person holding single panoramic black frame with 3 kids — shows scale
+  'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS-BlackXL_ba652b45-37a3-4f18-8af8-d341b150f44a.jpg?v=1764101397&width=600',
+  // ✅ Same as first, rotated for variety
+  'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397&width=600',
 ]
 
 function SamplePhotoRotator() {
