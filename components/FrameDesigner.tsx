@@ -465,17 +465,17 @@ function PriceRow({ frames, isRefill }: { frames: FrameItem[]; isRefill: boolean
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, padding: '5px 16px', background: 'white', borderTop: '1px solid #f0ece4' }}>
       <div style={{ textAlign: 'center', flex: 1 }}>
         <div style={{ fontSize: 14, fontWeight: 600, color: '#bd7b57', textDecoration: 'line-through' }}>${fullTotal}</div>
-        <div style={{ fontSize: 9, color: '#999', fontWeight: 500 }}>Full Price</div>
+        <div style={{ fontSize: 11, color: '#888', fontWeight: 500 }}>Full Price</div>
       </div>
       <div style={{ width: 1, height: 28, background: '#e5e7eb' }} />
       <div style={{ textAlign: 'center', flex: 1 }}>
         <div style={{ fontSize: 15, fontWeight: 700, color: '#143639' }}>${saleTotal}</div>
-        <div style={{ fontSize: 9, color: '#999', fontWeight: 500 }}>Sale Price</div>
+        <div style={{ fontSize: 11, color: '#888', fontWeight: 500 }}>Sale Price</div>
       </div>
       <div style={{ width: 1, height: 28, background: '#e5e7eb' }} />
       <div style={{ textAlign: 'center', flex: 1 }}>
         <div style={{ fontSize: 20, fontWeight: 900, color: '#143639', lineHeight: 1 }}>${bundleTotal}</div>
-        <div style={{ fontSize: 9, color: '#888', fontWeight: 600 }}>Bundle Price</div>
+        <div style={{ fontSize: 11, color: '#555', fontWeight: 600 }}>Bundle Price</div>
       </div>
     </div>
   )
@@ -796,7 +796,7 @@ export default function FrameDesigner() {
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', flex: 1, minHeight: 44, padding: '4px 2px', justifyContent: 'center' }}
             >
               <span style={{ height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{btn.icon}</span>
-              <span style={{ fontSize: 9, fontWeight: 600, color: '#143639' }}>{btn.label}</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: '#143639' }}>{btn.label}</span>
             </button>
           ))}
         </div>
@@ -806,7 +806,7 @@ export default function FrameDesigner() {
           {/* Product type — matches dev app "Frames" dropdown pill */}
           <button
             onClick={() => setIsRefill(v => !v)}
-            style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 4, border: '1.5px solid #143639', background: isRefill ? '#143639' : 'white', color: isRefill ? 'white' : '#143639', fontSize: 11, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 10px', height: 44, borderRadius: 4, border: '1.5px solid #143639', background: isRefill ? '#143639' : 'white', color: isRefill ? 'white' : '#143639', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             <svg width="8" height="5" viewBox="0 0 10 6" fill={isRefill ? 'white' : '#143639'}><path d="M5 0L0 6h10z"/></svg>
             {isRefill ? 'Print Refill' : 'Frames'}
