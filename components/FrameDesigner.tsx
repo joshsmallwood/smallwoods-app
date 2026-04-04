@@ -827,8 +827,8 @@ export default function FrameDesigner() {
           disabled={adding}
           style={{
             width: '100%', padding: '14px 0',
-            background: added ? '#22c55e' : 'white',
-            color: '#143639', border: 'none', borderRadius: 6,
+            background: added ? '#22c55e' : '#143639',
+            color: 'white', border: 'none', borderRadius: 6,
             fontSize: 15, fontWeight: 800, cursor: 'pointer',
             transition: 'background 0.2s',
             letterSpacing: '0.01em',
