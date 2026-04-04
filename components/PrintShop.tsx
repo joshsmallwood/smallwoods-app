@@ -149,7 +149,7 @@ export default function PrintShop() {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateRows: 'auto 1fr auto auto',
+      gridTemplateRows: displayImage ? 'auto 1fr auto auto' : 'auto auto auto',
       height: '100dvh',
       maxWidth: 480,
       margin: '0 auto',
@@ -194,12 +194,12 @@ export default function PrintShop() {
         </div>
       </div>
 
-      {/* ── Canvas Preview ── */}
-      <div style={{ position: 'relative', background: '#f5f0e8', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', minHeight: 0 }}>
-        {displayImage ? (
+      {/* ── Canvas Preview — only shown when image exists ── */}
+      <div style={{ position: 'relative', background: '#f5f0e8', display: displayImage ? 'flex' : 'none', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', minHeight: 0 }}>
+        {displayImage && (
           <div style={{
             position: 'relative',
-            maxWidth: '85%', maxHeight: '90%',
+            maxWidth: '88%', maxHeight: '92%',
             borderRadius: 4,
             boxShadow: '0 8px 32px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.12)',
             overflow: 'hidden',
@@ -213,33 +213,10 @@ export default function PrintShop() {
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             />
           </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: 32 }}>
-            {mode === 'generate' ? (
-              <>
-                <div style={{ fontSize: 48 }}>✨</div>
-                <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#143639', textAlign: 'center' }}>
-                  Describe your print below
-                </p>
-                <p style={{ margin: 0, fontSize: 12, color: '#aaa', textAlign: 'center' }}>
-                  AI will generate a unique canvas print just for you
-                </p>
-              </>
-            ) : (
-              <button
-                onClick={() => fileRef.current?.click()}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, background: 'none', border: '2px dashed #d0ccc4', borderRadius: 16, padding: '40px 48px', cursor: 'pointer' }}
-              >
-                <span style={{ fontSize: 36 }}>📷</span>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#143639' }}>Tap to upload your photo</span>
-                <span style={{ fontSize: 11, color: '#aaa' }}>JPG, PNG or HEIC</span>
-              </button>
-            )}
-          </div>
         )}
 
-        {/* Generating overlay */}
-        {generationState === 'generating' && (
+        {/* Generating overlay — only shown when image exists and regenerating */}
+        {generationState === 'generating' && displayImage && (
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
             <div style={{ width: 48, height: 48, borderRadius: '50%', border: '4px solid #143639', borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite' }} />
             <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#143639' }}>Creating your print…</p>
@@ -318,20 +295,21 @@ export default function PrintShop() {
             </div>
           </div>
         ) : (
-          <div style={{ padding: '10px 14px 6px', display: 'flex', gap: 8, alignItems: 'center' }}>
-            <button
-              onClick={() => fileRef.current?.click()}
-              style={{ flex: 1, padding: '12px', background: '#f0ece4', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, color: '#143639', cursor: 'pointer' }}
-            >
-              {uploadedImage ? '↩ Change Photo' : '📷 Choose Photo'}
-            </button>
-            {uploadedImage && (
+          <div style={{ padding: '10px 14px 6px' }}>
+            {!uploadedImage ? (
               <button
-                onClick={() => setUploadedImage(null)}
-                style={{ padding: '12px 14px', background: 'none', border: '1px solid #e5e7eb', borderRadius: 10, fontSize: 13, color: '#888', cursor: 'pointer' }}
+                onClick={() => fileRef.current?.click()}
+                style={{ width: '100%', padding: '24px', background: '#f5f0e8', border: '2px dashed #c8c0b8', borderRadius: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, cursor: 'pointer' }}
               >
-                ✕
+                <span style={{ fontSize: 40 }}>📷</span>
+                <span style={{ fontSize: 15, fontWeight: 800, color: '#143639' }}>Tap to upload your photo</span>
+                <span style={{ fontSize: 12, color: '#aaa' }}>JPG · PNG · HEIC</span>
               </button>
+            ) : (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => fileRef.current?.click()} style={{ flex: 1, padding: '12px', background: '#f0ece4', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, color: '#143639', cursor: 'pointer' }}>↩ Change Photo</button>
+                <button onClick={() => setUploadedImage(null)} style={{ padding: '12px 14px', background: 'none', border: '1px solid #e5e7eb', borderRadius: 10, fontSize: 13, color: '#888', cursor: 'pointer' }}>✕</button>
+              </div>
             )}
           </div>
         )}
@@ -346,9 +324,10 @@ export default function PrintShop() {
             {selectedSize.label}
             <svg width="8" height="5" viewBox="0 0 10 6" fill="#143639"><path d="M5 6L0 0h10z"/></svg>
           </button>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            <span style={{ fontSize: 13, color: '#aaa', textDecoration: 'line-through' }}>${selectedSize.compareAt}</span>
-            <span style={{ fontSize: 20, fontWeight: 900, color: '#143639' }}>${discountedPrice}</span>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'baseline', gap: 5 }}>
+            <span style={{ fontSize: 11, color: '#aaa', textDecoration: 'line-through' }}>${selectedSize.price}</span>
+            <span style={{ fontSize: 18, fontWeight: 900, color: '#143639' }}>${discountedPrice}</span>
+            <span style={{ fontSize: 10, color: '#22c55e', fontWeight: 700 }}>35% off</span>
           </div>
         </div>
       </div>
@@ -381,9 +360,15 @@ export default function PrintShop() {
                 background: !prompt.trim() || generationState === 'generating' ? 'rgba(255,255,255,0.3)' : 'white',
                 color: !prompt.trim() || generationState === 'generating' ? 'rgba(20,54,57,0.5)' : '#143639',
                 border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 800, cursor: prompt.trim() ? 'pointer' : 'default', transition: 'all 0.15s',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               }}
             >
-              {generationState === 'generating' ? 'Generating…' : '✨ Generate My Print'}
+              {generationState === 'generating' ? (
+                <>
+                  <div style={{ width: 18, height: 18, borderRadius: '50%', border: '2.5px solid rgba(20,54,57,0.5)', borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite', flexShrink: 0 }} />
+                  <span>Creating your print…</span>
+                </>
+              ) : '✨ Generate My Print'}
             </button>
           )
         ) : (
