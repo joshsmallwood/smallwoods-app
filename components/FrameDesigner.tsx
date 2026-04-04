@@ -153,23 +153,25 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   const aspectW = isLandscape ? longerDim : shorterDim
   const aspectH = isLandscape ? shorterDim : longerDim
 
-  // Frame border via CSS border-image (same technique as dev app)
-  const framePadding = 14
+    const BORDER_PX = showRefill ? 0 : 10
   const containerRef = useRef<HTMLDivElement>(null)
+  const [containerSize, setContainerSize] = useState({ w: 340, h: 500 })
 
-  // Compute display size: fill available space, respecting aspect ratio
-  // Border stays fixed — only the photo interior scales
-  const BORDER_PX = showRefill ? 0 : 10 // matches dev app border-width exactly
+  useEffect(() => {
+    const el = containerRef.current?.closest('[data-canvas-area]') as HTMLElement | null
+    if (!el) return
+    const measure = () => setContainerSize({ w: el.clientWidth, h: el.clientHeight })
+    measure()
+    const obs = new ResizeObserver(measure)
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
   const photoW = aspectW
   const photoH = aspectH
-  // Scale frame to fill available space — container is max 480px wide, height depends on viewport
-  const viewW = typeof window !== 'undefined' ? Math.min(window.innerWidth, 480) : 390
-  const viewH = typeof window !== 'undefined' ? window.innerHeight : 844
-  const maxDisplayW = viewW * 0.80 - BORDER_PX * 2
-  const maxDisplayH = viewH * 0.76 - BORDER_PX * 2
-  const scaleByW = maxDisplayW / photoW
-  const scaleByH = maxDisplayH / photoH
-  const scale = Math.min(scaleByW, scaleByH)
+  const maxDisplayW = containerSize.w * 0.90 - BORDER_PX * 2
+  const maxDisplayH = containerSize.h * 0.90 - BORDER_PX * 2
+  const scale = Math.min(maxDisplayW / photoW, maxDisplayH / photoH)
   const innerW = Math.round(photoW * scale)
   const innerH = Math.round(photoH * scale)
 
@@ -581,7 +583,7 @@ export default function FrameDesigner() {
         height: '100dvh',
         maxWidth: 480,
         margin: '0 auto',
-        background: '#b0aaa4',
+        background: '#c8c4be',
         fontFamily: '"Poppins", sans-serif',
         overflow: 'hidden',
         position: 'relative',
