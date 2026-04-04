@@ -681,7 +681,15 @@ export default function FrameDesigner() {
       </div>
 
       {/* ── Canvas Area ── */}
-      <div data-canvas-area style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 8px', overflow: 'hidden', gap: 10, minHeight: 0, position: 'relative' }}>
+      <div data-canvas-area style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4px 8px', overflow: 'hidden', gap: 10, minHeight: 0, position: 'relative' }}>
+        {/* Gallery Wall header — only shown with multiple frames */}
+        {frames.length > 1 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Gallery Wall</span>
+            <span style={{ fontSize: 10, color: '#aaa' }}>·</span>
+            <span style={{ fontSize: 11, color: '#aaa' }}>{frames.length} Frames</span>
+          </div>
+        )}
         {/* Floating banners — orientation mismatch + quality, bottom of canvas */}
         <div style={{ position: 'absolute', bottom: 6, left: 8, right: 8, zIndex: 20, display: 'flex', flexDirection: 'column', gap: 4, pointerEvents: 'none' }}>
           {orientMismatch && activeFrame.photo && (
@@ -697,10 +705,11 @@ export default function FrameDesigner() {
             </div>
           )}
         </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, flex: 1, width: '100%' }}>
         {frames.map(frame => (
           <div
             key={frame.id}
-            style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', maxWidth: frames.length === 1 ? '100%' : `${Math.floor(92 / frames.length)}%` }}
+            style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
             onClick={() => setActiveId(frame.id)}
           >
             <FrameCanvas
@@ -733,6 +742,7 @@ export default function FrameDesigner() {
             )}
           </div>
         ))}
+        </div>
       </div>
 
       {/* ── Price Row ── */}
