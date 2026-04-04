@@ -826,56 +826,51 @@ export default function FrameDesigner() {
     <div
       style={{
         display: 'grid',
-        gridTemplateRows: '44px auto 1fr auto auto 52px',
+        // FrameForest layout: header | frame fills screen | 4 icon buttons | price+cart
+        gridTemplateRows: 'auto 1fr auto auto',
         height: '100dvh',
         maxWidth: 480,
         margin: '0 auto',
-        // Warm wall texture — makes frames look like they're hanging on a real wall
         background: '#f5f0e8',
-        backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(200,180,140,0.12) 0%, transparent 70%), repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(0,0,0,0.012) 28px,rgba(0,0,0,0.012) 29px),repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(0,0,0,0.008) 28px,rgba(0,0,0,0.008) 29px)',
+        backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(200,180,140,0.12) 0%, transparent 70%), repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(0,0,0,0.012) 28px,rgba(0,0,0,0.012) 29px)',
         fontFamily: '"Poppins", sans-serif',
         overflow: 'hidden',
         position: 'relative',
       }}
     >
-      {/* ── Top Bar ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', background: 'white', borderBottom: '1px solid #e5e7eb' }}>
-        <a href="https://www.smallwoodhome.com" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#143639', letterSpacing: '0.08em' }}>SMALLWOODHOME</span>
-        </a>
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-          {frames.length < 3 && (
-            <button
-              onClick={addFrame}
-              style={{ fontSize: 12, fontWeight: 700, color: '#143639', background: 'none', border: '1px solid #143639', borderRadius: 4, padding: '10px', minHeight: 44, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-            >
-              + Frame
-            </button>
-          )}
-          <a href="https://www.smallwoodhome.com/cart" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2">
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#143639' }}>Cart</span>
+      {/* ── Header — minimal, FrameForest style ── */}
+      <div style={{ background: 'white', borderBottom: '1px solid #f0ece4' }}>
+        {/* Brand row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px' }}>
+          <a href="https://www.smallwoodhome.com" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+            <span style={{ fontSize: 15, fontWeight: 800, color: '#143639', letterSpacing: '0.05em' }}>SMALLWOODHOME</span>
           </a>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            {frames.length < 3 && (
+              <button onClick={addFrame} style={{ fontSize: 12, fontWeight: 700, color: '#143639', background: 'none', border: '1.5px solid #143639', borderRadius: 6, padding: '6px 12px', cursor: 'pointer' }}>
+                + Frame
+              </button>
+            )}
+            <a href="https://www.smallwoodhome.com/cart" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2">
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+            </a>
+          </div>
         </div>
-      </div>
-
-      {/* ── Social proof + delivery bar ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '3px 14px', background: 'white', borderBottom: '1px solid #f0ece4', flexShrink: 0 }}>
-        {/* Reviews */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ color: '#F59E0B', fontSize: 11, letterSpacing: '-0.5px' }}>★★★★★</span>
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#1a1a1a' }}>{starRating.toFixed(2)}</span>
-          <span style={{ fontSize: 10, color: '#888' }}>({reviewCount.toLocaleString()})</span>
-        </div>
-        {/* Delivery */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ fontSize: 11 }}>📦</span>
-          <span style={{ fontSize: 10, fontWeight: 600, color: '#143639' }}>{deliveryInfo.shipsText}</span>
-          <span style={{ fontSize: 10, color: '#888' }}>· arrives {deliveryInfo.arrivesText}</span>
+        {/* Reviews + delivery — single compact line */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ color: '#F59E0B', fontSize: 10, letterSpacing: '-0.5px' }}>★★★★★</span>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#1a1a1a' }}>{starRating.toFixed(2)}</span>
+            <span style={{ fontSize: 10, color: '#aaa' }}>({reviewCount.toLocaleString()})</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <span style={{ fontSize: 10, fontWeight: 600, color: '#143639' }}>{deliveryInfo.shipsText}</span>
+            <span style={{ fontSize: 10, color: '#aaa' }}>· {deliveryInfo.arrivesText}</span>
+          </div>
         </div>
       </div>
 
@@ -944,174 +939,85 @@ export default function FrameDesigner() {
         </div>
       </div>
 
-      {/* ── Price Row ── */}
-      <PriceRow frames={frames} isRefill={isRefill} />
+      {/* Price row moved into controls area */}
 
-      {/* ── Controls ── */}
-      <div style={{ background: 'white', borderTop: '1px solid #e5e7eb' }}>
+      {/* ── Bottom Controls — FrameForest layout ── */}
+      <div style={{ background: 'white', borderTop: '1px solid #f0ece4' }}>
 
-        {/* Gallery wall active frame indicator */}
+        {/* Gallery wall frame indicator */}
         {frames.length > 1 && (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '4px 0 0' }}>
             {frames.map((f, i) => (
-              <button
-                key={f.id}
-                onClick={() => setActiveId(f.id)}
-                style={{
-                  width: f.id === activeId ? 20 : 8, height: 8,
-                  borderRadius: 4, border: 'none', cursor: 'pointer',
-                  background: f.id === activeId ? '#143639' : '#d1d5db',
-                  transition: 'all 0.2s', padding: 0, flexShrink: 0,
-                }}
+              <button key={f.id} onClick={() => setActiveId(f.id)}
+                style={{ width: f.id === activeId ? 20 : 8, height: 8, borderRadius: 4, border: 'none', cursor: 'pointer', background: f.id === activeId ? '#143639' : '#d1d5db', transition: 'all 0.2s', padding: 0 }}
                 aria-label={`Select frame ${i + 1}`}
               />
             ))}
-            <span style={{ fontSize: 10, color: '#888', fontWeight: 500 }}>
-              Frame {frames.findIndex(f => f.id === activeId) + 1} of {frames.length}
-            </span>
+            <span style={{ fontSize: 10, color: '#888' }}>Frame {frames.findIndex(f => f.id === activeId) + 1} of {frames.length}</span>
           </div>
         )}
 
-        {/* Toolbar — 5 buttons full width, 44px touch targets */}
-        <div style={{ display: 'flex', padding: '0 8px' }}>
+        {/* 4 icon buttons — FrameForest style */}
+        <div style={{ display: 'flex', padding: '4px 8px 0' }}>
           {[
-            {
-              label: 'Add',
-              icon: (
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <rect width="18" height="18" fill="#143639" rx="2"/>
-                  <path fill="white" d="M8 3h2v12H8z"/>
-                  <path fill="white" d="M15 8v2H3V8z"/>
-                </svg>
-              ),
-              action: () => { const f = document.querySelector<HTMLInputElement>('input[type="file"]'); f?.click() }
-            },
-            {
-              label: 'Art',
-              icon: (
-                <svg width="15" height="18" viewBox="0 0 15 18" fill="#143639">
-                  <path d="M10.66 4.28L6.74 8.12V4.62l-.18.03C3.82 5.11 1.73 7.49 1.73 10.36c0 2.83 2.03 5.17 4.71 5.69v1.6C2.88 17.12.15 14.06.15 10.36.15 6.59 2.97 3.49 6.61 3.04l.14-.02V.36l3.91 3.92zM11.92 16.28c-1 .74-2.13 1.19-3.3 1.36v-1.6c.76-.14 1.49-.45 2.15-.9l1.15 1.14zM14.83 11.45c-.17 1.17-.63 2.3-1.37 3.28l-1.13-1.12c.45-.67.74-1.41.88-2.16h1.62zM13.46 5.98c.74.99 1.2 2.12 1.37 3.29h-1.6c-.14-.76-.44-1.5-.9-2.16l1.13-1.13z"/>
-                </svg>
-              ),
-              action: rotateArt
-            },
-            {
-              label: 'Frame',
-              icon: (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path fill="#143639" d="M10.99 1.68C13.17 2.71 14.73 4.83 14.97 7.33h1C15.63 3.23 12.2 0 8 0L7.56.02l2.54 2.54.89-.88zM6.82 1.17c-.39-.39-1.03-.39-1.41 0L1.17 5.41c-.39.39-.39 1.03 0 1.41l8.01 8.01c.39.39 1.03.39 1.41 0l4.24-4.24c.39-.39.39-1.03 0-1.41L6.82 1.17zm3.07 12.96L1.87 6.11l4.24-4.24 8.01 8.01-4.23 4.25zM5.01 14.32c-2.18-1.03-3.74-3.15-3.98-5.66h-1C.37 12.77 3.81 16 8 16l.44-.02-2.54-2.54-.89.88z"/>
-                </svg>
-              ),
-              action: rotateFrame
-            },
-            {
-              label: 'Clear',
-              icon: (
-                <svg width="14" height="17" viewBox="0 0 16 17" fill="#143639">
-                  <path d="M12.5 16.91H3.35c-.31 0-.58-.24-.61-.54L1.87 2.9H.6C.26 2.9 0 2.65 0 2.33s.26-.57.6-.57h4.9V1.0C5.5.44 5.98 0 6.55 0h2.75c.58 0 1.05.44 1.05 1v.75h4.9c.33 0 .6.25.6.57s-.26.57-.6.57h-1.28L12.5 16.91zm-8.6-1.14h7.99l.85-12.88H3.06l.85 12.88zm2.78-13.9h2.47V.76H6.69v1.11z"/>
-                </svg>
-              ),
-              action: clearPhoto
-            },
-            {
-              label: 'Info',
-              icon: (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="12" y1="8" x2="12" y2="12"/>
-                  <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-              ),
-              action: () => {}
-            },
+            { label: 'Size', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>, action: () => setShowSizePanel(true) },
+            { label: 'Style', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>, action: () => setShowStylePanel(true) },
+            { label: 'Mat', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="2"/><rect x="6" y="6" width="12" height="12" rx="1"/></svg>, action: () => updateFrame(activeId, { mat: activeFrame.mat === 'none' ? 'standard' : 'none' }) },
+            { label: 'Clear', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#143639" strokeWidth="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>, action: clearPhoto },
           ].map(btn => (
-            <button
-              key={btn.label}
-              onClick={btn.action}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', flex: 1, minHeight: 44, padding: '4px 2px', justifyContent: 'center' }}
+            <button key={btn.label} onClick={btn.action}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, background: 'none', border: 'none', cursor: 'pointer', flex: 1, padding: '8px 4px', color: '#143639' }}
+              aria-label={btn.label}
             >
-              <span style={{ height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{btn.icon}</span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#143639' }}>{btn.label}</span>
+              {btn.icon}
+              <span style={{ fontSize: 11, fontWeight: 600 }}>{btn.label}</span>
             </button>
           ))}
         </div>
 
-        {/* Controls: Row 1 — size + Style button (FrameForest pattern: tap to open panel) */}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '2px 8px 2px', gap: 6 }}>
-          <SizeSelectorButton selected={activeFrame.size} onClick={() => setShowSizePanel(true)} />
-          {/* Style button — shows selected color, opens panel on tap */}
-          <button
-            onClick={() => setShowStylePanel(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', height: 44, borderRadius: 4, border: '1.5px solid #e5e7eb', background: 'white', cursor: 'pointer', marginLeft: 'auto', flexShrink: 0 }}
-            aria-label="Choose frame style"
-          >
-            {/* Mini swatch of currently selected color */}
-            <div style={{ width: 24, height: 24, borderRadius: 3, overflow: 'hidden', flexShrink: 0 }}>
-              <img src={COLORS.find(c => c.id === activeFrame.color)?.corner} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </div>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#143639' }}>{COLORS.find(c => c.id === activeFrame.color)?.label}</span>
-            <svg width="8" height="5" viewBox="0 0 10 6" fill="#143639"><path d="M5 6L0 0h10z"/></svg>
-          </button>
-        </div>
-        {/* Controls: Row 2 — mat + refill (secondary options) */}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '0 8px 4px', gap: 6 }}>
-          <div style={{ display: 'flex', background: '#f0ece4', borderRadius: 16, padding: 2, gap: 1 }}>
-            <button onClick={() => updateFrame(activeId, { mat: 'none' })} style={{ padding: '0 10px', height: 44, borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 700, background: activeFrame.mat === 'none' ? '#143639' : 'transparent', color: activeFrame.mat === 'none' ? 'white' : '#888', whiteSpace: 'nowrap' }} aria-label="No mat">No Mat</button>
-            <button onClick={() => updateFrame(activeId, { mat: 'standard' })} style={{ padding: '0 10px', height: 44, borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 700, background: activeFrame.mat === 'standard' ? '#143639' : 'transparent', color: activeFrame.mat === 'standard' ? 'white' : '#888', whiteSpace: 'nowrap' }} aria-label="Mat +$8">Mat +$8</button>
+        {/* Full Summary row — FrameForest style */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '6px 14px 4px' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a' }}>Full Summary</span>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'baseline', gap: 8 }}>
+            <span style={{ fontSize: 13, color: '#aaa', textDecoration: 'line-through' }}>${fullTotal}</span>
+            <span style={{ fontSize: 20, fontWeight: 900, color: '#143639' }}>${discountedTotal}</span>
           </div>
-          <button
-            onClick={() => setIsRefill(v => !v)}
-            aria-label={isRefill ? 'Switch to Frame' : 'Switch to Print Refill'}
-            style={{ height: 44, padding: '0 10px', borderRadius: 22, border: '1px solid #e5e7eb', background: isRefill ? '#f0faf5' : 'transparent', color: isRefill ? '#143639' : '#bbb', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
-          >
-            {isRefill ? '↩ Back to Frame' : 'Have a frame? Order a print refill'}
-          </button>
         </div>
+
+        {/* Summary details — hidden by default, expandable */}
+        {frames.length === 1 && !isRefill && (
+          <div style={{ padding: '0 14px 4px' }}>
+            <span style={{ fontSize: 11, color: '#888' }}>Add another frame and </span>
+            <span style={{ fontSize: 11, color: '#143639', fontWeight: 700 }}>save ${fullTotal - discountedTotal} total</span>
+          </div>
+        )}
+
+        {/* Mat indicator when selected */}
+        {activeFrame.mat === 'standard' && (
+          <div style={{ padding: '0 14px 4px' }}>
+            <span style={{ fontSize: 11, color: '#143639', fontWeight: 600 }}>✓ Mat (+$8) selected</span>
+          </div>
+        )}
       </div>
 
-      {/* ── Size Panel — FrameForest-style slide-up panel ── */}
+      {/* ── Size Panel ── */}
       {showSizePanel && (
-        <SizePanel
-          selected={activeFrame.size}
-          onSelect={(s) => { updateFrame(activeId, { size: s }); setShowSizePanel(false) }}
-          onClose={() => setShowSizePanel(false)}
-        />
+        <SizePanel selected={activeFrame.size} onSelect={(s) => { updateFrame(activeId, { size: s }); setShowSizePanel(false) }} onClose={() => setShowSizePanel(false)} />
       )}
 
-      {/* ── Style Panel — FrameForest-style slide-up panel for color selection ── */}
+      {/* ── Style Panel ── */}
       {showStylePanel && (
-        <div
-          style={{ position: 'fixed', inset: 0, zIndex: 9998, background: 'rgba(0,0,0,0.4)' }}
-          onClick={() => setShowStylePanel(false)}
-        >
-          <div
-            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'white', borderRadius: '20px 20px 0 0', padding: '16px 16px 32px' }}
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Header */}
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9998, background: 'rgba(0,0,0,0.4)' }} onClick={() => setShowStylePanel(false)}>
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'white', borderRadius: '20px 20px 0 0', padding: '16px 16px 32px' }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <span style={{ fontSize: 16, fontWeight: 800, color: '#1a1a1a' }}>Style</span>
-              <button
-                onClick={() => setShowStylePanel(false)}
-                style={{ background: '#143639', color: 'white', border: 'none', borderRadius: 8, padding: '6px 16px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
-              >
-                Done
-              </button>
+              <button onClick={() => setShowStylePanel(false)} style={{ background: '#143639', color: 'white', border: 'none', borderRadius: 8, padding: '6px 16px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Done</button>
             </div>
-            {/* Large swatches — FrameForest layout */}
             <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 }}>
               {COLORS.map(c => (
-                <button
-                  key={c.id}
-                  onClick={() => { updateFrame(activeId, { color: c.id }); setShowStylePanel(false) }}
-                  style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-                    padding: '8px', borderRadius: 8, border: activeFrame.color === c.id ? '2.5px solid #143639' : '2px solid #e5e7eb',
-                    background: activeFrame.color === c.id ? '#f0faf5' : 'white',
-                    cursor: 'pointer', flexShrink: 0, minWidth: 72,
-                  }}
-                  aria-label={c.label}
-                  aria-pressed={activeFrame.color === c.id}
+                <button key={c.id} onClick={() => { updateFrame(activeId, { color: c.id }); setShowStylePanel(false) }}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '8px', borderRadius: 8, border: activeFrame.color === c.id ? '2.5px solid #143639' : '2px solid #e5e7eb', background: activeFrame.color === c.id ? '#f0faf5' : 'white', cursor: 'pointer', flexShrink: 0, minWidth: 72 }}
+                  aria-label={c.label} aria-pressed={activeFrame.color === c.id}
                 >
                   <div style={{ width: 56, height: 56, borderRadius: 6, overflow: 'hidden' }}>
                     <img src={c.corner} alt={c.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -1120,25 +1026,27 @@ export default function FrameDesigner() {
                 </button>
               ))}
             </div>
+            {/* Refill option at bottom of style panel */}
+            <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #f0ece4' }}>
+              <button onClick={() => { setIsRefill(v => !v); setShowStylePanel(false) }}
+                style={{ width: '100%', padding: '10px', background: isRefill ? '#f0faf5' : 'transparent', border: '1px solid #e5e7eb', borderRadius: 8, color: '#888', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                aria-label={isRefill ? 'Switch to Frame' : 'Switch to Print Refill'}
+              >
+                {isRefill ? '↩ Switch back to Framed print' : '📄 Have a frame? Order a print refill instead'}
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* ── CTA Bar — full width, matches dev app exactly ── */}
-      <div style={{ background: '#143639', padding: '6px 12px', paddingBottom: 'calc(6px + env(safe-area-inset-bottom, 0px))', display: 'flex', alignItems: 'center' }}>
+      {/* ── Add to Cart button ── */}
+      <div style={{ background: '#143639', padding: '8px 14px', paddingBottom: 'calc(8px + env(safe-area-inset-bottom, 0px))' }}>
         <button
           onClick={hasAnyPhoto ? handleAddToCart : () => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
           disabled={adding}
-          style={{
-            width: '100%', padding: '14px 0',
-            background: added ? '#22c55e' : '#143639',
-            color: 'white', border: 'none', borderRadius: 6,
-            fontSize: 15, fontWeight: 800, cursor: 'pointer',
-            transition: 'background 0.2s',
-            letterSpacing: '0.01em',
-          }}
+          style={{ width: '100%', padding: '14px 0', background: added ? '#22c55e' : '#3d6b5e', color: 'white', border: 'none', borderRadius: 8, fontSize: 16, fontWeight: 800, cursor: 'pointer', transition: 'background 0.2s' }}
         >
-          {adding ? 'Adding…' : added ? '✓ Added!' : hasAnyPhoto ? `Add to Cart — $${discountedTotal}` : 'Upload Photos'}
+          {adding ? 'Adding…' : added ? '✓ Added!' : hasAnyPhoto ? `$${discountedTotal} — Add to Cart` : 'Upload Photos'}
         </button>
       </div>
 
