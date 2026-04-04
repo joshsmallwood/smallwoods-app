@@ -540,13 +540,13 @@ export default function PrintShop() {
           </a>
         </div>
 
-        {/* Image preview — always shown, placeholder when empty */}
-        <div style={{ flex: '1 1 auto', padding: '8px 12px', minHeight: 120, position: 'relative' }}>
+        {/* Image preview — always shown, capped height on mobile */}
+        <div style={{ flex: displayImage ? '1 1 auto' : '0 0 auto', padding: '8px 12px', minHeight: 100, maxHeight: displayImage ? 'unset' : '35vh', position: 'relative' }}>
           {imagePanel}
         </div>
 
         {/* Controls — always shown, fills remaining space */}
-        <div style={{ flex: displayImage ? '0 0 auto' : '1 1 auto', overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', paddingTop: displayImage ? 0 : 8 }}>
+        <div style={{ flex: '0 0 auto', overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
           {controlsPanel}
         </div>
       </div>
