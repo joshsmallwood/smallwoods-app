@@ -316,7 +316,9 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
           lineHeight: 0,
           boxSizing: 'content-box',
           position: 'relative',
-          background: '#3d2010', // matches walnut dark tone
+          background: '#3d2010',
+          // Hanging frame drop shadow
+          filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.22)) drop-shadow(0 2px 6px rgba(0,0,0,0.14))',
         }}
       >
         {/* Photo area */}
@@ -678,7 +680,9 @@ export default function FrameDesigner() {
         height: '100dvh',
         maxWidth: 480,
         margin: '0 auto',
-        background: '#ffffff',
+        // Warm wall texture — makes frames look like they're hanging on a real wall
+        background: '#f5f0e8',
+        backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(200,180,140,0.12) 0%, transparent 70%), repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(0,0,0,0.012) 28px,rgba(0,0,0,0.012) 29px),repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(0,0,0,0.008) 28px,rgba(0,0,0,0.008) 29px)',
         fontFamily: '"Poppins", sans-serif',
         overflow: 'hidden',
         position: 'relative',
