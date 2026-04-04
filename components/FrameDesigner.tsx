@@ -137,6 +137,20 @@ function getPrice(frame: FrameItem, isRefill: boolean) {
 
 // ─── Sub-components ─────────────────────────────────────────────────────────
 
+// Clean placeholder for gallery wall frames — no sample photos at small sizes
+function SimplePlaceholder() {
+  return (
+    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, background: '#f8f5f0' }}>
+      <svg width="20" height="16" viewBox="0 0 28 22" fill="none" stroke="#143639" strokeWidth="1.8" opacity="0.5">
+        <rect x="1" y="5" width="26" height="16" rx="2"/>
+        <circle cx="14" cy="13" r="4"/>
+        <path d="M9 5V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1"/>
+      </svg>
+      <p style={{ margin: 0, fontSize: 9, fontWeight: 600, color: '#143639', opacity: 0.6 }}>Add Photo</p>
+    </div>
+  )
+}
+
 const SAMPLE_PHOTOS = [
   'https://cdn.shopify.com/s/files/1/1091/1314/files/63A4970-2_b44b42d1-4e90-45f9-8479-046771313de6.jpg?v=1764101397&width=600',
   'https://cdn.shopify.com/s/files/1/1091/1314/files/SmallwoodKids-3M_310829a1-d49a-4c9e-bfca-2d6bf9e21509.jpg?v=1764101397&width=600',
@@ -368,7 +382,11 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
               }}
             />
           ) : (
-            <SamplePhotoRotator />
+            // Gallery wall: clean placeholder (sample photos look broken at small sizes)
+            // Single frame: rotating sample photos
+            showGalleryRing
+              ? <SimplePlaceholder />
+              : <SamplePhotoRotator />
           )}
         </div>
       </div>
