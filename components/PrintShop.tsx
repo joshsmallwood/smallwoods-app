@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback, useEffect } from 'react'
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -98,6 +98,7 @@ function getViewerCount(): number {
 export default function PrintShop() {
   const [mode, setMode] = useState<Mode>('generate')
   const [material, setMaterial] = useState<Material>('canvas')
+  const [addFrame, setAddFrame] = useState(false)
   const [reviewCount] = useState(6570)
   const [starRating] = useState(4.74)
   const shipText = getShipText()
@@ -117,6 +118,28 @@ export default function PrintShop() {
   const refImageRef = useRef<HTMLInputElement>(null)
   const [referenceImage, setReferenceImage] = useState<string | null>(null)
   const [referenceThumb, setReferenceThumb] = useState<string | null>(null)
+
+  // Phase 3.1: Persistence
+  React.useEffect(() => {
+    try {
+      const savedHistory = localStorage.getItem('ps_gen_history')
+      if (savedHistory) {
+        const parsed = JSON.parse(savedHistory)
+        if (parsed.length > 0) {
+          setGenerationHistory(parsed)
+          setCurrentImage(parsed[0].imageDataUrl)
+        }
+      }
+    } catch (e) { console.error('Failed to load history', e) }
+  }, [])
+
+  React.useEffect(() => {
+    if (generationHistory.length > 0) {
+      try {
+        localStorage.setItem('ps_gen_history', JSON.stringify(generationHistory.slice(0, 3)))
+      } catch (e) { console.error('Failed to save history', e) }
+    }
+  }, [generationHistory])
 
   const discountedPrice = Math.round(selectedSize.price * (1 - DISCOUNT))
   const displayImage = mode === 'generate' ? currentImage : uploadedImage
@@ -212,6 +235,9 @@ export default function PrintShop() {
           style: style || null,
           referenceImageUsed: !!referenceImage,
           sessionId: typeof window !== 'undefined' ? (window as any).__ps_session || crypto.randomUUID() : null,
+          properties: {
+            'Floating Frame': addFrame ? 'Walnut' : 'None'
+          },
         }),
       })
       const storeData = await storeRes.json()
@@ -402,6 +428,32 @@ export default function PrintShop() {
         ))}
       </div>
 
+      {/* Frame Upsell (Phase 1.2) */}
+      {material === 'canvas' && (
+        <div style={{ padding: '0 16px 16px' }}>
+          <div 
+            onClick={() => setAddFrame(!addFrame)}
+            style={{ 
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', 
+              background: addFrame ? '#F2F6F5' : '#F9F7F4', borderRadius: 12, cursor: 'pointer',
+              border: addFrame ? '1.5px solid #1B5A4A' : '1.5px solid transparent', transition: 'all 0.2s'
+            }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ 
+                width: 20, height: 20, borderRadius: 4, border: '2px solid #1B5A4A', 
+                display: 'flex', alignItems: 'center', justifyContent: 'center', background: addFrame ? '#1B5A4A' : 'transparent'
+              }}>
+                {addFrame && <svg width="12" height="9" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 4L4.5 7.5L11 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              </div>
+              <div>
+                <span style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#1B5A4A' }}>Add Walnut Floating Frame</span>
+                <span style={{ display: 'block', fontSize: 11, color: '#888' }}>Handcrafted solid wood (+ ${selectedSize.price > 100 ? 40 : 30})</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Size Grid */}
       <div style={{ padding: '0 16px 24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 12 }}>
@@ -410,8 +462,9 @@ export default function PrintShop() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
           {CANVAS_SIZES.slice(0, 8).map(size => {
-            const discountedPrice = Math.round(size.price * 0.65);
-            const originalPrice = size.price;
+            const frameCost = addFrame && material === 'canvas' ? (size.price > 100 ? 40 : 30) : 0;
+            const discountedPrice = Math.round(size.price * 0.65) + frameCost;
+            const originalPrice = size.price + frameCost;
             return (
               <button key={size.id} onClick={() => setSelectedSize(size)} style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
