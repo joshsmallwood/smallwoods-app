@@ -243,8 +243,9 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   const BORDER_PX = showRefill ? 0 : galleryBorderPx
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Use stable window dimensions — avoids stale state lag on orientation change
-  const vw = typeof window !== 'undefined' ? Math.min(window.innerWidth, 480) : 390
+  // Use actual container width — the grid is maxWidth:480 but centered, so actual width = min(vw, 480)
+  // For frame sizing, use the viewport width so frames never exceed the screen edge
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 390
   const vh = typeof window !== 'undefined' ? window.innerHeight : 844
   // Canvas height = viewport minus fixed rows: 44 header + 28 social bar + 40 price + 84 controls + 52 CTA = 248
   const canvasH = Math.max(200, vh - 248)
@@ -408,7 +409,17 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
           )}
         </div>
       </div>
-      <input ref={fileRef} type="file" accept="image/*,.heic,.heif" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
+      {/* multiple allows picking several photos at once — each gets its own frame */}
+      <input ref={fileRef} type="file" accept="image/*,.heic,.heif" className="hidden" multiple onChange={(e) => {
+        const files = Array.from(e.target.files || [])
+        if (files.length === 0) return
+        // First file goes to current frame
+        handleFile(files[0])
+        // Additional files bubble up via custom event so parent can create new frames
+        if (files.length > 1) {
+          e.target.dispatchEvent(new CustomEvent('multiupload', { detail: { files: files.slice(1) }, bubbles: true }))
+        }
+      }} />
     </div>
   )
 }
@@ -469,7 +480,7 @@ function ColorSwatch({ color, selected, onSelect }: { color: typeof COLORS[0]; s
       onClick={onSelect}
       title={color.label}
       style={{
-        width: 44, height: 44, padding: 4, border: 'none', background: 'none',
+        width: 38, height: 38, padding: 3, border: 'none', background: 'none',
         cursor: 'pointer', borderRadius: 3, flexShrink: 0,
         outline: selected ? `2px solid #143639` : '2px solid transparent',
         outlineOffset: 1,
@@ -530,22 +541,34 @@ function PriceRow({ frames, isRefill }: { frames: FrameItem[]; isRefill: boolean
   // Refills don't get 35% bundle discount — price is already final
   const bundleTotal = isRefill ? saleTotal : Math.round(saleTotal * (1 - DISCOUNT))
 
+  const saving = fullTotal - bundleTotal
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, padding: '5px 16px', background: 'white', borderTop: '1px solid #f0ece4' }}>
-      <div style={{ textAlign: 'center', flex: 1 }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#bd7b57', textDecoration: 'line-through' }}>${fullTotal}</div>
-        <div style={{ fontSize: 11, color: '#888', fontWeight: 500 }}>Full Price</div>
+    <div style={{ background: 'white', borderTop: '1px solid #f0ece4', padding: '5px 14px' }}>
+      {/* Main price row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0 }}>
+        <div style={{ textAlign: 'center', flex: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#bd7b57', textDecoration: 'line-through' }}>${fullTotal}</div>
+          <div style={{ fontSize: 9, color: '#aaa', fontWeight: 500 }}>retail</div>
+        </div>
+        <div style={{ width: 1, height: 26, background: '#e5e7eb' }} />
+        <div style={{ textAlign: 'center', flex: 1 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#143639' }}>${saleTotal}</div>
+          <div style={{ fontSize: 9, color: '#aaa', fontWeight: 500 }}>your price</div>
+        </div>
+        <div style={{ width: 1, height: 26, background: '#e5e7eb' }} />
+        <div style={{ textAlign: 'center', flex: 1 }}>
+          <div style={{ fontSize: 20, fontWeight: 900, color: '#143639', lineHeight: 1 }}>${bundleTotal}</div>
+          <div style={{ fontSize: 9, color: '#143639', fontWeight: 700 }}>with 35% off</div>
+        </div>
       </div>
-      <div style={{ width: 1, height: 28, background: '#e5e7eb' }} />
-      <div style={{ textAlign: 'center', flex: 1 }}>
-        <div style={{ fontSize: 15, fontWeight: 700, color: '#143639' }}>${saleTotal}</div>
-        <div style={{ fontSize: 11, color: '#888', fontWeight: 500 }}>Sale Price</div>
-      </div>
-      <div style={{ width: 1, height: 28, background: '#e5e7eb' }} />
-      <div style={{ textAlign: 'center', flex: 1 }}>
-        <div style={{ fontSize: 20, fontWeight: 900, color: '#143639', lineHeight: 1 }}>${bundleTotal}</div>
-        <div style={{ fontSize: 11, color: '#555', fontWeight: 600 }}>Bundle Price</div>
-      </div>
+      {/* Upsell nudge — only when single frame, not in refill mode */}
+      {frames.length === 1 && !isRefill && (
+        <div style={{ textAlign: 'center', marginTop: 3 }}>
+          <span style={{ fontSize: 10, color: '#888' }}>Add another frame and </span>
+          <span style={{ fontSize: 10, color: '#143639', fontWeight: 700 }}>save ${saving} total</span>
+        </div>
+      )}
     </div>
   )
 }
@@ -599,6 +622,39 @@ export default function FrameDesigner() {
       document.removeEventListener('photozoom', handleCanvasEvent)
     }
   }, [handleCanvasEvent])
+
+  // Handle multi-photo upload — extra files beyond the first create new frames
+  const handleMultiUpload = useCallback((e: Event) => {
+    const ce = e as CustomEvent
+    const extraFiles: File[] = ce.detail?.files || []
+    extraFiles.slice(0, 2).forEach((file) => { // max 3 frames total
+      const id = `f${counterRef.current++}`
+      const newFrame: FrameItem = makeFrame(id)
+      setFrames(prev => {
+        if (prev.length >= 3) return prev // cap at 3
+        return [...prev, newFrame]
+      })
+      // Load the photo into the new frame
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        const dataUrl = ev.target?.result as string
+        const img = new window.Image()
+        img.onload = () => {
+          const px = img.naturalWidth * img.naturalHeight
+          const quality = px >= 150*150*300*300/10000 ? 'excellent' : px >= 100*100 ? 'good' : 'low'
+          setFrames(prev => prev.map(f => f.id === id ? { ...f, photo: dataUrl, photoQuality: quality, photoW: img.naturalWidth, photoH: img.naturalHeight } : f))
+          setActiveId(id)
+        }
+        img.src = dataUrl
+      }
+      reader.readAsDataURL(file)
+    })
+  }, [])
+
+  useEffect(() => {
+    document.addEventListener('multiupload', handleMultiUpload)
+    return () => document.removeEventListener('multiupload', handleMultiUpload)
+  }, [handleMultiUpload])
 
   const updateFrame = (id: string, patch: Partial<FrameItem>) => {
     setFrames(prev => prev.map(f => {
@@ -937,33 +993,21 @@ export default function FrameDesigner() {
           ))}
         </div>
 
-        {/* Bottom row: [Frames▾] [25x17▾] [swatch][swatch][swatch][swatch] — exact match to dev app */}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '2px 8px 4px', gap: 4 }}>
-          {/* Product type — matches dev app "Frames" dropdown pill */}
-          <button
-            onClick={() => setIsRefill(v => !v)}
-            style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 10px', height: 44, borderRadius: 4, border: '1.5px solid #143639', background: isRefill ? '#143639' : 'white', color: isRefill ? 'white' : '#143639', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
-          >
-            <svg width="8" height="5" viewBox="0 0 10 6" fill={isRefill ? 'white' : '#143639'}><path d="M5 0L0 6h10z"/></svg>
-            {isRefill ? 'Print Refill' : 'Frames'}
-          </button>
+        {/* Bottom row — CLEAN: size, wood color, mat toggle. No confusing product type button */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '2px 8px 6px', gap: 4, overflow: 'hidden' }}>
           {/* Size selector */}
           <SizeSelector selected={activeFrame.size} onSelect={(s) => updateFrame(activeId, { size: s })} />
-          {/* Mat toggle — No Mat / Standard */}
+          {/* Mat toggle */}
           <div style={{ display: 'flex', background: '#f0ece4', borderRadius: 16, padding: 2, gap: 1, flexShrink: 0 }}>
-            <button
-              onClick={() => updateFrame(activeId, { mat: 'none' })}
-              style={{ padding: '0 7px', height: 40, borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 700, background: activeFrame.mat === 'none' ? '#143639' : 'transparent', color: activeFrame.mat === 'none' ? 'white' : '#888', whiteSpace: 'nowrap' }}
-              aria-label="No mat"
-            >No Mat</button>
-            <button
-              onClick={() => updateFrame(activeId, { mat: 'standard' })}
-              style={{ padding: '0 7px', height: 40, borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 700, background: activeFrame.mat === 'standard' ? '#143639' : 'transparent', color: activeFrame.mat === 'standard' ? 'white' : '#888', whiteSpace: 'nowrap' }}
-              aria-label="Standard mat +$8"
-            >Mat +$8</button>
+            <button onClick={() => updateFrame(activeId, { mat: 'none' })} style={{ padding: '0 8px', height: 44, borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 700, background: activeFrame.mat === 'none' ? '#143639' : 'transparent', color: activeFrame.mat === 'none' ? 'white' : '#888', whiteSpace: 'nowrap' }} aria-label="No mat">No Mat</button>
+            <button onClick={() => updateFrame(activeId, { mat: 'standard' })} style={{ padding: '0 8px', height: 44, borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 700, background: activeFrame.mat === 'standard' ? '#143639' : 'transparent', color: activeFrame.mat === 'standard' ? 'white' : '#888', whiteSpace: 'nowrap' }} aria-label="Mat +$8">Mat +$8</button>
           </div>
-          {/* 4 color swatches — fixed size, always all visible, right-aligned with padding */}
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginLeft: 'auto', paddingRight: 4 }}>
+          {/* Print Refill toggle — only shown as subtle text link, not a confusing button */}
+          {isRefill && (
+            <span style={{ fontSize: 10, color: '#143639', fontWeight: 700, flexShrink: 0 }}>Print Refill</span>
+          )}
+          {/* 4 color swatches */}
+          <div style={{ display: 'flex', gap: 3, alignItems: 'center', marginLeft: 'auto', paddingRight: 4 }}>
             {COLORS.map(c => (
               <ColorSwatch key={c.id} color={c} selected={activeFrame.color === c.id} onSelect={() => updateFrame(activeId, { color: c.id })} />
             ))}
