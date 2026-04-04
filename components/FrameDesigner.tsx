@@ -127,6 +127,50 @@ function getPrice(frame: FrameItem, isRefill: boolean) {
 
 // ─── Sub-components ─────────────────────────────────────────────────────────
 
+const SAMPLE_PHOTOS = [
+  'https://cdn.shopify.com/s/files/1/1091/1314/files/63A4970-2_b44b42d1-4e90-45f9-8479-046771313de6.jpg?v=1764101397&width=600',
+  'https://cdn.shopify.com/s/files/1/1091/1314/files/SmallwoodKids-3M_310829a1-d49a-4c9e-bfca-2d6bf9e21509.jpg?v=1764101397&width=600',
+  'https://cdn.shopify.com/s/files/1/1091/1314/files/laceyburgert_7217bd0e-cbbd-4bbc-9f2c-18ef9a38a8f4.jpg?v=1764101397&width=600',
+  'https://cdn.shopify.com/s/files/1/1091/1314/files/20200312-DrCulver_9fd36e38-7b6d-4758-b6cd-c680d813b789.jpg?v=1764101397&width=600',
+]
+
+function SamplePhotoRotator() {
+  const [idx, setIdx] = useState(0)
+  const [visible, setVisible] = useState(true)
+  useEffect(() => {
+    const t = setInterval(() => {
+      setVisible(false)
+      setTimeout(() => { setIdx(i => (i + 1) % SAMPLE_PHOTOS.length); setVisible(true) }, 400)
+    }, 4000)
+    return () => clearInterval(t)
+  }, [])
+  return (
+    <>
+      {SAMPLE_PHOTOS.map((src, i) => (
+        <img key={src} src={src} alt="Sample" draggable={false}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
+            opacity: i === idx ? (visible ? 1 : 0) : 0, transition: 'opacity 0.4s ease',
+            pointerEvents: 'none', filter: 'brightness(0.88) saturate(1.1)' }}
+        />
+      ))}
+      {/* "SAMPLE" badge */}
+      <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.4)', color: 'white', fontSize: 8, fontWeight: 700, padding: '2px 6px', borderRadius: 10, letterSpacing: '0.08em', textTransform: 'uppercase', pointerEvents: 'none' }}>Sample</div>
+      {/* Upload CTA overlay */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.65), transparent)', padding: '16px 12px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, pointerEvents: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="12" height="10" viewBox="0 0 28 22" fill="none" stroke="#143639" strokeWidth="2">
+              <rect x="1" y="5" width="26" height="16" rx="2"/><circle cx="14" cy="13" r="4"/><path d="M9 5V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </div>
+          <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: 'white' }}>Tap to Add Your Photo</p>
+        </div>
+        <p style={{ margin: 0, fontSize: 9, color: 'rgba(255,255,255,0.7)' }}>JPG, PNG or HEIC</p>
+      </div>
+    </>
+  )
+}
+
 function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOrientMismatch, showGalleryRing }: {
   frame: FrameItem
   onPhotoChange: (photo: string | null, quality: 'excellent' | 'good' | 'low', photoW: number, photoH: number) => void
@@ -310,15 +354,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
               }}
             />
           ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-              <svg width="28" height="22" viewBox="0 0 28 22" fill="none" stroke="#143639" strokeWidth="1.5">
-                <rect x="1" y="5" width="26" height="16" rx="2"/>
-                <circle cx="14" cy="13" r="4"/>
-                <path d="M9 5V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1"/>
-              </svg>
-              <p style={{ fontSize: 11, fontWeight: 600, color: '#143639' }}>Add Photo</p>
-              <p style={{ fontSize: 9, color: '#888' }}>JPG, PNG or HEIC</p>
-            </div>
+            <SamplePhotoRotator />
           )}
         </div>
       </div>
@@ -586,7 +622,7 @@ export default function FrameDesigner() {
         margin: '0 auto',
         background: '#c8c4be',
         fontFamily: '"Poppins", sans-serif',
-        overflow: 'clip',
+        overflow: 'hidden',
         position: 'relative',
       }}
     >
