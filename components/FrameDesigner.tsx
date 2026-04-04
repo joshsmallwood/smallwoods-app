@@ -291,7 +291,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
           lineHeight: 0,
           boxSizing: 'content-box',
           position: 'relative',
-          background: 'transparent',
+          background: '#2a1a0a', // dark wood tone — semi-transparent edge pixels blend dark, no inner glow
         }}
       >
         {/* Photo area */}
