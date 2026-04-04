@@ -5,7 +5,7 @@ import { useState, useRef, useCallback } from 'react'
 // ── Types ──────────────────────────────────────────────────────────────────
 
 type Mode = 'generate' | 'upload'
-type Material = 'canvas' | 'foam_core' | 'photo_paper'
+type Material = 'canvas' | 'foam_core' | 'photo_paper' | 'coroplast'
 type Style = 'photorealistic' | 'watercolor' | 'oil' | 'abstract' | 'minimalist' | 'vintage'
 type GenerationState = 'idle' | 'generating' | 'success' | 'error' | 'blocked'
 
@@ -53,9 +53,10 @@ const STYLES: { id: Style; label: string; emoji: string }[] = [
 ]
 
 const MATERIALS: { id: Material; label: string; desc: string; emoji: string }[] = [
-  { id: 'canvas',      label: 'Canvas',      desc: 'Gallery-wrapped, ready to hang', emoji: '🖼️' },
-  { id: 'foam_core',   label: 'Foam Core',   desc: 'Lightweight, modern finish',     emoji: '⬛' },
-  { id: 'photo_paper', label: 'Photo Paper', desc: 'Gloss or matte photo print',     emoji: '📄' },
+  { id: 'canvas',      label: 'Canvas',      desc: 'Gallery-wrapped, ready to hang',   emoji: '🖼️' },
+  { id: 'foam_core',   label: 'Foam Core',   desc: 'Lightweight, modern finish',       emoji: '⬛' },
+  { id: 'photo_paper', label: 'Photo Paper', desc: 'Gloss or matte photo print',       emoji: '📄' },
+  { id: 'coroplast',   label: 'Coroplast',   desc: 'Corrugated plastic, weather-proof', emoji: '🪧' },
 ]
 
 const SHOPIFY_STORE = 'https://smallwoodhome.com'
@@ -103,6 +104,9 @@ export default function PrintShop() {
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+  const refImageRef = useRef<HTMLInputElement>(null)
+  const [referenceImage, setReferenceImage] = useState<string | null>(null)
+  const [referenceThumb, setReferenceThumb] = useState<string | null>(null)
 
   const discountedPrice = Math.round(selectedSize.price * (1 - DISCOUNT))
   const displayImage = mode === 'generate' ? currentImage : uploadedImage
@@ -118,7 +122,7 @@ export default function PrintShop() {
       const res = await fetch('/api/printshop/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: prompt.trim(), style, aspectRatio: selectedSize.aspectRatio }),
+        body: JSON.stringify({ prompt: prompt.trim(), style, aspectRatio: selectedSize.aspectRatio, referenceImageBase64: referenceImage || undefined }),
       })
       const data = await res.json()
 
@@ -135,6 +139,18 @@ export default function PrintShop() {
       setErrorMessage('Connection issue. Please try again.')
     }
   }, [prompt, style, selectedSize, isGenerating])
+
+  const handleRefImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string
+      setReferenceImage(dataUrl) // full base64 for API
+      setReferenceThumb(dataUrl) // thumbnail preview
+    }
+    reader.readAsDataURL(file)
+  }
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -217,8 +233,35 @@ export default function PrintShop() {
             ))}
           </div>
 
-          {/* Prompt */}
+          {/* Prompt + reference image */}
           <div style={{ padding: '0 16px 10px' }}>
+            {/* Reference image attachment */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <button
+                onClick={() => refImageRef.current?.click()}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '6px 12px', borderRadius: 8,
+                  border: referenceThumb ? '2px solid #143639' : '1.5px dashed #c8c0b8',
+                  background: referenceThumb ? '#f0faf5' : '#f8f5f0',
+                  cursor: 'pointer', fontSize: 11, fontWeight: 700, color: '#143639',
+                }}
+              >
+                <span>📎</span>
+                <span>{referenceThumb ? 'Reference attached' : 'Attach reference photo'}</span>
+              </button>
+              {referenceThumb && (
+                <>
+                  <div style={{ width: 36, height: 36, borderRadius: 6, overflow: 'hidden', flexShrink: 0, border: '1px solid #e5e7eb' }}>
+                    <img src={referenceThumb} alt="Reference" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <button
+                    onClick={() => { setReferenceImage(null); setReferenceThumb(null) }}
+                    style={{ background: 'none', border: 'none', color: '#888', fontSize: 16, cursor: 'pointer', padding: '0 4px' }}
+                  >✕</button>
+                </>
+              )}
+            </div>
             <textarea
               value={prompt}
               onChange={e => { setPrompt(e.target.value); if (generationState !== 'idle') setGenerationState('idle') }}
@@ -505,6 +548,7 @@ export default function PrintShop() {
       )}
 
       <input ref={fileRef} type="file" accept="image/*,.heic,.heif" style={{ display: 'none' }} onChange={handleUpload} />
+      <input ref={refImageRef} type="file" accept="image/*,.heic,.heif" style={{ display: 'none' }} onChange={handleRefImage} />
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg) } }
