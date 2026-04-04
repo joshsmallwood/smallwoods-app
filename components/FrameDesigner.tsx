@@ -165,8 +165,8 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   // Scale frame to fill available space — container is max 480px wide, height depends on viewport
   const viewW = typeof window !== 'undefined' ? Math.min(window.innerWidth, 480) : 390
   const viewH = typeof window !== 'undefined' ? window.innerHeight : 844
-  const maxDisplayW = viewW * 0.70 - BORDER_PX * 2
-  const maxDisplayH = viewH * 0.68 - BORDER_PX * 2
+  const maxDisplayW = viewW * 0.65 - BORDER_PX * 2
+  const maxDisplayH = viewH * 0.72 - BORDER_PX * 2
   const scaleByW = maxDisplayW / photoW
   const scaleByH = maxDisplayH / photoH
   const scale = Math.min(scaleByW, scaleByH)
@@ -581,7 +581,7 @@ export default function FrameDesigner() {
         height: '100dvh',
         maxWidth: 480,
         margin: '0 auto',
-        background: '#d8d2cc',
+        background: '#d3d3d3',
         fontFamily: '"Poppins", sans-serif',
         overflow: 'hidden',
         position: 'relative',
@@ -613,7 +613,7 @@ export default function FrameDesigner() {
       </div>
 
       {/* ── Canvas Area ── */}
-      <div data-canvas-area style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 16px', overflow: 'hidden', gap: 10, minHeight: 0 }}>
+      <div data-canvas-area style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 8px', overflow: 'hidden', gap: 10, minHeight: 0 }}>
         {frames.map(frame => (
           <div
             key={frame.id}
@@ -771,29 +771,21 @@ export default function FrameDesigner() {
         )}
       </div>
 
-      {/* ── CTA Bar — full width, matches dev app ── */}
-      <div style={{ background: '#143639', display: 'flex', alignItems: 'center', padding: '0 12px', gap: 10 }}>
+      {/* ── CTA Bar — full width, matches dev app exactly ── */}
+      <div style={{ background: '#143639', padding: '8px 12px', paddingBottom: 'calc(8px + env(safe-area-inset-bottom, 0px))' }}>
         <button
           onClick={hasAnyPhoto ? handleAddToCart : () => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
           disabled={adding}
           style={{
-            flex: 1, padding: '16px 0',
+            width: '100%', padding: '14px 0',
             background: added ? '#22c55e' : 'white',
-            color: '#143639', border: 'none', borderRadius: 8,
+            color: '#143639', border: 'none', borderRadius: 6,
             fontSize: 15, fontWeight: 800, cursor: 'pointer',
             transition: 'background 0.2s',
+            letterSpacing: '0.01em',
           }}
         >
           {adding ? 'Adding…' : added ? '✓ Added!' : hasAnyPhoto ? `Add to Cart — $${discountedTotal}` : 'Upload Photos'}
-        </button>
-        <button
-          onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
-          style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 8, padding: '13px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 }}
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-            <circle cx="12" cy="13" r="4"/>
-          </svg>
         </button>
       </div>
 
