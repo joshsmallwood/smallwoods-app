@@ -27,10 +27,14 @@ interface SizeOption {
   frameSku: string
 }
 
+type MatOption = 'none' | 'standard'
+const MAT_PRICE = 8 // $8 for standard mat, verified from competitor pricing model
+
 interface FrameItem {
   id: string
   size: SizeOption
   color: ColorId
+  mat: MatOption
   photo: string | null
   orientation: 'portrait' | 'landscape'
   zoom: number
@@ -116,7 +120,7 @@ function naturalOrientation(size: SizeOption): 'portrait' | 'landscape' {
 }
 
 function makeFrame(id: string): FrameItem {
-  return { id, size: DEFAULT_SIZE, color: 'Stained', photo: null, orientation: naturalOrientation(DEFAULT_SIZE), zoom: 1, offsetX: 0, offsetY: 0 }
+  return { id, size: DEFAULT_SIZE, color: 'Stained', mat: 'none', photo: null, orientation: naturalOrientation(DEFAULT_SIZE), zoom: 1, offsetX: 0, offsetY: 0 }
 }
 
 function getFrameImageUrl(size: SizeOption, color: ColorId): string {
@@ -132,7 +136,8 @@ function getVariantId(size: SizeOption, color: ColorId, isRefill: boolean): numb
 }
 
 function getPrice(frame: FrameItem, isRefill: boolean) {
-  return isRefill ? frame.size.refillPrice : frame.size.price
+  const base = isRefill ? frame.size.refillPrice : frame.size.price
+  return base + (frame.mat === 'standard' ? MAT_PRICE : 0)
 }
 
 // ─── Sub-components ─────────────────────────────────────────────────────────
@@ -241,8 +246,8 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   // Use stable window dimensions — avoids stale state lag on orientation change
   const vw = typeof window !== 'undefined' ? Math.min(window.innerWidth, 480) : 390
   const vh = typeof window !== 'undefined' ? window.innerHeight : 844
-  // Canvas height = viewport minus fixed rows: 44 header + 40 price + 84 controls + 52 CTA = 220
-  const canvasH = Math.max(200, vh - 220)
+  // Canvas height = viewport minus fixed rows: 44 header + 28 social bar + 40 price + 84 controls + 52 CTA = 248
+  const canvasH = Math.max(200, vh - 248)
   const count = frameCount || 1
   const photoW = aspectW
   const photoH = aspectH
@@ -486,6 +491,39 @@ function ColorSwatch({ color, selected, onSelect }: { color: typeof COLORS[0]; s
   )
 }
 
+
+// ── Delivery date utility ─────────────────────────────────────────────────
+function getDeliveryInfo(): { shipsText: string; arrivesText: string } {
+  const now = new Date()
+  const ct = new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+  const hour = ct.getHours()
+  const day = ct.getDay() // 0=Sun,6=Sat
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
+  // Ships: before 3pm CT weekday = today, else next business day
+  let shipDate = new Date(ct)
+  if (day === 0) { shipDate.setDate(shipDate.getDate() + 1) } // Sun → Mon
+  else if (day === 6) { shipDate.setDate(shipDate.getDate() + 2) } // Sat → Mon
+  else if (hour >= 15) { // after 3pm → next biz day
+    shipDate.setDate(shipDate.getDate() + 1)
+    if (shipDate.getDay() === 6) shipDate.setDate(shipDate.getDate() + 2)
+    if (shipDate.getDay() === 0) shipDate.setDate(shipDate.getDate() + 1)
+  }
+  const shipsToday = shipDate.getDate() === ct.getDate()
+  const shipsText = shipsToday ? 'Ships today' : `Ships ${dayNames[shipDate.getDay()]}`
+
+  // Arrives: +3 business days from ship date
+  let arriveDate = new Date(shipDate)
+  let added = 0
+  while (added < 3) {
+    arriveDate.setDate(arriveDate.getDate() + 1)
+    if (arriveDate.getDay() !== 0 && arriveDate.getDay() !== 6) added++
+  }
+  const arrivesText = `${dayNames[arriveDate.getDay()]} ${monthNames[arriveDate.getMonth()]} ${arriveDate.getDate()}`
+  return { shipsText, arrivesText }
+}
+
 function PriceRow({ frames, isRefill }: { frames: FrameItem[]; isRefill: boolean }) {
   const fullTotal = frames.reduce((s, f) => s + f.size.compareAt, 0)
   const saleTotal = frames.reduce((s, f) => s + getPrice(f, isRefill), 0)
@@ -518,6 +556,19 @@ export default function FrameDesigner() {
   const [frames, setFrames] = useState<FrameItem[]>([makeFrame('f1')])
   const [activeId, setActiveId] = useState('f1')
   const [isRefill, setIsRefill] = useState(false)
+  const [reviewCount, setReviewCount] = useState(6494)
+  const [starRating, setStarRating] = useState(4.74)
+  const deliveryInfo = getDeliveryInfo()
+
+  useEffect(() => {
+    fetch('/api/stats')
+      .then(r => r.json())
+      .then(d => {
+        if (d.reviewCount > 0) setReviewCount(d.reviewCount)
+        if (d.starRating > 0) setStarRating(d.starRating)
+      })
+      .catch(() => {})
+  }, [])
   const [showOrderSummary, setShowOrderSummary] = useState(false)
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
@@ -676,7 +727,7 @@ export default function FrameDesigner() {
     <div
       style={{
         display: 'grid',
-        gridTemplateRows: '44px 1fr auto auto 52px',
+        gridTemplateRows: '44px auto 1fr auto auto 52px',
         height: '100dvh',
         maxWidth: 480,
         margin: '0 auto',
@@ -710,6 +761,22 @@ export default function FrameDesigner() {
             </svg>
             <span style={{ fontSize: 11, fontWeight: 600, color: '#143639' }}>Cart</span>
           </a>
+        </div>
+      </div>
+
+      {/* ── Social proof + delivery bar ── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '3px 14px', background: 'white', borderBottom: '1px solid #f0ece4', flexShrink: 0 }}>
+        {/* Reviews */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ color: '#F59E0B', fontSize: 11, letterSpacing: '-0.5px' }}>★★★★★</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#1a1a1a' }}>{starRating.toFixed(2)}</span>
+          <span style={{ fontSize: 10, color: '#888' }}>({reviewCount.toLocaleString()})</span>
+        </div>
+        {/* Delivery */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ fontSize: 11 }}>📦</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: '#143639' }}>{deliveryInfo.shipsText}</span>
+          <span style={{ fontSize: 10, color: '#888' }}>· arrives {deliveryInfo.arrivesText}</span>
         </div>
       </div>
 
@@ -882,6 +949,19 @@ export default function FrameDesigner() {
           </button>
           {/* Size selector */}
           <SizeSelector selected={activeFrame.size} onSelect={(s) => updateFrame(activeId, { size: s })} />
+          {/* Mat toggle — No Mat / Standard */}
+          <div style={{ display: 'flex', background: '#f0ece4', borderRadius: 16, padding: 2, gap: 1, flexShrink: 0 }}>
+            <button
+              onClick={() => updateFrame(activeId, { mat: 'none' })}
+              style={{ padding: '0 7px', height: 40, borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 700, background: activeFrame.mat === 'none' ? '#143639' : 'transparent', color: activeFrame.mat === 'none' ? 'white' : '#888', whiteSpace: 'nowrap' }}
+              aria-label="No mat"
+            >No Mat</button>
+            <button
+              onClick={() => updateFrame(activeId, { mat: 'standard' })}
+              style={{ padding: '0 7px', height: 40, borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 700, background: activeFrame.mat === 'standard' ? '#143639' : 'transparent', color: activeFrame.mat === 'standard' ? 'white' : '#888', whiteSpace: 'nowrap' }}
+              aria-label="Standard mat +$8"
+            >Mat +$8</button>
+          </div>
           {/* 4 color swatches — fixed size, always all visible, right-aligned with padding */}
           <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginLeft: 'auto', paddingRight: 4 }}>
             {COLORS.map(c => (
