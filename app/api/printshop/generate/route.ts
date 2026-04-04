@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyDLIHqbWRtmf55pU9C4jJKdRb9sctbTw8A'
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyCbPdM4mJePyIBomhw0I7YoB8ZE4AAxAdY'
 const MODEL = 'gemini-3.1-flash-image-preview'
 
 const STYLE_MODIFIERS: Record<string, string> = {
