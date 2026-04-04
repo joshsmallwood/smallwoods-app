@@ -316,7 +316,7 @@ export default function PrintShop() {
         )}
 
         {/* Controls — always shown, fills remaining space */}
-        <div style={{ flex: displayImage ? '0 0 auto' : '1 1 auto', overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: displayImage ? 'flex-start' : 'center' }}>
+        <div style={{ flex: displayImage ? '0 0 auto' : '1 1 auto', overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', paddingTop: displayImage ? 0 : 8 }}>
           {controlsPanel}
         </div>
       </div>
@@ -344,7 +344,7 @@ export default function PrintShop() {
           </div>
 
           {/* Right: controls panel */}
-          <div style={{ background: 'white', borderLeft: '1px solid #f0ece4', height: '100%', overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{ background: 'white', borderLeft: '1px solid #f0ece4', height: '100%', overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', paddingTop: 16 }}>
             {controlsPanel}
           </div>
         </div>
