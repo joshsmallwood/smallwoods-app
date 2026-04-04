@@ -615,7 +615,22 @@ export default function FrameDesigner() {
       </div>
 
       {/* ── Canvas Area ── */}
-      <div data-canvas-area style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 8px', overflow: 'hidden', gap: 10, minHeight: 0 }}>
+      <div data-canvas-area style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 8px', overflow: 'hidden', gap: 10, minHeight: 0, position: 'relative' }}>
+        {/* Floating banners — orientation mismatch + quality, bottom of canvas */}
+        <div style={{ position: 'absolute', bottom: 6, left: 8, right: 8, zIndex: 20, display: 'flex', flexDirection: 'column', gap: 4, pointerEvents: 'none' }}>
+          {orientMismatch && activeFrame.photo && (
+            <div style={{ background: 'rgba(254,243,199,0.97)', borderRadius: 8, border: '1px solid #f59e0b', padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 8, pointerEvents: 'auto', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+              <span style={{ fontSize: 10, color: '#92400e', fontWeight: 600, flex: 1 }}>🔄 Photo fits better in {orientMismatch}</span>
+              <button onClick={() => { updateFrame(activeId, { orientation: orientMismatch }); setOrientMismatch(null) }} style={{ background: '#f59e0b', color: 'white', border: 'none', borderRadius: 5, padding: '3px 8px', fontSize: 10, fontWeight: 800, cursor: 'pointer' }}>Rotate</button>
+              <button onClick={() => setOrientMismatch(null)} style={{ background: 'none', border: 'none', color: '#92400e', fontSize: 14, cursor: 'pointer', lineHeight: 1 }}>×</button>
+            </div>
+          )}
+          {activeFrame.photoQuality === 'low' && activeFrame.photo && (
+            <div style={{ background: 'rgba(254,226,226,0.97)', borderRadius: 8, border: '1px solid #fca5a5', padding: '6px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', pointerEvents: 'auto' }}>
+              <p style={{ margin: 0, fontSize: 10, color: '#991b1b', fontWeight: 600 }}>⚠️ Low resolution{activeFrame.photoW ? ` (${activeFrame.photoW}×${activeFrame.photoH}px)` : ''} — may appear blurry. Use original camera photos.</p>
+            </div>
+          )}
+        </div>
         {frames.map(frame => (
           <div
             key={frame.id}
@@ -654,45 +669,7 @@ export default function FrameDesigner() {
       <PriceRow frames={frames} isRefill={isRefill} />
 
       {/* ── Controls ── */}
-      <div style={{ background: 'white', borderTop: '1px solid #f0ece4', borderBottom: '1px solid #f0ece4' }}>
-
-        {/* Orientation mismatch warning */}
-        {orientMismatch && activeFrame.photo && (
-          <div style={{ margin: '0 16px 4px', padding: '8px 10px', background: '#fffbeb', borderRadius: 8, border: '1px solid #f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-            <p style={{ margin: 0, fontSize: 10, color: '#92400e', fontWeight: 600, lineHeight: 1.4, flex: 1 }}>
-              🔄 Your photo looks better in {orientMismatch} orientation
-            </p>
-            <button
-              onClick={() => { updateFrame(activeId, { orientation: orientMismatch }); setOrientMismatch(null) }}
-              style={{ background: '#f59e0b', color: 'white', border: 'none', borderRadius: 6, padding: '4px 10px', fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
-            >
-              Rotate
-            </button>
-            <button
-              onClick={() => setOrientMismatch(null)}
-              style={{ background: 'none', border: 'none', color: '#92400e', fontSize: 14, cursor: 'pointer', padding: '0 2px' }}
-            >
-              ×
-            </button>
-          </div>
-        )}
-
-        {/* Photo quality indicator */}
-        {activeFrame.photoQuality && activeFrame.photo && (
-          <div style={{
-            margin: '0 16px 4px', padding: '6px 10px', borderRadius: 8,
-            background: activeFrame.photoQuality === 'excellent' ? '#f0faf5' : activeFrame.photoQuality === 'good' ? '#fffbeb' : '#fef2f2',
-            border: `1px solid ${activeFrame.photoQuality === 'excellent' ? '#86efac' : activeFrame.photoQuality === 'good' ? '#fcd34d' : '#fca5a5'}`,
-          }}>
-            <p style={{ margin: 0, fontSize: 10, fontWeight: 600, lineHeight: 1.4,
-              color: activeFrame.photoQuality === 'excellent' ? '#166534' : activeFrame.photoQuality === 'good' ? '#92400e' : '#991b1b'
-            }}>
-              {activeFrame.photoQuality === 'excellent' && `✅ Great quality — will print beautifully at ${activeFrame.size.label}`}
-              {activeFrame.photoQuality === 'good' && `🟡 Good quality — will print well${activeFrame.photoW ? ` (${activeFrame.photoW}×${activeFrame.photoH}px)` : ''}`}
-              {activeFrame.photoQuality === 'low' && `⚠️ Low resolution${activeFrame.photoW ? ` (${activeFrame.photoW}×${activeFrame.photoH}px)` : ''} — may appear blurry at ${activeFrame.size.label}. Use original camera photos for best results.`}
-            </p>
-          </div>
-        )}
+      <div style={{ background: 'white', borderTop: '1px solid #e5e7eb' }}>
 
         {/* Toolbar — matching dev app: Add, Frame(rotate), Clear, Info */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 20, padding: '6px 16px 2px' }}>
@@ -749,28 +726,25 @@ export default function FrameDesigner() {
           ))}
         </div>
 
-        {/* Size + Color + Refill toggle row */}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '4px 10px 6px', gap: 6, overflowX: 'auto' }}>
-          {/* Product type toggle — compact pills */}
-          <div style={{ display: 'flex', background: '#f0ece4', borderRadius: 16, padding: 2, gap: 1, flexShrink: 0 }}>
-            <button onClick={() => setIsRefill(false)} style={{ padding: '3px 8px', borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 700, background: !isRefill ? '#143639' : 'transparent', color: !isRefill ? 'white' : '#888', whiteSpace: 'nowrap' }}>Frame</button>
-            <button onClick={() => setIsRefill(true)} style={{ padding: '3px 8px', borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 700, background: isRefill ? '#143639' : 'transparent', color: isRefill ? 'white' : '#888', whiteSpace: 'nowrap' }}>Refill</button>
-          </div>
+        {/* Bottom row: [Frames▾] [25x17▾] [swatch][swatch][swatch][swatch] — exact match to dev app */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '4px 10px 6px', gap: 6 }}>
+          {/* Product type — matches dev app "Frames" dropdown pill */}
+          <button
+            onClick={() => setIsRefill(v => !v)}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 4, border: '1.5px solid #143639', background: isRefill ? '#143639' : 'white', color: isRefill ? 'white' : '#143639', fontSize: 11, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
+          >
+            <svg width="8" height="5" viewBox="0 0 10 6" fill={isRefill ? 'white' : '#143639'} style={{ transform: 'rotate(180deg)' }}><path d="M5 6L0 0h10z"/></svg>
+            {isRefill ? 'Print Refill' : 'Frames'}
+          </button>
           {/* Size selector */}
           <SizeSelector selected={activeFrame.size} onSelect={(s) => updateFrame(activeId, { size: s })} />
-          {/* Color swatches — all 4 visible, no overflow */}
-          <div style={{ display: 'flex', gap: 3, alignItems: 'center', flexShrink: 0 }}>
+          {/* 4 color swatches — fixed size, always all visible */}
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginLeft: 'auto' }}>
             {COLORS.map(c => (
               <ColorSwatch key={c.id} color={c} selected={activeFrame.color === c.id} onSelect={() => updateFrame(activeId, { color: c.id })} />
             ))}
           </div>
         </div>
-        {/* Refill note — only shown in refill mode, compact */}
-        {isRefill && (
-          <div style={{ margin: '0 10px 4px', padding: '4px 8px', background: '#f0faf5', borderRadius: 6, border: '1px solid #c6e6d8' }}>
-            <p style={{ margin: 0, fontSize: 9, color: '#143639', fontWeight: 600, lineHeight: 1.3 }}>Fits your existing frame · barcode hidden behind face-frame</p>
-          </div>
-        )}
       </div>
 
       {/* ── CTA Bar — full width, matches dev app exactly ── */}
