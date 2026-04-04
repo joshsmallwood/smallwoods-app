@@ -225,7 +225,8 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
 
   const photoW = aspectW
   const photoH = aspectH
-  // Leave 24px breathing room on each side so border-image renders fully
+  // innerW/innerH = photo area (fills frame exactly, no mat)
+  // Frame total = innerW + BORDER_PX*2, so max photo = available space minus borders and breathing room
   const maxDisplayW = containerSize.w - 48 - BORDER_PX * 2
   const maxDisplayH = containerSize.h - 32 - BORDER_PX * 2
   const scale = Math.min(maxDisplayW / photoW, maxDisplayH / photoH)
@@ -279,8 +280,9 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
       {/* Frame border using border-image — fixed border width, variable interior */}
       <div
         style={{
-          width: innerW + BORDER_PX * 2,
-          height: innerH + BORDER_PX * 2,
+          // frame content = innerW (photo fills it exactly), border adds BORDER_PX outside
+          width: innerW,
+          height: innerH,
           borderStyle: frameImgUrl ? 'solid' : 'none',
           borderWidth: BORDER_PX,
           borderImageSource: frameImgUrl ? `url("${frameImgUrl}")` : 'none',
