@@ -154,7 +154,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill }: {
 
   // Compute display size: fill available space, respecting aspect ratio
   // Border stays fixed — only the photo interior scales
-  const BORDER_PX = showRefill ? 0 : 16 // no border for print refill
+  const BORDER_PX = showRefill ? 0 : 10 // matches dev app border-width exactly
   const photoW = aspectW
   const photoH = aspectH
   // Scale frame to fill available space — container is max 480px wide, height depends on viewport
@@ -226,7 +226,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill }: {
             height: innerH,
             overflow: 'hidden',
             cursor: frame.photo ? (dragging ? 'grabbing' : 'grab') : 'pointer',
-            background: '#f0ece4',
+            background: 'white',
             position: 'relative',
           }}
           onClick={() => { if (!frame.photo && !loading) fileRef.current?.click() }}
