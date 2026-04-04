@@ -192,23 +192,8 @@ function SamplePhotoRotator() {
       ))}
       {/* "SAMPLE" badge */}
       <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.4)', color: 'white', fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10, letterSpacing: '0.06em', textTransform: 'uppercase', pointerEvents: 'none' }}>Sample</div>
-      {/* Upload CTA overlay — prominent pill button, impossible to miss */}
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)', pointerEvents: 'none', paddingBottom: 14 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            background: 'rgba(255,255,255,0.96)',
-            borderRadius: 24, padding: '9px 18px',
-            boxShadow: '0 3px 14px rgba(0,0,0,0.3)',
-          }}>
-            <svg width="16" height="13" viewBox="0 0 28 22" fill="none" stroke="#143639" strokeWidth="2.5">
-              <rect x="1" y="5" width="26" height="16" rx="2"/><circle cx="14" cy="13" r="4"/><path d="M9 5V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1"/>
-            </svg>
-            <span style={{ fontSize: 14, fontWeight: 800, color: '#143639', whiteSpace: 'nowrap' }}>Tap to Add Your Photo</span>
-          </div>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', fontWeight: 500 }}>JPG · PNG · HEIC</span>
-        </div>
-      </div>
+      {/* Subtle gradient at bottom — no pill button (CTA bar handles upload) */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 100%)', pointerEvents: 'none' }} />
     </>
   )
 }
@@ -250,7 +235,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   const vw = typeof window !== 'undefined' ? window.innerWidth : 390
   const vh = typeof window !== 'undefined' ? window.innerHeight : 844
   // Canvas height = viewport minus fixed rows: 44 header + 28 social bar + 40 price + 84 controls + 52 CTA = 248
-  const canvasH = Math.max(200, vh - 248)
+  const canvasH = Math.max(200, vh - 320) // 320 = header+controls+cta+iOS browser chrome
   const count = frameCount || 1
   const photoW = aspectW
   const photoH = aspectH
