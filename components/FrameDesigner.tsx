@@ -153,7 +153,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   const aspectW = isLandscape ? longerDim : shorterDim
   const aspectH = isLandscape ? shorterDim : longerDim
 
-    const BORDER_PX = showRefill ? 0 : 10
+    const BORDER_PX = showRefill ? 0 : 20 // border-width to match borderImageSlice:26 at rendered scale
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerSize, setContainerSize] = useState({ w: 340, h: 500 })
 
@@ -228,7 +228,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
           borderStyle: frameImgUrl ? 'solid' : 'none',
           borderWidth: BORDER_PX,
           borderImageSource: frameImgUrl ? `url("${frameImgUrl}")` : 'none',
-          borderImageSlice: 10,
+          borderImageSlice: 26, // matches actual frame thickness in the PNG (26px per side)
           borderImageRepeat: 'stretch',
           lineHeight: 0,
           boxSizing: 'content-box',
@@ -586,7 +586,7 @@ export default function FrameDesigner() {
         margin: '0 auto',
         background: '#c8c4be',
         fontFamily: '"Poppins", sans-serif',
-        overflow: 'hidden',
+        overflow: 'clip',
         position: 'relative',
       }}
     >
