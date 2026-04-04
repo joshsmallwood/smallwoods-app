@@ -221,17 +221,14 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   const count = frameCount || 1
   const photoW = aspectW
   const photoH = aspectH
-  // Gallery wall: use height as primary constraint, width secondary
-  // Single frame: fill width. Multiple frames: height-driven, divide remaining width
+  // Compute max photo dimensions that fit within viewport
   const gap = count > 1 ? 8 : 0
-  const maxDisplayH = canvasH - 32 - BORDER_PX * 2
-  // For gallery wall: scale by height first, then check if all fit in width
-  const scaleByH = maxDisplayH / photoH
-  const frameWidthAtScaleH = photoW * scaleByH + BORDER_PX * 2
-  const totalWidthNeeded = frameWidthAtScaleH * count + gap * (count - 1) + 48
-  // If all frames fit at height scale, use that; otherwise constrain by width
-  const scaleByW = (Math.floor((vw - 48 - gap * (count - 1)) / count) - BORDER_PX * 2) / photoW
-  const maxDisplayW = totalWidthNeeded <= vw ? photoW * scaleByH : photoW * scaleByW
+  // Available photo width per frame (after borders and gaps)
+  const slotW = Math.floor((vw - 48 - gap * (count - 1)) / count) - BORDER_PX * 2
+  const slotH = canvasH - 32 - BORDER_PX * 2
+  // Use the more constraining dimension
+  const maxDisplayW = Math.max(20, slotW)
+  const maxDisplayH = Math.max(20, slotH)
   const scale = Math.min(maxDisplayW / photoW, maxDisplayH / photoH)
   const innerW = Math.round(photoW * scale)
   const innerH = Math.round(photoH * scale)
