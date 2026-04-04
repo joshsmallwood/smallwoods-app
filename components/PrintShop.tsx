@@ -5,6 +5,7 @@ import { useState, useRef, useCallback } from 'react'
 // ── Types ──────────────────────────────────────────────────────────────────
 
 type Mode = 'generate' | 'upload'
+type Material = 'canvas' | 'foam_core' | 'photo_paper'
 type Style = 'photorealistic' | 'watercolor' | 'oil' | 'abstract' | 'minimalist' | 'vintage'
 type GenerationState = 'idle' | 'generating' | 'success' | 'error' | 'blocked'
 
@@ -28,13 +29,18 @@ interface Generation {
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
+// 10 print sizes confirmed from Shopify API. Pricing TBD.
 const CANVAS_SIZES: CanvasSize[] = [
-  { id: '8x10',  label: '8×10',  widthIn: 8,  heightIn: 10, price: 69,  compareAt: 100, shopifyVariantId: 40466081120393, aspectRatio: '4:5'  },
-  { id: '10x12', label: '10×12', widthIn: 10, heightIn: 12, price: 75,  compareAt: 100, shopifyVariantId: 40466081153161, aspectRatio: '4:5'  },
-  { id: '12x16', label: '12×16', widthIn: 12, heightIn: 16, price: 89,  compareAt: 120, shopifyVariantId: 40466081185929, aspectRatio: '3:4'  },
-  { id: '16x16', label: '16×16', widthIn: 16, heightIn: 16, price: 99,  compareAt: 130, shopifyVariantId: 40466081218697, aspectRatio: '1:1'  },
-  { id: '25x17', label: '25×17', widthIn: 25, heightIn: 17, price: 109, compareAt: 150, shopifyVariantId: 43045065556105, aspectRatio: '3:2'  },
-  { id: '20x30', label: '20×30', widthIn: 20, heightIn: 30, price: 119, compareAt: 170, shopifyVariantId: 43045065556105, aspectRatio: '2:3'  },
+  { id: '8x10',  label: '8×10',  widthIn: 8,  heightIn: 10, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '4:5'  },
+  { id: '10x12', label: '10×12', widthIn: 10, heightIn: 12, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '5:6'  },
+  { id: '12x16', label: '12×16', widthIn: 12, heightIn: 16, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '3:4'  },
+  { id: '13x13', label: '13×13', widthIn: 13, heightIn: 13, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '1:1'  },
+  { id: '16x16', label: '16×16', widthIn: 16, heightIn: 16, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '1:1'  },
+  { id: '25x17', label: '25×17', widthIn: 25, heightIn: 17, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '3:2'  },
+  { id: '20x30', label: '20×30', widthIn: 20, heightIn: 30, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '2:3'  },
+  { id: '25x25', label: '25×25', widthIn: 25, heightIn: 25, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '1:1'  },
+  { id: '24x36', label: '24×36', widthIn: 24, heightIn: 36, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '2:3'  },
+  { id: '44x22', label: '44×22', widthIn: 44, heightIn: 22, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '2:1'  },
 ]
 
 const STYLES: { id: Style; label: string; emoji: string }[] = [
@@ -46,6 +52,12 @@ const STYLES: { id: Style; label: string; emoji: string }[] = [
   { id: 'vintage',        label: 'Vintage',    emoji: '📷' },
 ]
 
+const MATERIALS: { id: Material; label: string; desc: string; emoji: string }[] = [
+  { id: 'canvas',      label: 'Canvas',      desc: 'Gallery-wrapped, ready to hang', emoji: '🖼️' },
+  { id: 'foam_core',   label: 'Foam Core',   desc: 'Lightweight, modern finish',     emoji: '⬛' },
+  { id: 'photo_paper', label: 'Photo Paper', desc: 'Gloss or matte photo print',     emoji: '📄' },
+]
+
 const SHOPIFY_STORE = 'https://smallwoodhome.com'
 const PROMO_CODE = 'MYWALL35'
 const DISCOUNT = 0.35
@@ -54,6 +66,7 @@ const DISCOUNT = 0.35
 
 export default function PrintShop() {
   const [mode, setMode] = useState<Mode>('generate')
+  const [material, setMaterial] = useState<Material>('canvas')
   const [prompt, setPrompt] = useState('')
   const [style, setStyle] = useState<Style>('photorealistic')
   const [selectedSize, setSelectedSize] = useState<CanvasSize>(CANVAS_SIZES[4])
@@ -214,7 +227,21 @@ export default function PrintShop() {
         </div>
       )}
 
-      {/* Size + price */}
+      {/* Material selector */}
+      <div style={{ display: 'flex', gap: 6, padding: '0 16px 8px' }}>
+        {MATERIALS.map(m => (
+          <button key={m.id} onClick={() => setMaterial(m.id)} title={m.desc} style={{
+            display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 8,
+            border: material === m.id ? '2px solid #143639' : '1.5px solid #e5e7eb',
+            background: material === m.id ? '#f0faf5' : 'white', cursor: 'pointer',
+            fontSize: 11, fontWeight: 700, color: material === m.id ? '#143639' : '#555',
+          }}>
+            <span>{m.emoji}</span><span>{m.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Size + pricing TBD */}
       <div style={{ display: 'flex', alignItems: 'center', padding: '0 16px 10px', gap: 8 }}>
         <button onClick={() => setShowSizePanel(true)} style={{
           display: 'flex', alignItems: 'center', gap: 4, padding: '8px 14px', height: 44,
@@ -225,9 +252,9 @@ export default function PrintShop() {
           <svg width="8" height="5" viewBox="0 0 10 6" fill="#143639"><path d="M5 6L0 0h10z"/></svg>
         </button>
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'baseline', gap: 6 }}>
-          <span style={{ fontSize: 12, color: '#aaa', textDecoration: 'line-through' }}>${selectedSize.price}</span>
-          <span style={{ fontSize: 22, fontWeight: 900, color: '#143639' }}>${discountedPrice}</span>
-          <span style={{ fontSize: 10, background: '#dcfce7', color: '#166534', fontWeight: 700, padding: '2px 6px', borderRadius: 8 }}>35% off</span>
+          
+          
+          <span style={{ fontSize: 12, color: '#aaa', fontStyle: 'italic' }}>Pricing coming soon</span>
         </div>
       </div>
 
@@ -240,11 +267,11 @@ export default function PrintShop() {
                 padding: '13px 16px', background: '#f0ece4', border: 'none', borderRadius: 10,
                 fontSize: 13, fontWeight: 700, color: '#143639', cursor: 'pointer',
               }}>↩ Redo</button>
-              <button onClick={handleAddToCart} disabled={adding} style={{
+              <button onClick={() => alert('Checkout coming soon! This is a sandbox preview.')} disabled={adding} style={{
                 flex: 1, padding: '13px 0', background: added ? '#22c55e' : '#143639',
                 color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 800, cursor: 'pointer',
               }}>
-                {adding ? 'Adding…' : added ? '✓ Added!' : `$${discountedPrice} — Order Print`}
+                {adding ? 'Adding…' : added ? '✓ Added!' : '💾 Save Design'}
               </button>
             </div>
           ) : (
@@ -265,7 +292,7 @@ export default function PrintShop() {
             color: canOrder ? 'white' : '#143639', border: 'none', borderRadius: 10,
             fontSize: 15, fontWeight: 800, cursor: 'pointer',
           }}>
-            {adding ? 'Adding…' : added ? '✓ Added!' : canOrder ? `$${discountedPrice} — Order Print` : '📷 Upload Photo to Start'}
+            {adding ? 'Adding…' : added ? '✓ Added!' : canOrder ? '💾 Save Design' : '📷 Upload Photo to Start'}
           </button>
         )}
 
