@@ -195,7 +195,7 @@ export default function PrintShop() {
       </div>
 
       {/* ── Canvas Preview — only shown when image exists ── */}
-      <div style={{ position: 'relative', background: '#f5f0e8', flex: displayImage ? '1 1 auto' : '0 0 0px', display: displayImage ? 'flex' : 'none', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', minHeight: 0 }}>
+      {displayImage && <div style={{ position: 'relative', background: '#f5f0e8', flex: '1 1 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', minHeight: 0 }}>
         {displayImage && (
           <div style={{
             position: 'relative',
@@ -246,7 +246,7 @@ export default function PrintShop() {
             ))}
           </div>
         )}
-      </div>
+      </div>}
 
       {/* ── Controls ── */}
       <div style={{ background: 'white', borderTop: '1px solid #f0ece4', flex: displayImage ? '0 0 auto' : '1 1 auto', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', overflowY: 'auto' }}>
