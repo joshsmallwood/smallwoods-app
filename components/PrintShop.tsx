@@ -485,10 +485,20 @@ export default function PrintShop() {
 
   const imagePanel = displayImage ? (
     <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f0e8', borderRadius: 12, overflow: 'hidden' }}>
-      <img src={displayImage} alt="Your print" style={{
-        maxWidth: '88%', maxHeight: '88%', borderRadius: 4, objectFit: 'contain',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-      }} />
+      {/* Constrain preview to selected print size aspect ratio */}
+      <div style={{
+        maxWidth: '88%', maxHeight: '88%', borderRadius: 4, overflow: 'hidden',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.12)',
+        aspectRatio: `${selectedSize.widthIn} / ${selectedSize.heightIn}`,
+        position: 'relative',
+      }}>
+        <img src={displayImage} alt="Your print" style={{
+          width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+        }} />
+        <div style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.5)', color: 'white', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 6 }}>
+          {selectedSize.label}
+        </div>
+      </div>
       {isGenerating && (
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.85)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
           <div style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid #143639', borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite' }} />
