@@ -249,7 +249,7 @@ export default function PrintShop() {
       </div>}
 
       {/* ── Controls ── */}
-      <div style={{ background: 'white', borderTop: '1px solid #f0ece4', flex: displayImage ? '0 0 auto' : '1 1 auto', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', overflowY: 'auto' }}>
+      <div style={{ background: 'white', borderTop: '1px solid #f0ece4', flex: displayImage ? '0 0 auto' : '1 1 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflowY: 'auto', padding: displayImage ? 0 : '0 0 8px' }}>
         {mode === 'generate' ? (
           <div style={{ padding: '10px 14px 6px' }}>
             {/* Style presets */}
