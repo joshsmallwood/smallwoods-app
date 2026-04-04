@@ -36,6 +36,9 @@ interface FrameItem {
   zoom: number
   offsetX: number
   offsetY: number
+  photoQuality?: 'excellent' | 'good' | 'low' | null
+  photoW?: number
+  photoH?: number
 }
 
 // ─── Constants ─────────────────────────────────────────────────────────────
@@ -124,12 +127,13 @@ function getPrice(frame: FrameItem, isRefill: boolean) {
 
 // ─── Sub-components ─────────────────────────────────────────────────────────
 
-function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill }: {
+function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOrientMismatch }: {
   frame: FrameItem
-  onPhotoChange: (photo: string | null, quality: 'excellent' | 'good' | 'low') => void
+  onPhotoChange: (photo: string | null, quality: 'excellent' | 'good' | 'low', photoW: number, photoH: number) => void
   isActive: boolean
   onClick: () => void
   showRefill?: boolean
+  onOrientMismatch?: (suggestion: 'portrait' | 'landscape') => void
 }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
@@ -183,7 +187,16 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill }: {
         const excellent = frame.size.widthIn * 150 * frame.size.heightIn * 150
         const good = frame.size.widthIn * 100 * frame.size.heightIn * 100
         const quality = px >= excellent ? 'excellent' : px >= good ? 'good' : 'low'
-        onPhotoChange(dataUrl, quality)
+        const natW = img.naturalWidth
+        const natH = img.naturalHeight
+        onPhotoChange(dataUrl, quality, natW, natH)
+        // Orientation mismatch detection
+        if (onOrientMismatch) {
+          const photoIsLandscape = natW > natH
+          const frameIsLandscape = frame.orientation === 'landscape'
+          if (photoIsLandscape && !frameIsLandscape) onOrientMismatch('landscape')
+          else if (!photoIsLandscape && frameIsLandscape) onOrientMismatch('portrait')
+        }
         setLoading(false)
       }
       img.onerror = () => { setLoading(false); alert('Could not read this image. Try a different photo.') }
@@ -471,10 +484,14 @@ export default function FrameDesigner() {
     }))
   }
 
-  const handlePhotoChange = (id: string, photo: string | null, quality: 'excellent' | 'good' | 'low') => {
-    updateFrame(id, { photo, zoom: 1, offsetX: 0, offsetY: 0 })
+  const [orientMismatch, setOrientMismatch] = useState<'portrait' | 'landscape' | null>(null)
+
+  const handlePhotoChange = (id: string, photo: string | null, quality: 'excellent' | 'good' | 'low', photoW = 0, photoH = 0) => {
+    updateFrame(id, { photo, zoom: 1, offsetX: 0, offsetY: 0, photoQuality: photo ? quality : null, photoW, photoH })
     if (photo) {
       trackPhotoUploaded({ sizeId: activeFrame.size.id, colorId: activeFrame.color, price: getPrice(activeFrame, isRefill), quality, frameCount: frames.length })
+    } else {
+      setOrientMismatch(null)
     }
   }
 
@@ -611,8 +628,9 @@ export default function FrameDesigner() {
               frame={frame}
               isActive={frame.id === activeId}
               onClick={() => setActiveId(frame.id)}
-              onPhotoChange={(photo, quality) => handlePhotoChange(frame.id, photo, quality)}
+              onPhotoChange={(photo, quality, w, h) => handlePhotoChange(frame.id, photo, quality, w, h)}
               showRefill={isRefill}
+              onOrientMismatch={(s) => setOrientMismatch(s)}
             />
             {frames.length > 1 && (
               <button
@@ -669,6 +687,44 @@ export default function FrameDesigner() {
           <div style={{ margin: '0 16px 4px', padding: '6px 10px', background: '#f0faf5', borderRadius: 8, border: '1px solid #c6e6d8' }}>
             <p style={{ margin: 0, fontSize: 10, color: '#143639', fontWeight: 600, lineHeight: 1.4 }}>
               🖼 Replaces the print inside your existing Smallwoods frame · Barcode on back is hidden behind the face-frame
+            </p>
+          </div>
+        )}
+
+        {/* Orientation mismatch warning */}
+        {orientMismatch && activeFrame.photo && (
+          <div style={{ margin: '0 16px 4px', padding: '8px 10px', background: '#fffbeb', borderRadius: 8, border: '1px solid #f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <p style={{ margin: 0, fontSize: 10, color: '#92400e', fontWeight: 600, lineHeight: 1.4, flex: 1 }}>
+              🔄 Your photo looks better in {orientMismatch} orientation
+            </p>
+            <button
+              onClick={() => { updateFrame(activeId, { orientation: orientMismatch }); setOrientMismatch(null) }}
+              style={{ background: '#f59e0b', color: 'white', border: 'none', borderRadius: 6, padding: '4px 10px', fontSize: 10, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              Rotate
+            </button>
+            <button
+              onClick={() => setOrientMismatch(null)}
+              style={{ background: 'none', border: 'none', color: '#92400e', fontSize: 14, cursor: 'pointer', padding: '0 2px' }}
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {/* Photo quality indicator */}
+        {activeFrame.photoQuality && activeFrame.photo && (
+          <div style={{
+            margin: '0 16px 4px', padding: '6px 10px', borderRadius: 8,
+            background: activeFrame.photoQuality === 'excellent' ? '#f0faf5' : activeFrame.photoQuality === 'good' ? '#fffbeb' : '#fef2f2',
+            border: `1px solid ${activeFrame.photoQuality === 'excellent' ? '#86efac' : activeFrame.photoQuality === 'good' ? '#fcd34d' : '#fca5a5'}`,
+          }}>
+            <p style={{ margin: 0, fontSize: 10, fontWeight: 600, lineHeight: 1.4,
+              color: activeFrame.photoQuality === 'excellent' ? '#166534' : activeFrame.photoQuality === 'good' ? '#92400e' : '#991b1b'
+            }}>
+              {activeFrame.photoQuality === 'excellent' && `✅ Great quality — will print beautifully at ${activeFrame.size.label}`}
+              {activeFrame.photoQuality === 'good' && `🟡 Good quality — will print well${activeFrame.photoW ? ` (${activeFrame.photoW}×${activeFrame.photoH}px)` : ''}`}
+              {activeFrame.photoQuality === 'low' && `⚠️ Low resolution${activeFrame.photoW ? ` (${activeFrame.photoW}×${activeFrame.photoH}px)` : ''} — may appear blurry at ${activeFrame.size.label}. Use original camera photos for best results.`}
             </p>
           </div>
         )}
