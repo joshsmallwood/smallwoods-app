@@ -31,16 +31,16 @@ interface Generation {
 
 // 10 print sizes confirmed from Shopify API. Pricing TBD.
 const CANVAS_SIZES: CanvasSize[] = [
-  { id: '8x10',  label: '8×10',  widthIn: 8,  heightIn: 10, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '4:5'  },
-  { id: '10x12', label: '10×12', widthIn: 10, heightIn: 12, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '5:6'  },
-  { id: '12x16', label: '12×16', widthIn: 12, heightIn: 16, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '3:4'  },
-  { id: '13x13', label: '13×13', widthIn: 13, heightIn: 13, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '1:1'  },
-  { id: '16x16', label: '16×16', widthIn: 16, heightIn: 16, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '1:1'  },
-  { id: '25x17', label: '25×17', widthIn: 25, heightIn: 17, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '3:2'  },
-  { id: '20x30', label: '20×30', widthIn: 20, heightIn: 30, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '2:3'  },
-  { id: '25x25', label: '25×25', widthIn: 25, heightIn: 25, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '1:1'  },
-  { id: '24x36', label: '24×36', widthIn: 24, heightIn: 36, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '2:3'  },
-  { id: '44x22', label: '44×22', widthIn: 44, heightIn: 22, price: 0, compareAt: 0, shopifyVariantId: 0, aspectRatio: '2:1'  },
+  { id: '8x10',  label: '8×10',  widthIn: 8,  heightIn: 10, price: 69, compareAt: 106, shopifyVariantId: 0, aspectRatio: '4:5'  },
+  { id: '10x12', label: '10×12', widthIn: 10, heightIn: 12, price: 75, compareAt: 115, shopifyVariantId: 0, aspectRatio: '5:6'  },
+  { id: '12x16', label: '12×16', widthIn: 12, heightIn: 16, price: 89, compareAt: 137, shopifyVariantId: 0, aspectRatio: '3:4'  },
+  { id: '13x13', label: '13×13', widthIn: 13, heightIn: 13, price: 79, compareAt: 122, shopifyVariantId: 0, aspectRatio: '1:1'  },
+  { id: '16x16', label: '16×16', widthIn: 16, heightIn: 16, price: 99, compareAt: 152, shopifyVariantId: 0, aspectRatio: '1:1'  },
+  { id: '25x17', label: '25×17', widthIn: 25, heightIn: 17, price: 109, compareAt: 168, shopifyVariantId: 0, aspectRatio: '3:2'  },
+  { id: '20x30', label: '20×30', widthIn: 20, heightIn: 30, price: 119, compareAt: 183, shopifyVariantId: 0, aspectRatio: '2:3'  },
+  { id: '25x25', label: '25×25', widthIn: 25, heightIn: 25, price: 129, compareAt: 198, shopifyVariantId: 0, aspectRatio: '1:1'  },
+  { id: '24x36', label: '24×36', widthIn: 24, heightIn: 36, price: 129, compareAt: 198, shopifyVariantId: 0, aspectRatio: '2:3'  },
+  { id: '44x22', label: '44×22', widthIn: 44, heightIn: 22, price: 139, compareAt: 214, shopifyVariantId: 0, aspectRatio: '2:1'  },
 ]
 
 const STYLES: { id: Style; label: string; emoji: string }[] = [
@@ -166,7 +166,25 @@ export default function PrintShop() {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = (ev) => setUploadedImage(ev.target?.result as string)
+    reader.onload = (ev) => {
+      const img = new Image()
+      img.onload = () => {
+        const MAX_DIM = 2000
+        let w = img.width
+        let h = img.height
+        if (w > MAX_DIM || h > MAX_DIM) {
+          if (w > h) { h = Math.round((h * MAX_DIM) / w); w = MAX_DIM }
+          else { w = Math.round((w * MAX_DIM) / h); h = MAX_DIM }
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')
+        ctx?.drawImage(img, 0, 0, w, h)
+        setUploadedImage(canvas.toDataURL('image/jpeg', 0.85))
+      }
+      img.src = ev.target?.result as string
+    }
     reader.readAsDataURL(file)
   }
 
@@ -392,7 +410,8 @@ export default function PrintShop() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
           {CANVAS_SIZES.slice(0, 8).map(size => {
-            const price = Math.round(size.price * 0.65); // applying 35% discount visually
+            const discountedPrice = Math.round(size.price * 0.65);
+            const originalPrice = size.price;
             return (
               <button key={size.id} onClick={() => setSelectedSize(size)} style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
@@ -404,7 +423,10 @@ export default function PrintShop() {
                 boxShadow: selectedSize.id === size.id ? '0 4px 12px rgba(27,90,74,0.2)' : '0 2px 4px rgba(0,0,0,0.02)'
               }}>
                 <span style={{ fontSize: 13, fontWeight: 700 }}>{size.label}</span>
-                {price > 0 && <span style={{ fontSize: 11, fontWeight: 500, opacity: selectedSize.id === size.id ? 0.9 : 0.6 }}>${price}</span>}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, opacity: selectedSize.id === size.id ? 0.9 : 0.7 }}>
+                  <span style={{ fontSize: 10, fontWeight: 500, textDecoration: 'line-through', color: selectedSize.id === size.id ? 'rgba(255,255,255,0.7)' : '#aaa' }}>${originalPrice}</span>
+                  <span style={{ fontSize: 11, fontWeight: 800 }}>${discountedPrice}</span>
+                </div>
               </button>
             )
           })}
