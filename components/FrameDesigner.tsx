@@ -151,11 +151,17 @@ function SimplePlaceholder() {
   )
 }
 
+// Sample photos — single portraits/families only, not gallery wall scenes
+// These show what a customer's photo looks like inside ONE frame
 const SAMPLE_PHOTOS = [
-  'https://cdn.shopify.com/s/files/1/1091/1314/files/63A4970-2_b44b42d1-4e90-45f9-8479-046771313de6.jpg?v=1764101397&width=600',
-  'https://cdn.shopify.com/s/files/1/1091/1314/files/SmallwoodKids-3M_310829a1-d49a-4c9e-bfca-2d6bf9e21509.jpg?v=1764101397&width=600',
+  // Couple portrait — best single-frame photo
   'https://cdn.shopify.com/s/files/1/1091/1314/files/laceyburgert_7217bd0e-cbbd-4bbc-9f2c-18ef9a38a8f4.jpg?v=1764101397&width=600',
-  'https://cdn.shopify.com/s/files/1/1091/1314/files/20200312-DrCulver_9fd36e38-7b6d-4758-b6cd-c680d813b789.jpg?v=1764101397&width=600',
+  // Family lifestyle
+  'https://cdn.shopify.com/s/files/1/1091/1314/files/220224Practicals_20.jpg?v=1764101397&width=600',
+  // Product hero — frame with photo
+  'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397&width=600',
+  // Family with kids
+  'https://cdn.shopify.com/s/files/1/1091/1314/files/sweethomememories1-Copy_da4bc885-36fb-4cba-94a2-39b8bae83b7f.jpg?v=1764101397&width=600',
 ]
 
 function SamplePhotoRotator() {
