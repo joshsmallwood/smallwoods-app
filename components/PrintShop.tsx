@@ -528,7 +528,7 @@ export default function PrintShop() {
   return (
     <>
       {/* ── Mobile layout (< 768px) ── */}
-      <div className="print-shop-mobile" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', fontFamily: '"Poppins", sans-serif', background: '#fff', overflow: 'hidden' }}>
+      <div className="print-shop-mobile" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', fontFamily: '"Poppins", sans-serif', background: '#fff', overflowY: 'auto', overflowX: 'hidden' }}>
         {/* Header */}
         <div style={{ background: 'white', borderBottom: '1px solid #f0ece4', padding: '10px 16px 6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <div>
@@ -540,8 +540,8 @@ export default function PrintShop() {
           </a>
         </div>
 
-        {/* Image preview — generous height to accommodate all orientations */}
-        <div style={{ flex: displayImage ? '1 1 auto' : '0 0 auto', padding: '8px 12px', minHeight: 220, position: 'relative' }}>
+        {/* Image preview — fixed max height, scrollable page handles overflow */}
+        <div style={{ flex: '0 0 auto', padding: '8px 12px', maxHeight: '45vh', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
           {imagePanel}
         </div>
 
