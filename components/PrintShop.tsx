@@ -575,6 +575,24 @@ export default function PrintShop() {
         <img src={displayImage} alt="Your print" style={{
           width: '100%', height: '100%', objectFit: 'cover', display: 'block',
         }} />
+        
+        {/* Material Overlays */}
+        {material === 'canvas' && (
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.4, mixBlendMode: 'multiply', backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }} />
+        )}
+        {material === 'photo_paper' && (
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.05) 100%)', pointerEvents: 'none' }} />
+        )}
+        {addFrame && material === 'canvas' && (
+          <div style={{ 
+            position: 'absolute', inset: 0, border: '16px solid #4a3728', 
+            boxShadow: 'inset 0 6px 12px rgba(0,0,0,0.6)', 
+            pointerEvents: 'none'
+          }}>
+            <div style={{ position: 'absolute', inset: 0, border: '4px solid #2d2016' }} />
+          </div>
+        )}
+
         <div style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.5)', color: 'white', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 6 }}>
           {selectedSize.label}
         </div>
