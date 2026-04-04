@@ -158,18 +158,10 @@ function SimplePlaceholder() {
 
 // Sample photos — single portraits/families only, not gallery wall scenes
 // These show what a customer's photo looks like inside ONE frame
-// VERIFIED SINGLE-FRAME PHOTOS ONLY — do not replace with gallery wall scenes
-// Each was visually checked on 2026-04-04. Must show ONE portrait/family, not multiple frames.
-const SAMPLE_PHOTOS = [
-  // ✅ Woman holding single large frame with 3 kids — shows product in use
-  'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397&width=600',
-  // ✅ Wedding portrait in single large frame at front door — emotional/personal
-  'https://cdn.shopify.com/s/files/1/1091/1314/files/sweethomememories1-Copy_da4bc885-36fb-4cba-94a2-39b8bae83b7f.jpg?v=1764101397&width=600',
-  // ✅ Person holding single panoramic black frame with 3 kids — shows scale
-  'https://cdn.shopify.com/s/files/1/1091/1314/files/CWFS-BlackXL_ba652b45-37a3-4f18-8af8-d341b150f44a.jpg?v=1764101397&width=600',
-  // ✅ Same as first, rotated for variety
-  'https://cdn.shopify.com/s/files/1/1091/1314/files/HERO_PRoduct_WEB_1125__0005_Frames-min.jpg?v=1764101397&width=600',
-]
+// No sample photos — clean empty state matches FrameForest approach
+// All available Shopify CDN photos are room/product shots, not close-up portraits
+// The empty state is cleaner and makes the upload CTA obvious
+const SAMPLE_PHOTOS: string[] = []
 
 function SamplePhotoRotator() {
   const [idx, setIdx] = useState(0)
@@ -181,20 +173,16 @@ function SamplePhotoRotator() {
     }, 4000)
     return () => clearInterval(t)
   }, [])
+  // Clean empty state — no confusing sample photos
   return (
-    <>
-      {SAMPLE_PHOTOS.map((src, i) => (
-        <img key={src} src={src} alt="Sample" draggable={false}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
-            opacity: i === idx ? (visible ? 1 : 0) : 0, transition: 'opacity 0.4s ease',
-            pointerEvents: 'none', filter: 'brightness(0.88) saturate(1.1)' }}
-        />
-      ))}
-      {/* "SAMPLE" badge */}
-      <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.4)', color: 'white', fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10, letterSpacing: '0.06em', textTransform: 'uppercase', pointerEvents: 'none' }}>Sample</div>
-      {/* Subtle gradient at bottom — no pill button (CTA bar handles upload) */}
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 100%)', pointerEvents: 'none' }} />
-    </>
+    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#f8f4ef' }}>
+      <svg width="36" height="30" viewBox="0 0 28 22" fill="none" stroke="#143639" strokeWidth="1.5" opacity="0.35">
+        <rect x="1" y="5" width="26" height="16" rx="2"/>
+        <circle cx="14" cy="13" r="4"/>
+        <path d="M9 5V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1"/>
+      </svg>
+      <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: '#143639', opacity: 0.45 }}>Add Your Photo</p>
+    </div>
   )
 }
 
