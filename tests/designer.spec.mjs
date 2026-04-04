@@ -139,8 +139,12 @@ async function runTests(page, vp) {
   });
   await page.waitForTimeout(300);
   const fAfter = await getFrame(page);
-  const flipped = fBefore && fAfter && Math.abs(fBefore.w - fAfter.h) < 40 && Math.abs(fBefore.h - fAfter.w) < 40;
-  assert(flipped, `${tag} Rotation toggle flips orientation`, `before ${fBefore?.w}x${fBefore?.h} after ${fAfter?.w}x${fAfter?.h}`);
+  // After rotation: aspect ratio should change significantly
+  // Portrait 25x17: ratio ~0.7. Landscape 25x17: ratio ~1.4
+  const ratioBefore = fBefore ? fBefore.w / fBefore.h : 0;
+  const ratioAfter = fAfter ? fAfter.w / fAfter.h : 0;
+  const flipped = Math.abs(ratioBefore - ratioAfter) > 0.3;
+  assert(flipped, `${tag} Rotation toggle flips orientation`, `ratio before=${Math.round(ratioBefore*100)/100} after=${Math.round(ratioAfter*100)/100}`);
 
   // T11: Gallery wall — 2 frames added without overflow
   await page.reload({ waitUntil: 'networkidle' }); await page.waitForTimeout(2000);
