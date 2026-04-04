@@ -173,17 +173,30 @@ async function runTests(page, vp) {
 
   // T13: Print Refill toggle activates / deactivates
   await page.reload({ waitUntil: 'networkidle' }); await page.waitForTimeout(2000);
+  // Click by aria-label — more reliable than text which changes
   await page.evaluate(() => {
-    [...document.querySelectorAll('button')].find(b => b.textContent?.includes('Frames'))?.click();
+    const btn = [...document.querySelectorAll('button')].find(b =>
+      b.getAttribute('aria-label') === 'Switch to Print Refill' ||
+      b.textContent?.includes('print refill') ||
+      b.textContent?.toLowerCase().includes('refill')
+    );
+    btn?.click();
   });
   await page.waitForTimeout(300);
+  // After activation aria-label changes to 'Switch to Frame'
   const refillActive = await page.evaluate(() =>
-    [...document.querySelectorAll('button')].some(b => b.textContent?.includes('Print Refill'))
+    [...document.querySelectorAll('button')].some(b =>
+      b.getAttribute('aria-label') === 'Switch to Frame' ||
+      b.textContent?.includes('\u21a9') // back arrow
+    )
   );
   assert(refillActive, `${tag} Print Refill toggle activates`, refillActive ? 'active' : 'not active');
   // Toggle back
   await page.evaluate(() => {
-    [...document.querySelectorAll('button')].find(b => b.textContent?.includes('Print Refill') || b.textContent?.includes('Frames'))?.click();
+    const btn = [...document.querySelectorAll('button')].find(b =>
+      b.getAttribute('aria-label') === 'Switch to Frame' || b.textContent?.includes('\u21a9')
+    );
+    btn?.click();
   });
   await page.waitForTimeout(200);
 
