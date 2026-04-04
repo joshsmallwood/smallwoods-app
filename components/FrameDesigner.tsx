@@ -480,7 +480,7 @@ function ColorSwatch({ color, selected, onSelect }: { color: typeof COLORS[0]; s
       onClick={onSelect}
       title={color.label}
       style={{
-        width: 38, height: 38, padding: 3, border: 'none', background: 'none',
+        width: 44, height: 44, padding: 4, border: 'none', background: 'none',
         cursor: 'pointer', borderRadius: 3, flexShrink: 0,
         outline: selected ? `2px solid #143639` : '2px solid transparent',
         outlineOffset: 1,
@@ -993,25 +993,28 @@ export default function FrameDesigner() {
           ))}
         </div>
 
-        {/* Bottom row — CLEAN: size, wood color, mat toggle. No confusing product type button */}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '2px 8px 6px', gap: 4, overflow: 'hidden' }}>
-          {/* Size selector */}
+        {/* Controls: Row 1 — size + color swatches + refill toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '2px 8px 2px', gap: 4 }}>
           <SizeSelector selected={activeFrame.size} onSelect={(s) => updateFrame(activeId, { size: s })} />
-          {/* Mat toggle */}
-          <div style={{ display: 'flex', background: '#f0ece4', borderRadius: 16, padding: 2, gap: 1, flexShrink: 0 }}>
-            <button onClick={() => updateFrame(activeId, { mat: 'none' })} style={{ padding: '0 8px', height: 44, borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 700, background: activeFrame.mat === 'none' ? '#143639' : 'transparent', color: activeFrame.mat === 'none' ? 'white' : '#888', whiteSpace: 'nowrap' }} aria-label="No mat">No Mat</button>
-            <button onClick={() => updateFrame(activeId, { mat: 'standard' })} style={{ padding: '0 8px', height: 44, borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 700, background: activeFrame.mat === 'standard' ? '#143639' : 'transparent', color: activeFrame.mat === 'standard' ? 'white' : '#888', whiteSpace: 'nowrap' }} aria-label="Mat +$8">Mat +$8</button>
-          </div>
-          {/* Print Refill toggle — only shown as subtle text link, not a confusing button */}
-          {isRefill && (
-            <span style={{ fontSize: 10, color: '#143639', fontWeight: 700, flexShrink: 0 }}>Print Refill</span>
-          )}
-          {/* 4 color swatches */}
-          <div style={{ display: 'flex', gap: 3, alignItems: 'center', marginLeft: 'auto', paddingRight: 4 }}>
+          <div style={{ display: 'flex', gap: 3, alignItems: 'center', marginLeft: 'auto' }}>
             {COLORS.map(c => (
               <ColorSwatch key={c.id} color={c} selected={activeFrame.color === c.id} onSelect={() => updateFrame(activeId, { color: c.id })} />
             ))}
           </div>
+        </div>
+        {/* Controls: Row 2 — mat + refill (secondary options) */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '0 8px 4px', gap: 6 }}>
+          <div style={{ display: 'flex', background: '#f0ece4', borderRadius: 16, padding: 2, gap: 1 }}>
+            <button onClick={() => updateFrame(activeId, { mat: 'none' })} style={{ padding: '0 10px', height: 32, borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 700, background: activeFrame.mat === 'none' ? '#143639' : 'transparent', color: activeFrame.mat === 'none' ? 'white' : '#888', whiteSpace: 'nowrap' }} aria-label="No mat">No Mat</button>
+            <button onClick={() => updateFrame(activeId, { mat: 'standard' })} style={{ padding: '0 10px', height: 32, borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 700, background: activeFrame.mat === 'standard' ? '#143639' : 'transparent', color: activeFrame.mat === 'standard' ? 'white' : '#888', whiteSpace: 'nowrap' }} aria-label="Mat +$8">Mat +$8</button>
+          </div>
+          <button
+            onClick={() => setIsRefill(v => !v)}
+            aria-label={isRefill ? 'Switch to Frame' : 'Switch to Print Refill'}
+            style={{ height: 32, padding: '0 10px', borderRadius: 16, border: '1px solid #e5e7eb', background: isRefill ? '#f0faf5' : 'transparent', color: isRefill ? '#143639' : '#bbb', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+          >
+            {isRefill ? '↩ Back to Frame' : 'Have a frame? Order a print refill'}
+          </button>
         </div>
       </div>
 
