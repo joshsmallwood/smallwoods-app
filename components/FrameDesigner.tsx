@@ -463,17 +463,17 @@ function PriceRow({ frames, isRefill }: { frames: FrameItem[]; isRefill: boolean
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, padding: '5px 16px', background: 'white', borderTop: '1px solid #f0ece4' }}>
       <div style={{ textAlign: 'center', flex: 1 }}>
         <div style={{ fontSize: 14, fontWeight: 600, color: '#bd7b57', textDecoration: 'line-through' }}>${fullTotal}</div>
-        <div style={{ fontSize: 8, color: '#999', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Price</div>
+        <div style={{ fontSize: 9, color: '#999', fontWeight: 500 }}>Full Price</div>
       </div>
       <div style={{ width: 1, height: 28, background: '#e5e7eb' }} />
       <div style={{ textAlign: 'center', flex: 1 }}>
         <div style={{ fontSize: 15, fontWeight: 700, color: '#143639' }}>${saleTotal}</div>
-        <div style={{ fontSize: 8, color: '#999', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sale Price</div>
+        <div style={{ fontSize: 9, color: '#999', fontWeight: 500 }}>Sale Price</div>
       </div>
       <div style={{ width: 1, height: 28, background: '#e5e7eb' }} />
       <div style={{ textAlign: 'center', flex: 1 }}>
         <div style={{ fontSize: 20, fontWeight: 900, color: '#143639', lineHeight: 1 }}>${bundleTotal}</div>
-        <div style={{ fontSize: 8, color: '#143639', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Bundle Price</div>
+        <div style={{ fontSize: 9, color: '#888', fontWeight: 600 }}>Bundle Price</div>
       </div>
     </div>
   )
@@ -735,8 +735,8 @@ export default function FrameDesigner() {
       {/* ── Controls ── */}
       <div style={{ background: 'white', borderTop: '1px solid #e5e7eb' }}>
 
-        {/* Toolbar — matching dev app: Add, Art, Frame, Clear, Info */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 20, padding: '6px 16px 2px' }}>
+        {/* Toolbar — 5 buttons full width, 44px touch targets */}
+        <div style={{ display: 'flex', padding: '0 8px' }}>
           {[
             {
               label: 'Add',
@@ -791,7 +791,7 @@ export default function FrameDesigner() {
             <button
               key={btn.label}
               onClick={btn.action}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', minWidth: 44, minHeight: 44, padding: '4px 0', justifyContent: 'center' }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', flex: 1, minHeight: 44, padding: '4px 2px', justifyContent: 'center' }}
             >
               <span style={{ height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{btn.icon}</span>
               <span style={{ fontSize: 9, fontWeight: 600, color: '#143639' }}>{btn.label}</span>
