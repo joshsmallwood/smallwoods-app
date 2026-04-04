@@ -240,10 +240,10 @@ export default function PrintShop() {
       <div style={{ display: 'flex', gap: 8, padding: '0 16px 16px' }}>
         {(['generate', 'upload'] as Mode[]).map(m => (
           <button key={m} onClick={() => setMode(m)} style={{
-            flex: 1, padding: '12px 16px', borderRadius: 0, border: mode === m ? '2px solid #143639' : '1px solid #e5e7eb', cursor: 'pointer',
+            flex: 1, padding: '12px 16px', borderRadius: 0, border: 'none', cursor: 'pointer',
             fontSize: 13, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em',
-            background: mode === m ? '#143639' : 'white',
-            color: mode === m ? 'white' : '#555',
+            background: mode === m ? '#143639' : '#f3f4f6',
+            color: mode === m ? 'white' : '#143639',
           }}>
             {m === 'generate' ? 'AI Generate' : 'Upload Photo'}
           </button>
@@ -266,10 +266,10 @@ export default function PrintShop() {
               <button key={s.id} onClick={() => setStyle(s.id)} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 padding: '8px 14px', borderRadius: 0, cursor: 'pointer',
-                border: style === s.id ? '2px solid #143639' : '1px solid #e5e7eb',
+                border: 'none',
                 fontSize: 12, fontWeight: 800, whiteSpace: 'nowrap', flexShrink: 0,
-                background: style === s.id ? '#143639' : 'white',
-                color: style === s.id ? 'white' : '#555',
+                background: style === s.id ? '#143639' : '#f3f4f6',
+                color: style === s.id ? 'white' : '#143639',
                 textTransform: 'uppercase', letterSpacing: '0.05em'
               }}>
                 <span>{s.label}</span>
@@ -286,8 +286,8 @@ export default function PrintShop() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   padding: '8px 12px', borderRadius: 0,
-                  border: referenceThumb ? '2px solid #143639' : '1px dashed #c8c0b8',
-                  background: referenceThumb ? '#143639' : 'transparent',
+                  border: 'none',
+                  background: referenceThumb ? '#143639' : '#f3f4f6',
                   cursor: 'pointer', fontSize: 11, fontWeight: 800, 
                   color: referenceThumb ? 'white' : '#143639',
                   textTransform: 'uppercase', letterSpacing: '0.05em'
@@ -315,11 +315,11 @@ export default function PrintShop() {
               maxLength={500}
               style={{
                 width: '100%', padding: '12px', borderRadius: 0,
-                border: '1px solid #e5e7eb', fontSize: 13, fontFamily: 'inherit',
+                border: 'none', background: '#f3f4f6', color: '#143639', fontSize: 13, fontFamily: 'inherit',
                 resize: 'none', boxSizing: 'border-box', outline: 'none', lineHeight: 1.5,
               }}
-              onFocus={e => e.target.style.borderColor = '#143639'}
-              onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+              onFocus={e => e.target.style.background = '#e5e7eb'}
+              onBlur={e => e.target.style.background = '#f3f4f6'}
             />
           </div>
 
@@ -370,9 +370,9 @@ export default function PrintShop() {
         {MATERIALS.map(m => (
           <button key={m.id} onClick={() => setMaterial(m.id)} title={m.desc} style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 12px', borderRadius: 0,
-            border: material === m.id ? '2px solid #143639' : '1px solid #e5e7eb',
-            background: material === m.id ? '#143639' : 'white', cursor: 'pointer', flexShrink: 0,
-            fontSize: 11, fontWeight: 800, color: material === m.id ? 'white' : '#555',
+            border: 'none',
+            background: material === m.id ? '#143639' : '#f3f4f6', cursor: 'pointer', flexShrink: 0,
+            fontSize: 11, fontWeight: 800, color: material === m.id ? 'white' : '#143639',
             textTransform: 'uppercase', letterSpacing: '0.05em'
           }}>
             <span>{m.label}</span>
@@ -380,21 +380,24 @@ export default function PrintShop() {
         ))}
       </div>
 
-      {/* Size + pricing TBD */}
-      <div style={{ display: 'flex', alignItems: 'center', padding: '0 16px 16px', gap: 8 }}>
-        <button onClick={() => setShowSizePanel(true)} style={{
-          display: 'flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 44,
-          borderRadius: 0, border: '1px solid #e5e7eb', background: 'white',
-          fontSize: 13, fontWeight: 800, color: '#143639', cursor: 'pointer',
-          textTransform: 'uppercase', letterSpacing: '0.05em'
-        }} aria-label="Choose size">
-          {selectedSize.label}
-          <svg width="8" height="5" viewBox="0 0 10 6" fill="#143639"><path d="M5 6L0 0h10z"/></svg>
-        </button>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'baseline', gap: 6 }}>
-          
-          
-          <span style={{ fontSize: 11, color: '#888', fontStyle: 'italic' }}>Pricing coming soon</span>
+      {/* Size Grid */}
+      <div style={{ padding: '0 16px 24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 12 }}>
+          <span style={{ fontSize: 12, fontWeight: 800, color: '#143639', textTransform: 'uppercase', letterSpacing: '0.05em' }}>SELECT SIZE</span>
+          <span style={{ fontSize: 10, color: '#888', fontStyle: 'italic', fontWeight: 600 }}>Pricing coming soon</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+          {CANVAS_SIZES.slice(0, 8).map(size => (
+            <button key={size.id} onClick={() => setSelectedSize(size)} style={{
+              padding: '12px 4px', borderRadius: 0,
+              background: selectedSize.id === size.id ? '#143639' : '#f3f4f6',
+              color: selectedSize.id === size.id ? 'white' : '#143639',
+              border: 'none', cursor: 'pointer',
+              fontSize: 12, fontWeight: 800, textTransform: 'uppercase'
+            }}>
+              {size.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -441,16 +444,10 @@ export default function PrintShop() {
         )}
 
       {/* Trust badges */}
-      <div style={{ display: 'flex', justifyContent: 'space-around', padding: '16px 16px 4px', borderTop: '1px solid #f0ece4' }}>
-        {[
-          { icon: '🚚', label: 'Free Shipping' },
-          { icon: '🇺🇸', label: 'Made in USA' },
-          { icon: '💯', label: 'Free Reprints' },
-          { icon: '⚡', label: '1–3 Day Ship' },
-        ].map(b => (
-          <div key={b.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-            <span style={{ fontSize: 16 }}>{b.icon}</span>
-            <span style={{ fontSize: 9, fontWeight: 600, color: '#888', textAlign: 'center', lineHeight: 1.2 }}>{b.label}</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '24px 16px 16px', borderTop: '2px solid #143639', marginTop: 16 }}>
+        {['Free Shipping', 'Made in USA', 'Free Reprints', '1-3 Day Ship'].map(label => (
+          <div key={label} style={{ fontSize: 9, fontWeight: 900, color: '#143639', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>
+            {label}
           </div>
         ))}
       </div>
@@ -481,7 +478,7 @@ export default function PrintShop() {
   )
 
   const imagePanel = displayImage ? (
-    <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f0e8', borderRadius: 12, overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#e5e7eb', borderRadius: 0, overflow: 'hidden' }}>
       {/* Constrain preview to selected print size aspect ratio */}
       <div style={{
         maxWidth: '88%', maxHeight: '88%', borderRadius: 4, overflow: 'hidden',
@@ -504,7 +501,7 @@ export default function PrintShop() {
       )}
     </div>
   ) : (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 120, background: '#f5f0e8', borderRadius: 12, padding: 16, position: 'relative', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 120, background: '#e5e7eb', borderRadius: 0, padding: 16, position: 'relative', overflow: 'hidden' }}>
       {/* Proportional preview matching selected size */}
       <div style={{
         width: '75%', maxWidth: 320,
@@ -514,8 +511,7 @@ export default function PrintShop() {
         background: 'rgba(255,255,255,0.6)',
         transition: 'aspect-ratio 0.3s ease',
       }}>
-        <div style={{ fontSize: 28 }}>✨</div>
-        <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: '#143639', textAlign: 'center' }}>Your print preview</p>
+        <span style={{ fontSize: 11, fontWeight: 800, color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.1em' }}>BLANK CANVAS</span>
         <span style={{ fontSize: 10, color: '#aaa', background: 'rgba(0,0,0,0.05)', padding: '2px 8px', borderRadius: 8 }}>{selectedSize.label}</span>
       </div>
       <p style={{ margin: '8px 0 0', fontSize: 11, color: '#aaa', textAlign: 'center' }}>Generate or upload — ships in 1–3 days</p>
