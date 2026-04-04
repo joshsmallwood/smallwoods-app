@@ -528,7 +528,7 @@ export default function PrintShop() {
   return (
     <>
       {/* ── Mobile layout (< 768px) ── */}
-      <div className="print-shop-mobile" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', maxWidth: 480, margin: '0 auto', fontFamily: '"Poppins", sans-serif', background: '#fff', overflow: 'hidden' }}>
+      <div className="print-shop-mobile" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', fontFamily: '"Poppins", sans-serif', background: '#fff', overflow: 'hidden' }}>
         {/* Header */}
         <div style={{ background: 'white', borderBottom: '1px solid #f0ece4', padding: '10px 16px 6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <div>
