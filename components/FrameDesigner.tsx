@@ -286,7 +286,7 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
           borderStyle: frameImgUrl ? 'solid' : 'none',
           borderWidth: BORDER_PX,
           borderImageSource: frameImgUrl ? `url("${frameImgUrl}")` : 'none',
-          borderImageSlice: 26, // matches actual frame thickness in the PNG (26px per side)
+          borderImageSlice: 18, // 18px crops inner light lip of frame PNG, no inner glow
           borderImageRepeat: 'stretch',
           lineHeight: 0,
           boxSizing: 'content-box',
