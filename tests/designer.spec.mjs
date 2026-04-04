@@ -33,14 +33,20 @@ async function getFrame(page) {
 }
 
 async function selectSize(page, label) {
+  // Open size panel via the size button (aria-label="Choose size")
   const opened = await page.evaluate(() => {
-    const btn = [...document.querySelectorAll('button')].find(b => /^\d+[x×]\d+$/.test(b.textContent?.trim() || ''));
+    const btn = document.querySelector('button[aria-label="Choose size"]') ||
+      [...document.querySelectorAll('button')].find(b => /^\d+[x×]\d+$/.test(b.textContent?.trim() || ''));
     btn?.click(); return !!btn;
   });
   if (!opened) return false;
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(400);
+  // Select size by aria-label in the panel (format: "25×17 $109")
   const selected = await page.evaluate((lbl) => {
-    const btn = [...document.querySelectorAll('button')].find(b => b.textContent?.trim().startsWith(lbl));
+    // Try aria-label first (panel), then text content (fallback)
+    const btn = [...document.querySelectorAll('button[aria-pressed]')].find(b => 
+      b.getAttribute('aria-label')?.startsWith(lbl)
+    ) || [...document.querySelectorAll('button')].find(b => b.textContent?.trim().startsWith(lbl));
     btn?.click(); return !!btn;
   }, label);
   await page.waitForTimeout(400);
@@ -215,15 +221,16 @@ async function runTests(page, vp) {
   });
   await page.waitForTimeout(200);
 
-  // T14: Size dropdown shows all options
+  // T14: Size panel shows all options
   await page.evaluate(() => {
-    [...document.querySelectorAll('button')].find(b => /^\d+[x×]\d+$/.test(b.textContent?.trim() || ''))?.click();
+    const btn = document.querySelector('button[aria-label="Choose size"]');
+    btn?.click();
   });
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(400);
   const dropCount = await page.evaluate(() =>
-    [...document.querySelectorAll('button')].filter(b => /\$\d+$/.test(b.textContent?.trim() || '') && /^\d+/.test(b.textContent?.trim() || '')).length
+    [...document.querySelectorAll('button[aria-pressed]')].filter(b => b.getAttribute('aria-label')?.match(/\$\d+/)).length
   );
-  assert(dropCount >= 9, `${tag} Size dropdown: all 10 options`, `found ${dropCount}`);
+  assert(dropCount >= 9, `${tag} Size panel: all 10 options`, `found ${dropCount}`);
   await page.keyboard.press('Escape');
   await page.waitForTimeout(200);
 

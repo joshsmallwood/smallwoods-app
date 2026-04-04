@@ -424,53 +424,94 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   )
 }
 
+// SizeSelector — opens a slide-up panel (FrameForest pattern)
+// The trigger button is passed as a prop so parent controls visibility
+function SizeSelectorButton({ selected, onClick }: { selected: SizeOption; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 4,
+        padding: '8px 12px', minHeight: 44, borderRadius: 4,
+        border: '1.5px solid #143639', background: 'white',
+        fontSize: 13, fontWeight: 700, color: '#143639',
+        cursor: 'pointer', flexShrink: 0,
+      }}
+      aria-label="Choose size"
+    >
+      {selected.label}
+      <svg width="10" height="6" viewBox="0 0 10 6" fill="#143639"><path d="M5 6L0 0h10z"/></svg>
+    </button>
+  )
+}
+
+// SizePanel — slide-up panel with proportional size squares
+function SizePanel({ selected, onSelect, onClose }: { selected: SizeOption; onSelect: (s: SizeOption) => void; onClose: () => void }) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 9997, background: 'rgba(0,0,0,0.4)' }} onClick={onClose}>
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'white', borderRadius: '20px 20px 0 0', padding: '16px 16px 36px' }} onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 16, fontWeight: 800, color: '#1a1a1a' }}>Size</span>
+            <span style={{ fontSize: 11, color: '#888' }}>ⓘ</span>
+          </div>
+          <button onClick={onClose} style={{ background: '#143639', color: 'white', border: 'none', borderRadius: 8, padding: '6px 16px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Done</button>
+        </div>
+        {/* Promo note */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
+          <span style={{ fontSize: 12 }}>🏷️</span>
+          <span style={{ fontSize: 11, color: '#555', fontWeight: 600 }}>MYWALL35 — 35% off applied automatically</span>
+        </div>
+        {/* Size grid — horizontal scroll, proportional squares */}
+        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
+          {SIZES.map(s => {
+            // Compute proportional display size — max 64px in longest dimension
+            const maxDim = 64
+            const ratio = s.widthIn / s.heightIn
+            const dispW = ratio >= 1 ? maxDim : Math.round(maxDim * ratio)
+            const dispH = ratio >= 1 ? Math.round(maxDim / ratio) : maxDim
+            const isSelected = selected.id === s.id
+            return (
+              <button
+                key={s.id}
+                onClick={() => { onSelect(s); onClose() }}
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  padding: '10px 8px', borderRadius: 8, border: isSelected ? '2.5px solid #143639' : '2px solid #e5e7eb',
+                  background: isSelected ? '#f0faf5' : 'white', cursor: 'pointer', flexShrink: 0, minWidth: 74,
+                }}
+                aria-label={`${s.label} $${s.price}`}
+                aria-pressed={isSelected}
+              >
+                {/* Proportional size square */}
+                <div style={{ width: maxDim, height: maxDim, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{
+                    width: dispW, height: dispH,
+                    border: isSelected ? '2px solid #143639' : '2px solid #888',
+                    borderRadius: 2,
+                    background: isSelected ? 'rgba(20,54,57,0.06)' : 'rgba(0,0,0,0.03)',
+                  }} />
+                </div>
+                <span style={{ fontSize: 12, fontWeight: isSelected ? 800 : 700, color: isSelected ? '#143639' : '#1a1a1a' }}>{s.label}</span>
+                <span style={{ fontSize: 11, color: '#888' }}>${s.price} Each</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Legacy export for compatibility — not used directly anymore
 function SizeSelector({ selected, onSelect }: { selected: SizeOption; onSelect: (s: SizeOption) => void }) {
   const [open, setOpen] = useState(false)
   return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen(v => !v)}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 4,
-          padding: '8px 12px', minHeight: 44, borderRadius: 4,
-          border: '1.5px solid #143639', background: 'white',
-          fontSize: 13, fontWeight: 700, color: '#143639',
-          cursor: 'pointer',
-        }}
-      >
-        {selected.label}
-        <svg width="10" height="6" viewBox="0 0 10 6" fill="#143639" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: '0.2s' }}>
-          <path d="M5 6L0 0h10z"/>
-        </svg>
-      </button>
-      {open && (
-        <div
-          style={{
-            position: 'absolute', bottom: '110%', left: 0, zIndex: 100,
-            background: 'white', border: '1px solid #e5e7eb', borderRadius: 8,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.15)', padding: 8, minWidth: 160,
-          }}
-        >
-          {SIZES.map(s => (
-            <button
-              key={s.id}
-              onClick={() => { onSelect(s); setOpen(false) }}
-              style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                width: '100%', padding: '8px 12px', borderRadius: 6, border: 'none',
-                background: selected.id === s.id ? '#f0faf5' : 'transparent',
-                color: selected.id === s.id ? '#143639' : '#333',
-                fontWeight: selected.id === s.id ? 800 : 500,
-                fontSize: 13, cursor: 'pointer', textAlign: 'left',
-              }}
-            >
-              <span>{s.label}</span>
-              <span style={{ fontSize: 11, color: '#888' }}>${s.price}</span>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    <>
+      <SizeSelectorButton selected={selected} onClick={() => setOpen(true)} />
+      {open && <SizePanel selected={selected} onSelect={(s) => { onSelect(s); setOpen(false) }} onClose={() => setOpen(false)} />}
+    </>
   )
 }
 
@@ -580,6 +621,7 @@ export default function FrameDesigner() {
   const [activeId, setActiveId] = useState('f1')
   const [isRefill, setIsRefill] = useState(false)
   const [showStylePanel, setShowStylePanel] = useState(false)
+  const [showSizePanel, setShowSizePanel] = useState(false)
   const [reviewCount, setReviewCount] = useState(6494)
   const [starRating, setStarRating] = useState(4.74)
   const deliveryInfo = getDeliveryInfo()
@@ -996,7 +1038,7 @@ export default function FrameDesigner() {
 
         {/* Controls: Row 1 — size + Style button (FrameForest pattern: tap to open panel) */}
         <div style={{ display: 'flex', alignItems: 'center', padding: '2px 8px 2px', gap: 6 }}>
-          <SizeSelector selected={activeFrame.size} onSelect={(s) => updateFrame(activeId, { size: s })} />
+          <SizeSelectorButton selected={activeFrame.size} onClick={() => setShowSizePanel(true)} />
           {/* Style button — shows selected color, opens panel on tap */}
           <button
             onClick={() => setShowStylePanel(true)}
@@ -1026,6 +1068,15 @@ export default function FrameDesigner() {
           </button>
         </div>
       </div>
+
+      {/* ── Size Panel — FrameForest-style slide-up panel ── */}
+      {showSizePanel && (
+        <SizePanel
+          selected={activeFrame.size}
+          onSelect={(s) => { updateFrame(activeId, { size: s }); setShowSizePanel(false) }}
+          onClose={() => setShowSizePanel(false)}
+        />
+      )}
 
       {/* ── Style Panel — FrameForest-style slide-up panel for color selection ── */}
       {showStylePanel && (
