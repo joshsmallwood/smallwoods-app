@@ -148,8 +148,8 @@ export default function PrintShop() {
 
   return (
     <div style={{
-      display: 'grid',
-      gridTemplateRows: displayImage ? 'auto 1fr auto auto' : 'auto auto auto',
+      display: 'flex',
+      flexDirection: 'column',
       height: '100dvh',
       maxWidth: 480,
       margin: '0 auto',
@@ -195,7 +195,7 @@ export default function PrintShop() {
       </div>
 
       {/* ── Canvas Preview — only shown when image exists ── */}
-      <div style={{ position: 'relative', background: '#f5f0e8', display: displayImage ? 'flex' : 'none', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', minHeight: 0 }}>
+      <div style={{ position: 'relative', background: '#f5f0e8', flex: displayImage ? '1 1 auto' : '0 0 0px', display: displayImage ? 'flex' : 'none', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', minHeight: 0 }}>
         {displayImage && (
           <div style={{
             position: 'relative',
@@ -249,7 +249,7 @@ export default function PrintShop() {
       </div>
 
       {/* ── Controls ── */}
-      <div style={{ background: 'white', borderTop: '1px solid #f0ece4' }}>
+      <div style={{ background: 'white', borderTop: '1px solid #f0ece4', flex: displayImage ? '0 0 auto' : '1 1 auto', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', overflowY: 'auto' }}>
         {mode === 'generate' ? (
           <div style={{ padding: '10px 14px 6px' }}>
             {/* Style presets */}
@@ -333,7 +333,7 @@ export default function PrintShop() {
       </div>
 
       {/* ── CTA Bar ── */}
-      <div style={{ background: '#143639', padding: '8px 14px', paddingBottom: 'calc(8px + env(safe-area-inset-bottom, 0px))' }}>
+      <div style={{ background: '#143639', padding: '8px 14px', paddingBottom: 'calc(8px + env(safe-area-inset-bottom, 0px))', flexShrink: 0 }}>
         {mode === 'generate' ? (
           generationState === 'success' && currentImage ? (
             <div style={{ display: 'flex', gap: 8 }}>
