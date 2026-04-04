@@ -59,6 +59,16 @@ const MATERIALS: { id: Material; label: string; desc: string; emoji: string }[] 
   { id: 'coroplast',   label: 'Coroplast',   desc: 'Corrugated plastic, weather-proof', emoji: '🪧' },
 ]
 
+// Print Shop Shopify product: ID 8532271595657, 40 variants (unpublished/draft)
+const VARIANT_MAP: Record<string, number> = {"8x10|Canvas":45478226919561,"8x10|Foam Core":45478226952329,"8x10|Photo Paper":45478226985097,"8x10|Coroplast":45478227017865,"10x12|Canvas":45478227050633,"10x12|Foam Core":45478227083401,"10x12|Photo Paper":45478227116169,"10x12|Coroplast":45478227148937,"12x16|Canvas":45478227181705,"12x16|Foam Core":45478227214473,"12x16|Photo Paper":45478227247241,"12x16|Coroplast":45478227280009,"13x13|Canvas":45478227312777,"13x13|Foam Core":45478227345545,"13x13|Photo Paper":45478227378313,"13x13|Coroplast":45478227411081,"16x16|Canvas":45478227443849,"16x16|Foam Core":45478227476617,"16x16|Photo Paper":45478227509385,"16x16|Coroplast":45478227542153,"25x17|Canvas":45478227574921,"25x17|Foam Core":45478227607689,"25x17|Photo Paper":45478227640457,"25x17|Coroplast":45478227673225,"20x30|Canvas":45478227705993,"20x30|Foam Core":45478227738761,"20x30|Photo Paper":45478227771529,"20x30|Coroplast":45478227804297,"25x25|Canvas":45478227837065,"25x25|Foam Core":45478227869833,"25x25|Photo Paper":45478227902601,"25x25|Coroplast":45478227935369,"24x36|Canvas":45478227968137,"24x36|Foam Core":45478228000905,"24x36|Photo Paper":45478228033673,"24x36|Coroplast":45478228066441,"44x22|Canvas":45478228099209,"44x22|Foam Core":45478228131977,"44x22|Photo Paper":45478228164745,"44x22|Coroplast":45478228197513}
+
+const MATERIAL_LABELS: Record<string, string> = {
+  canvas: 'Canvas',
+  foam_core: 'Foam Core',
+  photo_paper: 'Photo Paper',
+  coroplast: 'Coroplast',
+}
+
 const SHOPIFY_STORE = 'https://smallwoodhome.com'
 const PROMO_CODE = 'MYWALL35'
 const DISCOUNT = 0.35
@@ -160,16 +170,61 @@ export default function PrintShop() {
     reader.readAsDataURL(file)
   }
 
-  const handleAddToCart = useCallback(() => {
+  const handleAddToCart = useCallback(async () => {
     if (!displayImage || adding) return
     setAdding(true)
-    const cartUrl = `${SHOPIFY_STORE}/cart/${selectedSize.shopifyVariantId}:1?discount=${PROMO_CODE}`
-    setTimeout(() => {
+
+    // Get the correct variant ID from the map
+    const variantKey = `${selectedSize.id}|${MATERIAL_LABELS[material]}`
+    const variantId = VARIANT_MAP[variantKey]
+    if (!variantId) { alert('Size/material combination not available'); setAdding(false); return }
+
+    // Store the image and get a photo_id
+    try {
+      const storeRes = await fetch('/api/printshop/store-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageDataUrl: displayImage,
+          source: mode === 'generate' ? 'ai_generate' : 'upload',
+          material,
+          sizeId: selectedSize.id,
+          sku: `SB-${selectedSize.id === '25x17' ? 'M' : selectedSize.id === '13x13' ? 'SSQ' : selectedSize.id === '25x25' ? 'SQ' : selectedSize.id === '44x22' ? 'XL' : selectedSize.id}-CUSTOM-0-${material === 'canvas' ? 'CVS' : material === 'foam_core' ? 'FC' : material === 'photo_paper' ? 'PP' : 'CP'}-A0`,
+          prompt: prompt || null,
+          style: style || null,
+          referenceImageUsed: !!referenceImage,
+          sessionId: typeof window !== 'undefined' ? (window as any).__ps_session || crypto.randomUUID() : null,
+        }),
+      })
+      const storeData = await storeRes.json()
+      const photoId = storeData.photoId || crypto.randomUUID()
+
+      // Build Shopify cart URL with line item properties
+      let cartUrl = `${SHOPIFY_STORE}/cart/${variantId}:1?discount=${PROMO_CODE}`
+      cartUrl += `&properties[photo_id]=${photoId}`
+      cartUrl += `&properties[material]=${material}`
+      cartUrl += `&properties[appVersion]=printshop-1.0`
+      cartUrl += `&properties[features]=${mode === 'generate' ? 'ai-generated' : 'uploaded'}${style ? ',' + style : ''}`
+      cartUrl += `&properties[ssTags]=${mode === 'generate' ? 'AI Generated' : ''}`
+
+      // Pass UTM params
+      if (typeof window !== 'undefined') {
+        const sp = new URLSearchParams(window.location.search)
+        for (const key of ['utm_source','utm_medium','utm_campaign','utm_content','fbclid','gclid','ttclid']) {
+          const v = sp.get(key)
+          if (v) cartUrl += `&${key}=${encodeURIComponent(v)}`
+        }
+      }
+
       setAdded(true); setAdding(false)
       window.open(cartUrl, '_blank')
       setTimeout(() => setAdded(false), 3000)
-    }, 400)
-  }, [displayImage, selectedSize, adding])
+    } catch (err) {
+      console.error('Add to cart error:', err)
+      setAdding(false)
+      alert('Something went wrong. Please try again.')
+    }
+  }, [displayImage, selectedSize, material, mode, prompt, style, referenceImage, adding])
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -361,11 +416,11 @@ export default function PrintShop() {
                 padding: '13px 16px', background: '#f0ece4', border: 'none', borderRadius: 10,
                 fontSize: 13, fontWeight: 700, color: '#143639', cursor: 'pointer',
               }}>↩ Redo</button>
-              <button onClick={() => alert('Checkout coming soon! This is a sandbox preview.')} disabled={adding} style={{
+              <button onClick={handleAddToCart} disabled={adding} style={{
                 flex: 1, padding: '13px 0', background: added ? '#22c55e' : '#143639',
                 color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 800, cursor: 'pointer',
               }}>
-                {adding ? 'Adding…' : added ? '✓ Added!' : '💾 Save Design'}
+                {adding ? 'Adding…' : added ? '✓ Added!' : '🖨️ Order Print'}
               </button>
             </div>
           ) : (
@@ -386,7 +441,7 @@ export default function PrintShop() {
             color: canOrder ? 'white' : '#143639', border: 'none', borderRadius: 10,
             fontSize: 15, fontWeight: 800, cursor: 'pointer',
           }}>
-            {adding ? 'Adding…' : added ? '✓ Added!' : canOrder ? '💾 Save Design' : '📷 Upload Photo to Start'}
+            {adding ? 'Adding…' : added ? '✓ Added!' : canOrder ? '🖨️ Order Print' : '📷 Upload Photo to Start'}
           </button>
         )}
 
