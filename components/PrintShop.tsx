@@ -81,7 +81,7 @@ function getShipText(): string {
   const hour = ct.getHours()
   if (day === 0) return 'Ships Mon'
   if (day === 6) return 'Ships Mon'
-  if (hour < 15) return '⚡ Ships today'
+  if (hour < 15) return 'Ships today'
   return 'Ships tomorrow'
 }
 
@@ -388,22 +388,26 @@ export default function PrintShop() {
       <div style={{ padding: '0 16px 24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 12 }}>
           <span style={{ fontSize: 14, fontWeight: 800, color: '#1B5A4A' }}>Size & Format</span>
-          <span style={{ fontSize: 12, color: '#888' }}>Pricing coming soon</span>
+          
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-          {CANVAS_SIZES.slice(0, 8).map(size => (
-            <button key={size.id} onClick={() => setSelectedSize(size)} style={{
-              padding: '12px 4px', borderRadius: 12,
-              background: selectedSize.id === size.id ? '#1B5A4A' : 'white',
-              color: selectedSize.id === size.id ? 'white' : '#555',
-              border: selectedSize.id === size.id ? '1px solid #1B5A4A' : '1px solid #E5E7EB', 
-              cursor: 'pointer',
-              fontSize: 13, fontWeight: 700, transition: 'all 0.2s',
-              boxShadow: selectedSize.id === size.id ? '0 4px 12px rgba(27,90,74,0.2)' : '0 2px 4px rgba(0,0,0,0.02)'
-            }}>
-              {size.label}
-            </button>
-          ))}
+          {CANVAS_SIZES.slice(0, 8).map(size => {
+            const price = Math.round(size.price * 0.65); // applying 35% discount visually
+            return (
+              <button key={size.id} onClick={() => setSelectedSize(size)} style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                padding: '10px 4px', borderRadius: 12,
+                background: selectedSize.id === size.id ? '#1B5A4A' : 'white',
+                color: selectedSize.id === size.id ? 'white' : '#555',
+                border: selectedSize.id === size.id ? '1px solid #1B5A4A' : '1px solid #E5E7EB', 
+                cursor: 'pointer', transition: 'all 0.2s',
+                boxShadow: selectedSize.id === size.id ? '0 4px 12px rgba(27,90,74,0.2)' : '0 2px 4px rgba(0,0,0,0.02)'
+              }}>
+                <span style={{ fontSize: 13, fontWeight: 700 }}>{size.label}</span>
+                {price > 0 && <span style={{ fontSize: 11, fontWeight: 500, opacity: selectedSize.id === size.id ? 0.9 : 0.6 }}>${price}</span>}
+              </button>
+            )
+          })}
         </div>
       </div>
 
