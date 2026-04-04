@@ -164,8 +164,8 @@ function FrameCanvas({ frame, onPhotoChange, isActive, onClick, showRefill, onOr
   // Scale frame to fill available space — container is max 480px wide, height depends on viewport
   const viewW = typeof window !== 'undefined' ? Math.min(window.innerWidth, 480) : 390
   const viewH = typeof window !== 'undefined' ? window.innerHeight : 844
-  const maxDisplayW = viewW * 0.72 - BORDER_PX * 2
-  const maxDisplayH = viewH * 0.60 - BORDER_PX * 2
+  const maxDisplayW = viewW * 0.78 - BORDER_PX * 2
+  const maxDisplayH = viewH * 0.64 - BORDER_PX * 2
   const scaleByW = maxDisplayW / photoW
   const scaleByH = maxDisplayH / photoH
   const scale = Math.min(scaleByW, scaleByH)
@@ -379,9 +379,9 @@ function ColorSwatch({ color, selected, onSelect }: { color: typeof COLORS[0]; s
       onClick={onSelect}
       title={color.label}
       style={{
-        width: 44, height: 44, padding: 3, border: 'none', background: 'none',
-        cursor: 'pointer', borderRadius: 4, flexShrink: 0,
-        outline: selected ? `2.5px solid #143639` : '2.5px solid transparent',
+        width: 36, height: 36, padding: 2, border: 'none', background: 'none',
+        cursor: 'pointer', borderRadius: 3, flexShrink: 0,
+        outline: selected ? `2px solid #143639` : '2px solid transparent',
         outlineOffset: 1,
         transition: 'outline 0.1s',
       }}
@@ -408,25 +408,20 @@ function PriceRow({ frames, isRefill }: { frames: FrameItem[]; isRefill: boolean
   const bundleTotal = isRefill ? saleTotal : Math.round(saleTotal * (1 - DISCOUNT))
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, padding: '6px 20px', background: 'white', borderTop: '1px solid #f0ece4' }}>
-      {/* Full price - struck through, small */}
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, padding: '5px 16px', background: 'white', borderTop: '1px solid #f0ece4' }}>
       <div style={{ textAlign: 'center', flex: 1 }}>
-        <div style={{ fontSize: 15, fontWeight: 700, color: '#bd7b57', textDecoration: 'line-through' }}>${fullTotal}</div>
-        <div style={{ fontSize: 8, color: '#aaa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Full Price</div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#bd7b57', textDecoration: 'line-through' }}>${fullTotal}</div>
+        <div style={{ fontSize: 7, color: '#bbb', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Full Price</div>
       </div>
-      {/* Divider */}
-      <div style={{ width: 1, height: 32, background: '#e5e7eb', margin: '0 4px' }} />
-      {/* Sale price */}
+      <div style={{ width: 1, height: 28, background: '#e5e7eb' }} />
       <div style={{ textAlign: 'center', flex: 1 }}>
-        <div style={{ fontSize: 15, fontWeight: 700, color: '#143639' }}>${saleTotal}</div>
-        <div style={{ fontSize: 8, color: '#aaa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Sale Price</div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: '#143639' }}>${saleTotal}</div>
+        <div style={{ fontSize: 7, color: '#bbb', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Sale Price</div>
       </div>
-      {/* Divider */}
-      <div style={{ width: 1, height: 32, background: '#e5e7eb', margin: '0 4px' }} />
-      {/* Bundle price - hero */}
+      <div style={{ width: 1, height: 28, background: '#e5e7eb' }} />
       <div style={{ textAlign: 'center', flex: 1 }}>
-        <div style={{ fontSize: 22, fontWeight: 900, color: '#143639', lineHeight: 1 }}>${bundleTotal}</div>
-        <div style={{ fontSize: 8, color: '#143639', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Bundle Price</div>
+        <div style={{ fontSize: 18, fontWeight: 800, color: '#143639', lineHeight: 1 }}>${bundleTotal}</div>
+        <div style={{ fontSize: 7, color: '#888', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Bundle Price</div>
       </div>
     </div>
   )
@@ -656,40 +651,6 @@ export default function FrameDesigner() {
 
       {/* ── Controls ── */}
       <div style={{ background: 'white', borderTop: '1px solid #f0ece4', borderBottom: '1px solid #f0ece4' }}>
-        {/* Frame / Print Refill toggle */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '6px 16px 2px' }}>
-          <div style={{ display: 'flex', background: '#f0ece4', borderRadius: 20, padding: 3, gap: 2 }}>
-            <button
-              onClick={() => setIsRefill(false)}
-              style={{
-                padding: '5px 16px', borderRadius: 16, border: 'none', cursor: 'pointer',
-                fontSize: 12, fontWeight: 700, transition: 'all 0.15s',
-                background: !isRefill ? '#143639' : 'transparent',
-                color: !isRefill ? 'white' : '#666',
-              }}
-            >
-              Frame
-            </button>
-            <button
-              onClick={() => setIsRefill(true)}
-              style={{
-                padding: '5px 16px', borderRadius: 16, border: 'none', cursor: 'pointer',
-                fontSize: 12, fontWeight: 700, transition: 'all 0.15s',
-                background: isRefill ? '#143639' : 'transparent',
-                color: isRefill ? 'white' : '#666',
-              }}
-            >
-              Print Refill
-            </button>
-          </div>
-        </div>
-        {isRefill && (
-          <div style={{ margin: '0 16px 4px', padding: '6px 10px', background: '#f0faf5', borderRadius: 8, border: '1px solid #c6e6d8' }}>
-            <p style={{ margin: 0, fontSize: 10, color: '#143639', fontWeight: 600, lineHeight: 1.4 }}>
-              🖼 Replaces the print inside your existing Smallwoods frame · Barcode on back is hidden behind the face-frame
-            </p>
-          </div>
-        )}
 
         {/* Orientation mismatch warning */}
         {orientMismatch && activeFrame.photo && (
@@ -784,20 +745,28 @@ export default function FrameDesigner() {
           ))}
         </div>
 
-        {/* Size + Color row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 12px 8px', gap: 8 }}>
+        {/* Size + Color + Refill toggle row */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '4px 10px 6px', gap: 6, overflowX: 'auto' }}>
+          {/* Product type toggle — compact pills */}
+          <div style={{ display: 'flex', background: '#f0ece4', borderRadius: 16, padding: 2, gap: 1, flexShrink: 0 }}>
+            <button onClick={() => setIsRefill(false)} style={{ padding: '3px 8px', borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 700, background: !isRefill ? '#143639' : 'transparent', color: !isRefill ? 'white' : '#888', whiteSpace: 'nowrap' }}>Frame</button>
+            <button onClick={() => setIsRefill(true)} style={{ padding: '3px 8px', borderRadius: 14, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 700, background: isRefill ? '#143639' : 'transparent', color: isRefill ? 'white' : '#888', whiteSpace: 'nowrap' }}>Refill</button>
+          </div>
+          {/* Size selector */}
           <SizeSelector selected={activeFrame.size} onSelect={(s) => updateFrame(activeId, { size: s })} />
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
+          {/* Color swatches — all 4 visible, no overflow */}
+          <div style={{ display: 'flex', gap: 3, alignItems: 'center', flexShrink: 0 }}>
             {COLORS.map(c => (
-              <ColorSwatch
-                key={c.id}
-                color={c}
-                selected={activeFrame.color === c.id}
-                onSelect={() => updateFrame(activeId, { color: c.id })}
-              />
+              <ColorSwatch key={c.id} color={c} selected={activeFrame.color === c.id} onSelect={() => updateFrame(activeId, { color: c.id })} />
             ))}
           </div>
         </div>
+        {/* Refill note — only shown in refill mode, compact */}
+        {isRefill && (
+          <div style={{ margin: '0 10px 4px', padding: '4px 8px', background: '#f0faf5', borderRadius: 6, border: '1px solid #c6e6d8' }}>
+            <p style={{ margin: 0, fontSize: 9, color: '#143639', fontWeight: 600, lineHeight: 1.3 }}>Fits your existing frame · barcode hidden behind face-frame</p>
+          </div>
+        )}
       </div>
 
       {/* ── CTA Bar — full width, matches dev app ── */}
