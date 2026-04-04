@@ -141,8 +141,10 @@ async function runTests(page, vp) {
   );
   assert(swatchCount === 4, `${tag} Style panel: 4 swatches`, `found ${swatchCount}`);
 
-  // Color change
+  // Color change — open style panel before each color selection
   for (const color of ['Black', 'Walnut']) {
+    await openStylePanel(page);
+    await page.waitForTimeout(300);
     const changed = await page.evaluate((c) => {
       const btn = document.querySelector(`button[aria-label="${c}"]`);
       btn?.click(); return !!btn;
@@ -197,11 +199,15 @@ async function runTests(page, vp) {
   , vw);
   assert(!overflow3, `${tag} Gallery wall: 3 frames fit`, overflow3 ? 'OVERFLOW' : 'ok');
 
-  // Print Refill
+  // Print Refill — button is inside Style panel
   await page.reload({ waitUntil: 'networkidle' }); await page.waitForTimeout(2000);
+  await openStylePanel(page);
+  await page.waitForTimeout(300);
   await page.evaluate(() => {
     document.querySelector('button[aria-label="Switch to Print Refill"]')?.click();
   });
+  await page.waitForTimeout(300);
+  await openStylePanel(page);
   await page.waitForTimeout(300);
   const refillActive = await page.evaluate(() =>
     document.querySelector('button[aria-label="Switch to Frame"]') !== null
