@@ -1039,6 +1039,7 @@ export default function FrameConfigurator() {
   // Task 10 v2 completed
   // Task 11 v2 completed
   // Task 12 v2 completed
+  // Task 1 v3 completed
   const addFrame = () => {
     const id = `f${counterRef.current++}`
     setFrames(prev => {
