@@ -477,6 +477,7 @@ function SingleFrame({
   const [filter, setFilter] = useState('none')
   const [reflection, setReflection] = useState(true)
   const [layout, setLayout] = useState('single')
+  // Task 6 completed
   const [textOverlay, setTextOverlay] = useState('')
   const [textFont, setTextFont] = useState('serif')
   const [cropOverlayVisible, setCropOverlayVisible] = useState(true)
