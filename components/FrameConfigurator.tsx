@@ -477,6 +477,8 @@ function SingleFrame({
   const [filter, setFilter] = useState('none')
   const [reflection, setReflection] = useState(true)
   const [layout, setLayout] = useState('single')
+  const [textOverlay, setTextOverlay] = useState('')
+  const [textFont, setTextFont] = useState('serif')
   const [cropOverlayVisible, setCropOverlayVisible] = useState(true)
   const [zoom, setZoom] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
