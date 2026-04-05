@@ -481,6 +481,7 @@ function SingleFrame({
   const [textOverlay, setTextOverlay] = useState('')
   // Task 7 completed
   const [textFont, setTextFont] = useState('serif')
+  // Task 8 completed
   const [cropOverlayVisible, setCropOverlayVisible] = useState(true)
   const [zoom, setZoom] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
